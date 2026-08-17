@@ -1,0 +1,27 @@
+/* Neutral default skin. A clean, generic editorial palette — deliberately
+   NOT any house identity. Fraunces (display) + Inter (body); slate accent. */
+:root{
+  /* accent — restrained slate, used as a scalpel */
+  --accent:#3B5568; --accent-light:#5A7488; --accent-dark:#2A4050;
+  --accent-fade:rgba(59,85,104,0.12); --accent-tint:rgba(59,85,104,0.07);
+  /* light palette */
+  --lt-bg:#FFFFFF; --lt-bg2:#F6F7F8; --lt-bg3:#ECEEF0; --lt-card-bg:#F3F5F6;
+  --lt-text:#16181B; --lt-muted:#3C4248; --lt-rule:#DCDFE3;
+  --lt-footer-bg:#FAFBFC; --lt-card-rule:#E4E7EA;
+  /* dark palette */
+  --deck-bg:#0E1113; --deck-bg2:#14181B; --deck-bg3:#1B2024;
+  --dk-text:#E9ECEF; --dk-muted:#9AA2A9;
+  --deck-rule:rgba(90,116,136,0.28); --deck-border:rgba(90,116,136,0.16);
+  /* keynote caption family */
+  --kn-ink:#0E1113; --kn-paper:#FFFFFF;
+  /* fonts (with fallbacks so a failed fetch still renders) */
+  --display:'Fraunces','Georgia',serif;
+  --wordmark:'Inter','Helvetica Neue',Arial,sans-serif;
+  --body-font:'Inter','Helvetica Neue',Arial,sans-serif;
+  /* cover background — neutral dark with a faint slate bloom */
+  --cover-bg:
+      radial-gradient(100% 80% at 75% 30%, rgba(90,116,136,0.20) 0%, rgba(14,24,27,0) 55%),
+      linear-gradient(180deg, #14181B 0%, #0E1113 100%);
+  /* geometry (invariant) */
+  --W:1920px; --H:1080px;
+}

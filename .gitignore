@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+*.log
+# rendered deck outputs (keep .md sources only)
+*.html
+*.pdf
+
+# local golden baseline (not distributed)
+docs/fixtures/baseline/
+
+# process artifacts — kept local, not distributed
+docs/specs/
+docs/plans/
+docs/runs/

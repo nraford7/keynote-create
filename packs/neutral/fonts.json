@@ -1,0 +1,6 @@
+{
+  "families": [
+    { "name": "Fraunces", "source": "google", "urlName": "Fraunces", "weights": [300, 400, 500, 600, 700], "styles": ["normal"] },
+    { "name": "Inter", "source": "google", "urlName": "Inter", "weights": [300, 400, 500, 600, 700], "styles": ["normal"] }
+  ]
+}
