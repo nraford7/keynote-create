@@ -22,6 +22,7 @@ Markdown is the structural deliverable; HTML + PDF are the presentation delivera
 | `scripts/keynote-render.mjs` | Node renderer: markdown → self-contained HTML → 1920×1080 PDF via headless Chrome, fonts base64-embedded. Handles both modes; consumes a style pack. |
 | `scripts/house-style.mjs` | House-style registry (register/resolve a saved house pack). Imported by the renderer. |
 | `packs/neutral/` | The bundled neutral style pack (the default) + `REQUIRED-TOKENS.md` token contract. |
+| `KEYNOTE-MODE-SPEC.md` | Design spec for the Keynote-mode addition (kept for provenance). |
 
 ## Deployment
 
@@ -29,7 +30,7 @@ This repo is the **canonical source**. The live skill runs from copies under `~/
 
 ```sh
 # skill files (SKILL.md, references, and the bundled packs)
-cp SKILL.md ~/.claude/skills/keynote-create/
+cp SKILL.md KEYNOTE-MODE-SPEC.md ~/.claude/skills/keynote-create/
 cp references/*.md               ~/.claude/skills/keynote-create/references/
 cp -R packs                      ~/.claude/skills/keynote-create/     # bundled neutral pack — required for default resolution
 # render scripts (SKILL.md references these hardcoded paths).

@@ -226,6 +226,83 @@ function render(fixture, extraArgs = [], env = baseEnv) {
   chk(r.status === 0 && kb >= 30 * 5, `PDF export works and is above the ~30KB/slide floor (${kb.toFixed(0)}KB)`);
 }
 
+// 13. body-list measure is capped (no 140-char lines across the full slide)
+{
+  const r = render(FIX_B);
+  chk(/\.body-list\{[^}]*max-width:1180px/.test(r.html), 'body-list has a max-width measure cap');
+}
+
+// 14. subcaption has an ink plate (not a text-shadow crutch) and no house-palette residue
+{
+  const r = render(FIX_K);
+  chk(/\.kn-subcap\{[^}]*background:rgba\(0,0,0,\.55\)/.test(r.html), 'kn-subcap carries an ink plate');
+  chk(!/#F3F1EC/i.test(r.html) && !/rgba\(74,71,64/.test(r.html), 'no hardcoded house-palette residue in shared layouts');
+}
+
+// 15. art note flagging a light image auto-flips the caption box to dark
+{
+  const md = path.join(TMP, 'light.md');
+  fs.writeFileSync(md, '---\ntitle: "T"\nmode: "keynote"\n---\n\n# T\n\n---\n\n## The gallery was empty\n\n- one line\n\n> Art: bright white museum atrium, pale daylight\n');
+  const r = render(md);
+  chk(r.code === 0 && /kn-caption dark/.test(r.html), 'light art note auto-flips to caption-dark');
+}
+
+// 16. local images are base64-inlined; a missing image degrades to the placeholder
+{
+  const img = path.join(TMP, 'tiny.png');
+  fs.writeFileSync(img, Buffer.from('89504e470d0a1a0a', 'hex'));
+  const md = path.join(TMP, 'img.md');
+  fs.writeFileSync(md, '---\ntitle: "T"\nmode: "keynote"\n---\n\n# T\n\n---\n\n## A real image\n\n![](' + img + ')\n\n---\n\n## A missing image\n\n![](./no-such-file.jpg)\n');
+  const r = render(md);
+  chk(r.code === 0 && /data:image\/png;base64,/.test(r.html), 'local slide image is base64-inlined');
+  chk(!/no-such-file\.jpg/.test(r.html), 'missing image never leaves a dead URL in the HTML');
+}
+
+// 17. low-contrast core token pair fails closed
+{
+  const pdir = path.join(TMP, 'lowcontrast');
+  fs.cpSync(NEUTRAL, pdir, { recursive: true });
+  let css = fs.readFileSync(path.join(pdir, 'tokens.css'), 'utf8');
+  css = css.replace('--lt-text:#16181B;', '--lt-text:#EEEEEE;');
+  fs.writeFileSync(path.join(pdir, 'tokens.css'), css);
+  const r = render(FIX_B, ['--style', pdir]);
+  chk(r.code !== 0 && /fails contrast/.test(r.stderr), 'low-contrast lt-text on lt-bg fails closed');
+}
+
+// 18. richPromotion demands layouts:"self" (shared CSS covers only the baseline family)
+{
+  const pdir = path.join(TMP, 'richshared');
+  fs.cpSync(NEUTRAL, pdir, { recursive: true });
+  fs.writeFileSync(path.join(pdir, 'template.html'), '<div class="slide lt"></div>');
+  fs.writeFileSync(path.join(pdir, 'layout-catalog.md'), '# catalog');
+  fs.writeFileSync(path.join(pdir, 'pack.json'),
+    JSON.stringify({ schema: 1, name: 'x', brand: '', sublabel: '', layouts: 'shared', richPromotion: true }));
+  const r = render(FIX_B, ['--style', pdir]);
+  chk(r.code !== 0 && /richPromotion/.test(r.stderr) && /self/.test(r.stderr), 'richPromotion on shared layouts fails closed');
+}
+
+// 19. richPromotion template classes must have a CSS rule in the pack
+{
+  const pdir = path.join(TMP, 'richuncovered');
+  fs.cpSync(NEUTRAL, pdir, { recursive: true });
+  fs.writeFileSync(path.join(pdir, 'template.html'), '<div class="slide lt"><div class="totally-unstyled-class"></div></div>');
+  fs.writeFileSync(path.join(pdir, 'layout-catalog.md'), '# catalog');
+  fs.writeFileSync(path.join(pdir, 'pack.json'),
+    JSON.stringify({ schema: 1, name: 'x', brand: '', sublabel: '', layouts: 'self', richPromotion: true }));
+  const r = render(FIX_B, ['--style', pdir]);
+  chk(r.code !== 0 && /totally-unstyled-class/.test(r.stderr), 'template class with no CSS rule fails closed');
+}
+
+// 20. overflow probe flags an overstuffed slide during PDF export (needs Chrome, like #12)
+{
+  const bullets = Array.from({ length: 40 }, (_, i) => '- Bullet line number ' + (i + 1) + ' with enough words to take real vertical space on the slide').join('\n');
+  const md = path.join(TMP, 'overflow.md');
+  fs.writeFileSync(md, '---\ntitle: "T"\n---\n\n# T\n\n---\n\n## This slide has far too much body content\n\n' + bullets + '\n\n---\n\n## Closing beat\n');
+  const outDir = fs.mkdtempSync(path.join(TMP, 'ovf-'));
+  const r = spawnSync('node', [RENDER, md, '--out', outDir], { env: baseEnv, encoding: 'utf8' });
+  chk(r.status === 0 && /overflows/.test(r.stdout + r.stderr), 'overflow probe flags the overstuffed slide');
+}
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(ok ? '\nALL PASS' : '\nSOME FAILED');
 process.exit(ok ? 0 : 1);

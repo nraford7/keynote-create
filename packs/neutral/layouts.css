@@ -17,7 +17,7 @@
   .footer .brand .sub{font-weight:500;font-size:12px;letter-spacing:.06em;margin-left:9px;color:var(--accent-dark);}
   .dk .footer .brand .sub{color:var(--accent);}
   .footer .pageno{font-family:var(--display);font-size:16px;letter-spacing:.08em;}
-  .lt .footer .pageno{color:rgba(74,71,64,.65);} .dk .footer .pageno{color:rgba(232,230,225,.4);}
+  .lt .footer .pageno{color:var(--lt-muted);opacity:.7;} .dk .footer .pageno{color:var(--dk-muted);opacity:.75;}
   .header-bar{position:absolute;top:0;left:0;right:0;height:78px;display:flex;align-items:center;gap:18px;padding:0 80px;z-index:5;}
   .lt .header-bar{background:var(--lt-bg2);border-bottom:1px solid var(--lt-rule);}
   .dk .header-bar{border-bottom:1px solid var(--deck-rule);}
@@ -51,7 +51,7 @@
   .dk .card li{color:var(--dk-muted);border-bottom-color:var(--deck-rule);}
   .card li:last-child{border-bottom:none;}
   .card li::before{content:'\2014';position:absolute;left:0;color:var(--accent);font-size:13px;top:11px;}
-  .body-list{list-style:none;margin-top:8px;}
+  .body-list{list-style:none;margin-top:8px;max-width:1180px;}
   .body-list li{font-family:var(--body-font);font-size:23px;line-height:1.6;color:var(--lt-muted);padding:14px 0 14px 28px;position:relative;border-bottom:1px solid var(--lt-rule);}
   .dk .body-list li{color:var(--dk-muted);border-bottom-color:var(--deck-rule);}
   .body-list li:last-child{border-bottom:none;}
@@ -86,8 +86,11 @@
   .kn-caption{background:var(--kn-paper);color:var(--kn-ink);padding:20px 32px;font-family:var(--display);font-weight:500;font-size:60px;line-height:1.04;letter-spacing:-.01em;}
   .kn-caption.dark{background:var(--kn-ink);color:var(--kn-paper);}
   .kn-caption strong{font-weight:700;}
-  .kn-subcap{max-width:1080px;font-family:var(--body-font);font-size:27px;font-weight:500;line-height:1.45;color:#F3F1EC;
-    text-shadow:0 1px 12px rgba(0,0,0,.92),0 0 3px rgba(0,0,0,.7);}
+  /* Subcaption sits below the caption box where the scrim has faded — it gets
+     its own hard-edged ink plate (same grammar as the caption box), never a
+     text-shadow over an unknown image. Plate black is photographic, not brand. */
+  .kn-subcap{max-width:1080px;font-family:var(--body-font);font-size:27px;font-weight:500;line-height:1.45;
+    color:var(--kn-paper);background:rgba(0,0,0,.55);padding:10px 18px;}
   .kn-word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 150px;
     font-family:var(--display);font-weight:400;font-size:150px;line-height:1.0;color:var(--kn-paper);}
   .kn-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 140px;

@@ -41,6 +41,8 @@ import { resolveName } from './house-style.mjs';
 
 const HOME = os.homedir();
 const FONT_CACHE = path.join(HOME, '.claude/cache/fonts');
+const IMG_CACHE = path.join(HOME, '.claude/cache/deck-images');
+const IMG_MAX_BYTES = 12 * 1024 * 1024; // full-bleed photography runs larger than fonts
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -120,24 +122,15 @@ const htmlOut = path.join(outDir, `${baseName}.html`);
 const pdfOut  = path.join(outDir, `${baseName}.pdf`);
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(FONT_CACHE, { recursive: true });
+fs.mkdirSync(IMG_CACHE, { recursive: true });
 
 // ── re-export shortcut: existing HTML → PDF only ──
 // Used by Stage 4b after the model has rewritten the baseline HTML to richer
 // pack layouts. Skip markdown parsing and font fetching — the HTML already
 // has base64-inlined @font-face declarations from the initial render.
 if (inputExt === '.html' || inputExt === '.htm') {
-  if (!fs.existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')) {
-    console.error('[pdf] Chrome not found. Cannot re-export.');
-    process.exit(1);
-  }
-  const url = 'file://' + input;
-  const flags = [
-    '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-    '--virtual-time-budget=10000', '--run-all-compositor-stages-before-draw',
-    `--print-to-pdf=${pdfOut}`, '--no-pdf-header-footer', url,
-  ];
-  const r = spawnSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', flags, { stdio: 'inherit', timeout: 60_000 });
-  if (r.status !== 0) { console.error(`[pdf] Chrome exited ${r.status}`); process.exit(1); }
+  const ok = exportPdf(input, pdfOut);
+  if (!ok) process.exit(1);
   const sz = fs.statSync(pdfOut).size;
   console.log(`[pdf]  ${pdfOut}  (${(sz/1024).toFixed(0)}KB, re-exported)`);
   process.exit(0);
@@ -208,6 +201,28 @@ function assertNoStyleBreakout(css, label) {
   }
 }
 
+// WCAG relative-luminance contrast for the pack lint. Only lints values that
+// parse as flat colors (hex / rgb) — gradients and exotic notations are skipped,
+// not failed, because we cannot judge what we cannot parse.
+function parseColor(v) {
+  const s = String(v ?? '').trim();
+  let m = s.match(/^#([0-9a-f]{6})$/i);
+  if (m) { const n = parseInt(m[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  m = s.match(/^#([0-9a-f]{3})$/i);
+  if (m) return [...m[1]].map(c => parseInt(c + c, 16));
+  m = s.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (m) return [+m[1], +m[2], +m[3]];
+  return null;
+}
+function contrastRatio(a, b) {
+  const lum = (rgb) => {
+    const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+    return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]);
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
 function loadPack(dir) {
   const pj = path.join(dir, 'pack.json');
   if (!fs.existsSync(pj)) die(`pack has no pack.json: ${dir}`);
@@ -227,8 +242,11 @@ function loadPack(dir) {
   for (const req of [tokensPath, fontsPath, notesPath]) {
     if (!isRegularFile(req)) die(`pack missing required file ${path.basename(req)} (must be a regular file): ${dir}`);
   }
-  // richPromotion packs must actually ship the promotion assets
+  // richPromotion packs must carry the promotion assets AND their own layouts —
+  // the shared neutral layouts.css styles only the baseline + keynote families,
+  // so promoting against it produces unstyled slides.
   if (meta.richPromotion) {
+    if (layoutsMode !== 'self') die(`pack.json richPromotion:true requires layouts:"self" (shared layouts cover only the baseline family): ${pj}`);
     for (const f of ['template.html', 'layout-catalog.md']) {
       if (!isRegularFile(path.join(dir, f))) die(`pack.json richPromotion:true but missing ${f}: ${dir}`);
     }
@@ -238,6 +256,16 @@ function loadPack(dir) {
   const declared = tokensInRoot(tokensCss);
   const missing = REQUIRED_TOKENS.filter(t => !declared.has(t) || declared.get(t) === '');
   if (missing.length) die(`pack tokens.css is missing/empty required tokens (${missing.join(', ')}): ${tokensPath}`);
+  // contrast lint on the core text/background pairs — a pack that passes the
+  // token contract but renders unreadable text is still a broken pack
+  const CONTRAST_PAIRS = [['--lt-text', '--lt-bg'], ['--dk-text', '--deck-bg'], ['--kn-paper', '--kn-ink']];
+  for (const [fg, bg] of CONTRAST_PAIRS) {
+    const f = parseColor(declared.get(fg)), b = parseColor(declared.get(bg));
+    if (f && b) {
+      const ratio = contrastRatio(f, b);
+      if (ratio < 4.5) die(`pack fails contrast: ${fg} on ${bg} is ${ratio.toFixed(2)}:1 (minimum 4.5:1): ${tokensPath}`);
+    }
+  }
   // resolve layouts.css: own, or the bundled neutral shared copy
   let layoutsPath;
   if (layoutsMode === 'self') {
@@ -250,6 +278,16 @@ function loadPack(dir) {
   const layoutsCss = fs.readFileSync(layoutsPath, 'utf8');
   assertNoStyleBreakout(tokensCss, `pack tokens.css (${tokensPath})`);
   assertNoStyleBreakout(layoutsCss, `layouts.css (${layoutsPath})`);
+  // class-coverage lint: every class the promotion template uses must have at
+  // least one CSS rule in the pack, or promoted slides render unstyled
+  if (meta.richPromotion) {
+    const tpl = fs.readFileSync(path.join(dir, 'template.html'), 'utf8');
+    const classes = new Set();
+    for (const m of tpl.matchAll(/class="([^"]+)"/g)) m[1].split(/\s+/).forEach(c => c && classes.add(c));
+    const css = tokensCss + '\n' + layoutsCss;
+    const uncovered = [...classes].filter(c => !css.includes('.' + c));
+    if (uncovered.length) die(`richPromotion template.html uses classes with no CSS rule in the pack (${uncovered.join(', ')}): ${dir}`);
+  }
   // fonts
   let fontsSpec;
   try { fontsSpec = JSON.parse(fs.readFileSync(fontsPath, 'utf8')); }
@@ -352,7 +390,7 @@ const slides = slideChunks.map(parseSlide)
 // a hash of its URL (not its basename — two packs may both ship "font.woff2").
 // Values are sanitised before they reach the output CSS.
 
-function httpGet(url, { responseType = 'text', redirects = 0, deadlineAt = null } = {}) {
+function httpGet(url, { responseType = 'text', redirects = 0, deadlineAt = null, maxBytes = FETCH_MAX_BYTES } = {}) {
   // One hard wall-clock ceiling for the WHOLE fetch, preserved across redirects.
   const absDeadline = deadlineAt ?? (nowMs() + FETCH_DEADLINE_MS);
   return new Promise((resolve, reject) => {
@@ -382,14 +420,14 @@ function httpGet(url, { responseType = 'text', redirects = 0, deadlineAt = null 
         const loc = res.headers.location;
         if (!loc) { finish(reject, new Error(`redirect with no location for ${url}`)); return; }
         clearTimeout(timer); settled = true; // hand the same absDeadline to the next hop
-        resolve(httpGet(new URL(loc, u).toString(), { responseType, redirects: redirects + 1, deadlineAt: absDeadline }));
+        resolve(httpGet(new URL(loc, u).toString(), { responseType, redirects: redirects + 1, deadlineAt: absDeadline, maxBytes }));
         return;
       }
       if (res.statusCode !== 200) { res.destroy(); finish(reject, new Error(`HTTP ${res.statusCode} for ${url}`)); return; }
       const chunks = []; let total = 0;
       res.on('data', c => {
         total += c.length;
-        if (total > FETCH_MAX_BYTES) { req.destroy(new Error(`response exceeded ${FETCH_MAX_BYTES} bytes for ${url}`)); return; }
+        if (total > maxBytes) { req.destroy(new Error(`response exceeded ${maxBytes} bytes for ${url}`)); return; }
         chunks.push(c);
       });
       res.on('end', () => {
@@ -428,7 +466,7 @@ function safeFamily(name) {
   return s;
 }
 
-function hashKey(s) { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 20) + '.woff2'; }
+function hashKey(s, ext = '.woff2') { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 20) + ext; }
 
 // Resolve `rel` under `dir`, following symlinks, and return the real path only if
 // it is a REGULAR FILE contained within the real `dir` (segment boundary, so
@@ -563,6 +601,61 @@ async function buildFontCss() {
 }
 
 
+// ── image inlining ──
+// Images were the one asset class not embedded: a remote URL that misses
+// Chrome's virtual-time budget, or a file that moves after render, exported as
+// a blank gray field. Inline everything, same policy as fonts. Failure → ''
+// (the keynote placeholder), never a dead URL.
+const IMG_MIME = {
+  '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+  '.webp': 'image/webp', '.gif': 'image/gif', '.avif': 'image/avif', '.svg': 'image/svg+xml',
+};
+function mimeFor(p) { return IMG_MIME[path.extname(String(p)).toLowerCase()] || null; }
+
+async function inlineImage(src) {
+  const v = String(src ?? '').trim();
+  if (!v || v.startsWith('data:')) return v;
+  if (/^https?:\/\//i.test(v)) {
+    let ext = '.jpg';
+    try { ext = (new URL(v).pathname.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0].toLowerCase(); } catch {}
+    const mime = mimeFor('x' + ext) || 'image/jpeg';
+    const file = path.join(IMG_CACHE, hashKey(v, IMG_MIME[ext] ? ext : '.jpg'));
+    try {
+      if (!fs.existsSync(file) || fs.statSync(file).size === 0) {
+        process.stderr.write(`[img] fetching ${v}\n`);
+        const buf = await httpGet(v, { responseType: 'buffer', maxBytes: IMG_MAX_BYTES });
+        const tmp = `${file}.${process.pid}.tmp`;
+        fs.writeFileSync(tmp, buf);
+        fs.renameSync(tmp, file);
+      }
+      return `data:${mime};base64,${fs.readFileSync(file).toString('base64')}`;
+    } catch (e) {
+      process.stderr.write(`[img] WARN: fetch failed for ${v} (${e.message}) — slide falls back to the placeholder\n`);
+      return '';
+    }
+  }
+  // local path — resolve relative to the input markdown's directory
+  const p = path.isAbsolute(v) ? v : path.resolve(path.dirname(input), v);
+  const mime = mimeFor(p);
+  if (!mime) { process.stderr.write(`[img] WARN: unrecognised image type, leaving as-is: ${v}\n`); return v; }
+  try {
+    const b = fs.readFileSync(p);
+    if (b.length > IMG_MAX_BYTES) {
+      process.stderr.write(`[img] WARN: ${v} is ${(b.length / 1048576).toFixed(1)}MB (cap ${(IMG_MAX_BYTES / 1048576).toFixed(0)}MB) — referencing by file URL instead\n`);
+      return 'file://' + p;
+    }
+    return `data:${mime};base64,${b.toString('base64')}`;
+  } catch {
+    process.stderr.write(`[img] WARN: image not found: ${p} — slide falls back to the placeholder\n`);
+    return '';
+  }
+}
+
+async function inlineAllImages(meta, slides) {
+  meta.cover_image = await inlineImage(meta.cover_image || meta.image || '');
+  for (const s of slides) s.image = await inlineImage(s.image);
+}
+
 // ── HTML generation ──
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 
@@ -695,8 +788,8 @@ function renderKnCover(meta, pageno) {
 </div></div>`;
 }
 
-function renderKnFullbleed(slide, pageno) {
-  const capClass = slide.layout === 'caption-dark' ? 'kn-caption dark' : 'kn-caption';
+function renderKnFullbleed(slide, pageno, dark = false) {
+  const capClass = dark ? 'kn-caption dark' : 'kn-caption';
   const cap = slide.title ? `<div class="${capClass}">${escMd(slide.title)}</div>` : '';
   const sub = slide.bullets.length ? `<div class="kn-subcap">${slide.bullets.map(escMd).join(' &middot; ')}</div>` : '';
   const wrap = (cap || sub) ? `<div class="kn-capwrap">${cap}${sub}</div>` : '';
@@ -756,15 +849,18 @@ function pickKnLayout(slide) {
   // giant number: short title carrying a prominent numeral
   if (words <= 3 && /\d/.test(t) && /[\$€£]?\d[\d,\.]*\s*(%|bn|billion|million|m|k)?\b/i.test(t)) return 'number';
   if (words <= 2 && slide.bullets.length === 0) return 'oneword';
+  // a light image drowns the default white caption box — flip to the dark box
+  if (/\b(light|bright|white|pale|overexposed|snow|fog|daylit|sunlit)\b/i.test(slide.art || '')) return 'caption-dark';
   return 'fullbleed';
 }
 
 function renderKnSlide(slide, pageno) {
-  switch (pickKnLayout(slide)) {
+  const layout = pickKnLayout(slide);
+  switch (layout) {
     case 'wordless': return renderKnWordless(slide, pageno);
     case 'oneword':  return renderKnOneWord(slide, pageno);
     case 'number':   return renderKnNumber(slide, pageno);
-    default:         return renderKnFullbleed(slide, pageno);
+    default:         return renderKnFullbleed(slide, pageno, layout === 'caption-dark');
   }
 }
 
@@ -822,6 +918,16 @@ ${html}
 <script>
 function fit(){var s=Math.min(1,(window.innerWidth-56)/1920);document.documentElement.style.setProperty('--fit',s);}
 fit(); addEventListener('resize',fit);
+// overflow probe: .slide clips silently (overflow:hidden), so report any slide
+// whose content exceeds the frame. exportPdf reads these console lines from
+// Chrome's stderr (--enable-logging=stderr) and surfaces them as warnings.
+addEventListener('load',function(){
+  document.querySelectorAll('.slide').forEach(function(s,i){
+    if(s.scrollHeight>s.clientHeight+1||s.scrollWidth>s.clientWidth+1){
+      console.log('KN-OVERFLOW slide '+(i+1));
+    }
+  });
+});
 </script>
 </body>
 </html>`;
@@ -839,16 +945,23 @@ function exportPdf(htmlPath, pdfPath) {
     '--disable-gpu',
     '--no-sandbox',
     '--hide-scrollbars',
+    '--enable-logging=stderr',
     '--virtual-time-budget=10000',
     '--run-all-compositor-stages-before-draw',
     `--print-to-pdf=${pdfPath}`,
     '--no-pdf-header-footer',
     url,
   ];
-  const r = spawnSync(CHROME, flags, { stdio: 'inherit', timeout: 60_000 });
+  const r = spawnSync(CHROME, flags, { encoding: 'utf8', timeout: 60_000 });
   if (r.status !== 0) {
+    if (r.stderr) process.stderr.write(r.stderr);
     console.error(`[pdf] Chrome exited ${r.status}`);
     return false;
+  }
+  const pages = new Set();
+  for (const m of (r.stderr || '').matchAll(/KN-OVERFLOW slide (\d+)/g)) pages.add(+m[1]);
+  for (const n of [...pages].sort((a, b) => a - b)) {
+    console.log(`[pdf]  WARN: content overflows the slide frame on page ${n} — inspect that page in the PDF`);
   }
   return true;
 }
@@ -856,6 +969,7 @@ function exportPdf(htmlPath, pdfPath) {
 // ── main ──
 (async () => {
   await ensureFonts();
+  await inlineAllImages(meta, slides);
   const fontCss = await buildFontCss();
   if (!fontCss) {
     process.stderr.write('[fonts] WARN: no fonts embedded; PDF may use system fallback.\n');

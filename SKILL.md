@@ -17,7 +17,13 @@ Five stages. **Do not skip the confirmation stage. Do not draft slides before th
 
 ### Stage 1 — Read and propose 2-3 candidate punchlines
 
-Read the source material carefully. Identify what's at stake, what tension drives the piece, what the central insight or turn is, and what changes by the end.
+**First: know the room.** If the request doesn't already name the audience and the ask, ask one line before drafting anything:
+
+> Who is this deck for, and what should they decide, do, or feel when it ends?
+
+The same source yields different punchlines for a board, a conference hall, or a skeptical technical review — never pick a governing thought blind. If the request already makes audience and ask clear, don't re-ask: state your reading in one line and move on.
+
+Read the source material carefully. Identify what's at stake, what tension drives the piece, what the central insight or turn is, and what changes by the end — *for this audience*.
 
 Then draft **2 or 3 candidate punchlines**, each a single sentence, each committing to a different stance. For each, write one short line of reasoning: why this could be the spine of the deck. Present them numbered so the user can pick, edit, or write their own.
 
@@ -67,7 +73,7 @@ After the user picks or edits a punchline, ask **mode**, length, and density in 
 
 If the source reads as a spoken talk or a pitch, propose **Keynote** as the default and say so; the user can flip to Boardroom. Default density follows mode (Keynote → Keynote/sparse; Boardroom → Narrative) unless the user picks otherwise.
 
-**Stop and wait.** Do not proceed until mode, punchline, length, density, and style are confirmed. Acknowledge edits briefly and move on — don't re-litigate.
+**Stop and wait.** Do not proceed until mode, punchline, length, density, and style are confirmed — and restate the audience and the ask in one line as part of the confirmation ("For the board; the ask is approval of the Q3 plan"). Acknowledge edits briefly and move on — don't re-litigate.
 
 **Mode and spine are two independent dials.** Mode (above) sets the visual system and title register. The *spine* — the narrative structure — is chosen separately in Stage 3 from a menu that includes Minto and six keynote-native shapes. Minto is the Boardroom default and is never removed; it stays on the menu in either mode.
 
@@ -105,7 +111,9 @@ Once mode, punchline, length, and density are confirmed:
 
 7. **Fill in supporting content.** Short bullets, fragments, optional speaker notes. Calibrate to density. In Keynote/sparse this is often nothing — the image is the body.
 
-8. **Keynote mode only — art-direction pass (Stage 3.5).** Once the beat sequence is set, hand the deck to the **art-direct skill**. For each slide it returns an image concept, photography/style direction, mood, and an AI-image prompt. Hold to the **metaphor-not-illustration** principle (e.g. fire for a paradox of opposing forces; a broken foot beside a running shoe for moving fast yet standing still) — the image *stands for* the abstraction, it does not depict the words literally. Record each slide's direction on a `> Art:` line (presenter-only, like a speaker note) and, when an image file exists, an `![]()` or `> Image:` line. Boardroom mode skips this step.
+   **7b. Support audit — titles must be earned.** For every claim-bearing title (any title asserting a fact, number, cause, or recommendation), name its warrant: the bullet on the slide or the passage in the source that backs it. A title with no warrant gets softened, re-scoped, or cut — an assertive title the deck can't back is worse than a duller one it can. In **Evidence** density, every bullet must carry a number, a name, or a citation. Bodies also get the step-6 *scan list* (hedged verbs, AI tells, initialisms, sameness) — the scan applies to bodies; the prose-craft register rules do not, because bodies stay bullets and fragments.
+
+8. **Keynote mode only — art-direction pass (Stage 3.5).** Once the beat sequence is set, hand the deck to the **art-direct skill**. **Choose one global treatment first:** before any per-slide prompts, fix a single photographic treatment for the whole deck — grade, era, lens/film feel, palette temperature (e.g. "muted Kodachrome, 35mm, warm dusk, soft grain") — record it as `art_direction:` in the frontmatter, and append it verbatim to every per-slide AI-image prompt. Ten independently-prompted images with no shared treatment look like ten stock sites; the global treatment is what makes them one deck. Then, for each slide, art-direct returns an image concept, photography/style direction, mood, and an AI-image prompt. Hold to the **metaphor-not-illustration** principle the corpus uses (fire = "Volitocracy"; a broken foot beside a running shoe = "Fast inaction") — the image *stands for* the abstraction, it does not depict the words literally. Record each slide's direction on a `> Art:` line (presenter-only, like a speaker note) and, when an image file exists, an `![]()` or `> Image:` line. Boardroom mode skips this step.
 
 9. **Deploy keynote devices (Keynote mode).** Read [`references/keynote-devices.md`](references/keynote-devices.md) and select from the palette only what the content affords — a good deck uses maybe 4 of 16. Never manufacture a device the source doesn't earn (no invented coined words, no false dread, no fabricated authority quotes).
 
@@ -201,25 +209,31 @@ Repeatable until the user says stop.
 
 The **spine** is the narrative structure, chosen in Stage 3 independently of mode. The skill suggests a fitting spine plus one alternative; the user picks, swaps, or combines. **Minto is never removed** — it is the Boardroom default and stays on the menu in either mode.
 
-- **Spine 0 — Minto / McKinsey pyramid.** *(Default in Boardroom; available in Keynote.)* Answer-first, grouped supporting arguments, action-titles that read top-to-bottom. This is the skill's original behaviour, unchanged. An image-led deck can run on it — a 2×2 scenario matrix or a tiered pyramid rendered as full-bleed photographs is essentially Minto with pictures.
+- **Spine 0 — Minto / McKinsey pyramid.** *(Default in Boardroom; available in Keynote. Works at any length.)* Answer-first, grouped supporting arguments, action-titles that read top-to-bottom. An image-led deck can run on it — Oxford's 2×2 scenario matrix and Singapore's 4-stage pyramid are essentially Minto with photographs.
+
+  **Minto discipline (spine 0 only).** Minto is a method, not a title register. When this spine is chosen:
+  - **Answer by slide 2.** The punchline lands up front; the deck then defends it. No mid-deck turn — the five-act arc does not apply (see "Act structure by length").
+  - **Group the middle.** The supporting slides form 2–4 named argument groups. Check MECE-lite: do any two groups make the same argument (overlap)? Is there an obvious objection no group answers (gap)?
+  - **Vertical Q&A.** Each group's lead title answers the question the punchline raises ("why?" / "how?" / "why now?"); each slide inside a group answers the question its group lead raises. A title that doesn't answer the level above belongs elsewhere — or nowhere.
 
 The six additional spines (Keynote-native, but pairable with either mode):
 
-1. **Emotional arc** — Dread → Turn → Reframe → Hope → Answer → Exhale. Fear accumulates across sparse slides, snaps on a word or black slide ("Normal," "It did," "Hope | Fear"), reframes ("Great Transition"), reveals the answer, exhales on a wordless image or the speaker's own line.
-2. **Reveal / misdirection** — a long setup that recontextualizes at a hinge (a nine-slide dread run revealed as history: "It did / 1895–1945"; a glut of trend-reports revealed as a pathology: "there is no list!").
-3. **Framework build** — a recurring motif or diagram assembled across the deck (a pyramid filled tier by tier; a 2×2 whose quadrants become the acts; "Four Lessons" planted then walked one per section).
-4. **Forecast cascade → implication** — chained consequences, each slide's caption grammatically completing the last, then a pivot to "what this means for *you*."
-5. **Teaching / method** — problem → concept → how-to steps → proof. The most content-neutral spine; the default fallback when nothing else fits.
-6. **Scenario-parallel** — name N futures up front, walk each as a mini-arc under a repeated divider template, land on a synthesis.
+1. **Emotional arc** — Dread → Turn → Reframe → Hope → Answer → Exhale. Fear accumulates across sparse slides, snaps on a word or black slide ("Normal," "It did," "Hope | Fear"), reframes ("Great Transition"), reveals the answer, exhales on a wordless image or the speaker's own line. *(Needs Medium or longer — dread must accumulate over ~6+ slides.)*
+2. **Reveal / misdirection** — a long setup that recontextualizes at a hinge (a nine-slide dread run revealed as history: "It did / 1895–1945"; a glut of trend-reports revealed as a pathology: "there is no list!"). *(Needs ~8+ slides — the setup IS the deck. At Small length the hinge has no room; pick another spine.)*
+3. **Framework build** — a recurring motif or diagram assembled across the deck (a pyramid filled tier by tier; a 2×2 whose quadrants become the acts; "Four Lessons" planted then walked one per section). *(Needs one slide per tier/quadrant plus a planting slide — minimum ~5–6.)*
+4. **Forecast cascade → implication** — chained consequences, each slide's caption grammatically completing the last, then a pivot to "what this means for *you*." *(Works from ~5 slides — each link needs its own slide.)*
+5. **Teaching / method** — problem → concept → how-to steps → proof. The most content-neutral spine; the default fallback when nothing else fits. *(Works at any length.)*
+6. **Scenario-parallel** — name N futures up front, walk each as a mini-arc under a repeated divider template, land on a synthesis. *(Needs roughly 2×N+2 slides for N scenarios — divider + beat each, plus setup and synthesis.)*
 
 **Cross-cutting permissions (all spines):**
 - **Spines compose** — a Framework build can open with an Emotional dread run; a Minto pyramid can be delivered in Keynote visuals.
-- In **Keynote mode only**, the thesis may land late (slide 10–19) and the "question live by slide 2" rule relaxes. **Boardroom + Minto keeps answer-first.**
+- **Late thesis follows the spine, not the mode.** The Reveal and Emotional-arc spines may land the thesis late (past mid-deck) in *either* mode — the spine defines that contract. All other spines keep the question live by slide 2; **Minto keeps answer-first everywhere.**
+- **Check spine × length before drafting.** If the chosen spine's minimum (noted above) exceeds the confirmed length, say so and offer two ways out: stretch the length, or swap to a spine that fits. Never silently compress a Reveal into 4 slides.
 - If the source fits no spine cleanly, default to **Minto** (Boardroom) or **Teaching/method** (Keynote) rather than inventing structure.
 
 ## Act structure by length
 
-The five-act arc is the same in every length — exposition, rising action, climax, falling action, resolution. What changes is how compressed each act is. This applies directly to Minto and Boardroom decks; Keynote spines above map their own beats onto the same rising-then-resolving shape.
+The five-act arc is the same in every length — exposition, rising action, climax, falling action, resolution. What changes is how compressed each act is. **Exception — Minto (spine 0) does not use the dramatic arc:** it is answer-first (punchline by slide 2, grouped defense, a landing that returns to the answer), with no mid-deck turn. The Keynote spines map their own beats onto the rising-then-resolving shape.
 
 ### Small (3–5 slides)
 
@@ -308,8 +322,9 @@ For each title after the cover:
 
 - Does a stranger get the story from titles alone?
 - Is the question live by the second slide (or first, at small length)?
-- Is there an unmistakable turn near the middle?
+- Is there an unmistakable turn near the middle? *(Arc spines only — a Minto deck has no turn; check instead that the answer lands by slide 2.)*
 - Does the last title land the punchline, not summarize?
+- Does the final title contain or directly set up the ask? ("Open forward" endings are allowed only when the confirmed ask is reflective — never on a decision deck.)
 - Can any adjacent pair be swapped without loss?
 
 If any answer is no, rewrite before continuing. Include the numbered list at the top of the final output.
@@ -338,9 +353,12 @@ subtitle: "Optional subtitle"
 mode: "keynote | boardroom"
 spine: "minto | emotional | reveal | framework | cascade | teaching | scenario"
 punchline: "The one-line message, confirmed with the user"
+audience: "Who the deck is for, in a few words"
+ask: "What the audience should decide, do, or feel at the end"
 dramatic_question: "The central tension in one sentence"
 length: "small | medium | extended"
 density: "high-impact | narrative | evidence | keynote-sparse | eli5"
+art_direction: "one global photographic treatment appended verbatim to every image prompt (keynote)"
 cover_image: "path-or-url to the cover full-bleed image (keynote, optional)"
 ---
 
@@ -439,7 +457,7 @@ deferred follow-up — not yet built.
 - Does not generate `.pptx`. For PowerPoint, hand off to a separate skill.
 - Does not write long-form prose in slide bodies. Keep bodies sparse.
 - Does not skip the confirmation stage. The mode → punchline → length → density pause is the most important part of this skill.
-- Does not run prose-craft on slide bodies. Titles only.
+- Does not run prose-craft on slide bodies — titles only. (Bodies still get the step-6 hedge/AI-tell scan as part of the step-7b support audit.)
 - Does not override a project's own style guide when one is present in the working directory tree.
 
 ## References

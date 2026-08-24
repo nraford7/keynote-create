@@ -228,7 +228,7 @@ When unsure between two candidate titles, pick the one a friend would more likel
 - **Fragments are correct**, not lazy: "Warlord tax collectors," "Persistent basic needs," "Two worlds in one."
 - **One-to-three-word punches** are the strongest beats: "Bonkers," "Normal," "It did," "Accelerating," "Six days."
 - **Pivot questions** mark the turns: "What can we do about it?", "What about government?"
-- **Coined terms** carry concepts the deck wants you to leave with — a short invented name for a genuinely new idea — but only coin them when the source actually has one to name (see the anti-pastiche rule in [`keynote-devices.md`](keynote-devices.md)).
+- **Coined terms** carry concepts the deck wants you to leave with: "Volitocracy," "guberment" — but only invent them when the source has a genuinely new idea to name (see the anti-pastiche rule in [`keynote-devices.md`](keynote-devices.md)).
 - **Complete sentences are rationed** — spend them on the 3–4 lines meant to land: the turn, the thesis, the closing aphorism ("Analysis is focused on what is. Design is focused on what can be.").
 
 **The titles-only / spoken-prose test does not govern a Keynote deck as a whole.** Reading Keynote captions top-to-bottom will *not* narrate the talk — and that is by design. The strict chained-caption test applies **only to a designated climax run** (device #10 in `keynote-devices.md`), where captions grammatically complete across slides ("…which will lead to… / …but at a cost…"). Everywhere else, use the **beat + narration read**: imagine one spoken line per slide and check the sequence tracks as a told story.
