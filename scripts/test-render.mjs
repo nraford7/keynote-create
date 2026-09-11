@@ -78,6 +78,30 @@ function render(fixture, extraArgs = [], env = baseEnv) {
   fs.rmSync(pdir, { recursive: true, force: true });
   const r2 = render(FIX_B, ['--style', 'My Brand']);
   chk(r2.code !== 0, 'stale registered pack fails closed (no cross-brand fallback)');
+  fs.rmSync(REG, { force: true }); // reset: later --style-less renders must see "no default", not this stale entry
+}
+
+// 4b. broken registry DEFAULT is a hard error (Hard Rule 8) — never a silent
+// neutral fallback. Two shapes: default points at a moved/deleted directory,
+// and default names an unregistered pack.
+{
+  const pdir = path.join(TMP, 'dflt');
+  fs.cpSync(NEUTRAL, pdir, { recursive: true });
+  execFileSync('node', ['--input-type=module', '-e',
+    `import {registerPack} from '${path.join(HERE, 'house-style.mjs')}'; registerPack('Dflt', ${JSON.stringify(pdir)}, {makeDefault: true});`],
+    { env: baseEnv });
+  fs.rmSync(pdir, { recursive: true, force: true }); // default now stale
+  const r = render(FIX_B); // NO --style: the broken default must stop the render
+  chk(r.code !== 0, 'stale registry default exits non-zero (no silent neutral fallback)');
+  chk(/default/.test(r.stderr) && /missing directory/.test(r.stderr),
+    'stale default error names the broken entry');
+}
+{
+  fs.writeFileSync(REG, JSON.stringify({ schema: 1, packs: {}, default: 'ghost' }));
+  const r = render(FIX_B);
+  chk(r.code !== 0 && /default/.test(r.stderr) && /ghost/.test(r.stderr),
+    'default naming an unregistered pack exits non-zero naming it');
+  fs.rmSync(REG, { force: true }); // reset for the same reason as above
 }
 
 // 5. layouts:"shared" pack resolves the bundled neutral layouts

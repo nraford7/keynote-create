@@ -4,11 +4,20 @@ node_modules/
 # rendered deck outputs (keep .md sources only)
 *.html
 *.pdf
+# …except the committed publish-stage test fixture (plan Task 2)
+!docs/fixtures/sample-public.html
 
 # local golden baseline (not distributed)
 docs/fixtures/baseline/
 
+# layout-check output dir (keynote-check writes .check/ next to the deck,
+# which lands inside the repo when checking repo-local fixtures)
+.check/
+
 # process artifacts — kept local, not distributed
+# (note: upstream already tracks the 2026-08-18 diagnosis docs here; tracked
+# files are unaffected by ignore rules — this only stops NEW artifacts)
 docs/specs/
 docs/plans/
 docs/runs/
+docs/superpowers/

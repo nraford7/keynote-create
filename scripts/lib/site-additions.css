@@ -1,0 +1,20 @@
+/* Reading-mode hint (site addition) */
+.deck-hint{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:9999;display:inline-flex;align-items:center;gap:9px;padding:10px 18px;border-radius:999px;background:rgba(10,10,10,0.86);border:1px solid rgba(255,255,255,0.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:13px/1.4 var(--body-font);color:rgba(255,255,255,0.78);pointer-events:none;opacity:1;transition:opacity .6s;}
+.deck-hint.hidden{opacity:0;}
+.deck-hint kbd{font-family:var(--body-font);font-weight:700;font-size:11px;color:#E2FF00;border:1px solid rgba(226,255,0,0.45);border-radius:5px;padding:2px 8px;line-height:1.2;text-transform:uppercase;letter-spacing:.04em;}
+@media (max-width:720px),(pointer:coarse){.deck-hint{display:none;}}
+@media print{.deck-hint{display:none;}}
+
+/* Mobile present controls (site addition) */
+.present-btn{position:fixed;right:16px;bottom:16px;z-index:9999;display:none;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(10,10,10,0.86);border:1px solid rgba(255,255,255,0.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:13px/1.4 var(--body-font);color:rgba(255,255,255,0.78);cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.present-btn .tri{color:#E2FF00;font-size:11px}
+.present-exit{position:fixed;top:14px;right:14px;z-index:9999;display:none;width:42px;height:42px;border-radius:999px;background:rgba(10,10,10,0.6);border:1px solid rgba(255,255,255,0.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:rgba(255,255,255,0.8);font:17px/1 var(--body-font);align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.rotate-hint{position:fixed;left:50%;transform:translateX(-50%);top:16px;z-index:9999;padding:10px 18px;border-radius:999px;background:rgba(10,10,10,0.86);border:1px solid rgba(255,255,255,0.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:13px/1.4 var(--body-font);color:rgba(255,255,255,0.78);pointer-events:none;opacity:1;transition:opacity .6s}
+.rotate-hint.hidden{opacity:0}
+@media (max-width:720px),(pointer:coarse){
+  .present-btn{display:inline-flex}
+  body.show .present-btn{display:none}
+  body.show .present-exit{display:flex}
+}
+@media (pointer:fine) and (min-width:721px){.present-exit{display:none !important}}
+@media print{.present-btn,.present-exit,.rotate-hint{display:none !important}}

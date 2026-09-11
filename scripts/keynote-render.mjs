@@ -37,7 +37,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import https from 'node:https';
 import http from 'node:http';
-import { resolveName } from './house-style.mjs';
+import { resolveName, getDefault, registryPath } from './house-style.mjs';
 
 const HOME = os.homedir();
 const FONT_CACHE = path.join(HOME, '.claude/cache/fonts');
@@ -160,7 +160,19 @@ function bundledNeutralDir() {
 }
 
 function resolvePack(styleArg) {
-  if (styleArg == null) return bundledNeutralDir();       // flag absent → neutral
+  if (styleArg == null) {
+    // flag absent → the registry default first, then the bundled neutral pack.
+    // A registry with NO default silently uses the bundled neutral pack (that is
+    // the documented default behavior) — but a registry whose default is BROKEN
+    // (moved/deleted directory, unregistered name) is a hard error, never a
+    // silent neutral fallback (Hard Rule 8: unresolvable configuration stops).
+    const d = getDefault();
+    if (d.path) return d.path;
+    if (/no default house-style pack is set/.test(d.error || '')) {
+      return bundledNeutralDir();
+    }
+    die(`the registry default house-style pack is broken — ${d.error} (fix or clear the entry in ${registryPath()}; refusing to silently fall back to the bundled neutral pack)`);
+  }
   if (styleArg === '') die(`--style requires a non-empty value`); // explicit empty → fail closed
   // an existing directory path wins
   if (fs.existsSync(styleArg) && fs.statSync(styleArg).isDirectory()) return path.resolve(styleArg);
@@ -319,6 +331,9 @@ function parseFrontmatter(text) {
 }
 
 const { meta, body } = parseFrontmatter(raw);
+// deck frontmatter `sublabel` names the client / project / talk in the footer slot;
+// precedence: --sublabel CLI > deck frontmatter > pack.json
+if (cliSublabel == null && typeof meta.sublabel === 'string' && meta.sublabel.trim()) sublabel = meta.sublabel.trim();
 
 // strip the leading "# Deck title" + "> Punchline" + "## Title sequence" block,
 // then split remainder on horizontal rule separators
@@ -612,6 +627,7 @@ const IMG_MIME = {
 };
 function mimeFor(p) { return IMG_MIME[path.extname(String(p)).toLowerCase()] || null; }
 
+const VIDEO_EXT = /\.(mp4|webm|mov)$/i;
 async function inlineImage(src) {
   const v = String(src ?? '').trim();
   if (!v || v.startsWith('data:')) return v;
@@ -636,6 +652,8 @@ async function inlineImage(src) {
   }
   // local path — resolve relative to the input markdown's directory
   const p = path.isAbsolute(v) ? v : path.resolve(path.dirname(input), v);
+  // video is referenced, never inlined (base64 video would bloat the file); path relative to the output dir
+  if (VIDEO_EXT.test(p)) return path.relative(outDir, p) || path.basename(p);
   const mime = mimeFor(p);
   if (!mime) { process.stderr.write(`[img] WARN: unrecognised image type, leaving as-is: ${v}\n`); return v; }
   try {
@@ -654,6 +672,14 @@ async function inlineImage(src) {
 async function inlineAllImages(meta, slides) {
   meta.cover_image = await inlineImage(meta.cover_image || meta.image || '');
   for (const s of slides) s.image = await inlineImage(s.image);
+  // triptych frames: art line "three dated frames: a.jpg / b.jpg / c.jpg. Subtitle: ..." (igs pack, keynote hint `triptych`)
+  for (const s of slides) {
+    const m = /(?:three dated|two) frames:\s*(.+?)(?=\.\s|$)(?:\.\s*Subtitle:\s*(.+))?/i.exec(s.art || '');
+    if (m) {
+      s.frames = await Promise.all(m[1].split('/').map(f => inlineImage(f.trim())));
+      s.subtitle = (m[2] || '').trim();
+    }
+  }
 }
 
 // ── HTML generation ──
@@ -756,13 +782,19 @@ function knPlaceholder(note) {
   return `<div class="kn-placeholder"><div class="lbl"><strong>Image needed</strong>${esc(note || 'Full-bleed image')}</div></div>`;
 }
 function knBg(slide) {
+  if (VIDEO_EXT.test(String(slide.image || ''))) {
+    // muted + playsinline so autoplay is allowed; the show-mode script restarts it when its slide appears
+    return `<video class="kn-bg" src="${esc(slide.image)}" autoplay muted loop playsinline preload="auto"></video>`;
+  }
   const src = cssUrl(slide.image);
   return src
     ? `<div class="kn-bg" style="background-image:url('${src}')"></div>`
     : knPlaceholder(slide.art || slide.title);
 }
 function knPageno(pageno) {
-  return `<div class="kn-pageno">${String(pageno).padStart(2, '0')}</div>`;
+  // running foot (deck sublabel) + folio; packs style or hide either. Emitted only when a sublabel exists.
+  const foot = sublabel ? `<div class="kn-sub">${esc(sublabel)}</div>` : '';
+  return `${foot}<div class="kn-pageno">${String(pageno).padStart(2, '0')}</div>`;
 }
 function knNote(slide) {
   const bits = [];
@@ -788,13 +820,13 @@ function renderKnCover(meta, pageno) {
 </div></div>`;
 }
 
-function renderKnFullbleed(slide, pageno, dark = false) {
-  const capClass = dark ? 'kn-caption dark' : 'kn-caption';
+function renderKnFullbleed(slide, pageno, cls) {
+  const capClass = cls.split(' ').includes('dark') ? 'kn-caption dark' : 'kn-caption';
   const cap = slide.title ? `<div class="${capClass}">${escMd(slide.title)}</div>` : '';
   const sub = slide.bullets.length ? `<div class="kn-subcap">${slide.bullets.map(escMd).join(' &middot; ')}</div>` : '';
   const wrap = (cap || sub) ? `<div class="kn-capwrap">${cap}${sub}</div>` : '';
   return `
-<div class="slide-wrap"><div class="slide kn">
+<div class="slide-wrap"><div class="slide ${cls}">
   ${knBg(slide)}
   <div class="kn-scrim"></div>
   ${wrap}
@@ -803,18 +835,54 @@ function renderKnFullbleed(slide, pageno, dark = false) {
 </div></div>`;
 }
 
-function renderKnWordless(slide, pageno) {
+// triptych: three dated 4:3 frames, title and one-line subtitle above (pack text-family scaffold 28, emitted from markdown)
+function renderKnTriptych(slide, pageno, extra = '') {
+  const frames = (slide.frames || []);
+  const n = extra ? 2 : 3;
+  const cells = Array.from({ length: n }, (_, i) => slide.bullets[i] || '').map((b, i) => {
+    const [year, ...rest] = b.split(/\s+[·•]\s+/);
+    const img = frames[i] ? `<img src="${frames[i]}" alt="">` : '';
+    const meta = b ? `<div class="year">${escMd(year)}</div><div class="label">${escMd(rest.join(' · ') || '')}</div>` : '';
+    return `<div class="frame"><figure>${img}</figure>${meta}</div>`;
+  }).join('');
+  const lede = slide.subtitle ? `<p class="lede">${escMd(slide.subtitle)}</p>` : '';
   return `
-<div class="slide-wrap"><div class="slide kn">
+<div class="slide-wrap"><div class="slide lt" data-layout="${extra ? 'pair' : 'triptych'}">
+  <div class="content">
+    ${slide.title ? `<div class="content-header"><h2 class="h2">${escMd(slide.title)}</h2><div class="title-rule"></div>${lede}</div>` : ''}
+    <div class="tri${extra ? " " + extra : ""}">${cells}</div>
+  </div>
+  ${knNote(slide)}
+  <div class="footer"><span class="brand">${esc(brand)}<span class="sub">${esc(sublabel)}</span></span><span class="pageno">${String(pageno).padStart(2,'0')}</span></div>
+</div></div>`;
+}
+
+// verdict: dark, the claim set large, one volt subline (pack text-family scaffold 08, emitted from markdown)
+function renderKnVerdict(slide, pageno) {
+  const lead = slide.bullets.length ? `<p class="lead" style="margin-top:30px;color:var(--accent-light);">${escMd(slide.bullets[0])}</p>` : '';
+  return `
+<div class="slide-wrap"><div class="slide dk" data-layout="verdict">
+  <div class="content no-head" style="justify-content:center;">
+    <h2 class="h-verdict">${escMd(slide.title)}</h2>
+    ${lead}
+  </div>
+  ${knNote(slide)}
+  <div class="footer"><span class="brand">${esc(brand)}<span class="sub">${esc(sublabel)}</span></span><span class="pageno">${String(pageno).padStart(2,'0')}</span></div>
+</div></div>`;
+}
+
+function renderKnWordless(slide, pageno, cls) {
+  return `
+<div class="slide-wrap"><div class="slide ${cls}">
   ${knBg(slide)}
   ${knNote(slide)}
   ${knPageno(pageno)}
 </div></div>`;
 }
 
-function renderKnOneWord(slide, pageno) {
+function renderKnOneWord(slide, pageno, cls) {
   return `
-<div class="slide-wrap"><div class="slide kn">
+<div class="slide-wrap"><div class="slide ${cls}">
   <div class="kn-black"></div>
   <div class="kn-word">${escMd(slide.title)}</div>
   ${knNote(slide)}
@@ -822,12 +890,12 @@ function renderKnOneWord(slide, pageno) {
 </div></div>`;
 }
 
-function renderKnNumber(slide, pageno) {
+function renderKnNumber(slide, pageno, cls) {
   const bg = slide.image
     ? `${knBg(slide)}<div class="kn-scrim" style="background:rgba(0,0,0,.45);"></div>`
     : `<div class="kn-black"></div>`;
   return `
-<div class="slide-wrap"><div class="slide kn">
+<div class="slide-wrap"><div class="slide ${cls}">
   ${bg}
   <div class="kn-number">${escMd(slide.title)}</div>
   ${knNote(slide)}
@@ -835,14 +903,42 @@ function renderKnNumber(slide, pageno) {
 </div></div>`;
 }
 
-// keynote layout picker — honour explicit hint, else heuristic
-function pickKnLayout(slide) {
+// keynote layout hint resolution — modifier pass-through with alias map.
+// The hint is split on whitespace: the first word resolves against the
+// allowlist (through a small alias map), every remaining word is validated
+// as a simple class token and added to the .slide element's class list so a
+// pack can style it. Unknown first words fall to the heuristic picker with a
+// one-line warning naming the slide and the hint.
+const KN_ALLOWLIST = ['fullbleed', 'caption-dark', 'motif', 'wordless', 'oneword', 'number', 'cover', 'object', 'triptych', 'pair', 'verdict'];
+const KN_ALIASES = {
+  'caption-dark': { layout: 'fullbleed', classes: ['dark'] },
+  'object':       { layout: 'fullbleed', classes: ['object'] },
+};
+
+function resolveKnHint(slide, pageno) {
   const hint = (slide.layout || '').trim();
-  if (['fullbleed', 'caption-dark', 'motif', 'wordless', 'oneword', 'number', 'cover'].includes(hint)) {
-    // motif renders as fullbleed; cover handled separately
-    if (hint === 'motif') return 'fullbleed';
-    return hint;
+  const words = hint ? hint.split(/\s+/) : [];
+  let layout = '';
+  const classes = [];
+  if (words.length) {
+    const first = words[0];
+    if (KN_ALLOWLIST.includes(first)) {
+      if (first === 'motif') layout = 'fullbleed';          // motif renders as fullbleed
+      else if (KN_ALIASES[first]) { layout = KN_ALIASES[first].layout; classes.push(...KN_ALIASES[first].classes); }
+      else layout = first;                                   // 'cover' is handled separately upstream
+    } else {
+      process.stderr.write(`[layout] WARN: slide ${pageno}: unknown layout hint "${hint}" — falling back to the heuristic picker\n`);
+    }
+    for (const w of words.slice(1)) {
+      if (/^[a-z][a-z0-9-]*$/.test(w)) classes.push(w);
+      else process.stderr.write(`[layout] WARN: slide ${pageno}: ignoring invalid class token "${w}" in hint "${hint}"\n`);
+    }
   }
+  return { layout, classes };
+}
+
+// keynote layout picker — heuristic half only (no hint, or unknown hint)
+function pickKnLayout(slide) {
   const t = (slide.title || '').trim();
   if (!t) return 'wordless';
   const words = t.split(/\s+/).length;
@@ -855,12 +951,22 @@ function pickKnLayout(slide) {
 }
 
 function renderKnSlide(slide, pageno) {
-  const layout = pickKnLayout(slide);
+  const { layout: hintLayout, classes } = resolveKnHint(slide, pageno);
+  let layout = hintLayout || pickKnLayout(slide);
+  const clsList = ['kn', ...classes];
+  if (layout === 'caption-dark') {           // one code path: fullbleed + dark class
+    layout = 'fullbleed';
+    if (!clsList.includes('dark')) clsList.push('dark');
+  }
+  const cls = clsList.join(' ');
   switch (layout) {
-    case 'wordless': return renderKnWordless(slide, pageno);
-    case 'oneword':  return renderKnOneWord(slide, pageno);
-    case 'number':   return renderKnNumber(slide, pageno);
-    default:         return renderKnFullbleed(slide, pageno, layout === 'caption-dark');
+    case 'wordless': return renderKnWordless(slide, pageno, cls);
+    case 'oneword':  return renderKnOneWord(slide, pageno, cls);
+    case 'number':   return renderKnNumber(slide, pageno, cls);
+    case 'triptych': return renderKnTriptych(slide, pageno);
+    case 'pair':     return renderKnTriptych(slide, pageno, 'two contain');
+    case 'verdict':  return renderKnVerdict(slide, pageno);
+    default:         return renderKnFullbleed(slide, pageno, cls);
   }
 }
 
@@ -911,13 +1017,68 @@ function buildHtml(meta, slides, fontCss) {
 ${fontCss}
 ${pack.tokensCss}
 ${pack.layoutsCss}
+/* renderer base: video backgrounds and show mode (pack-agnostic, keep last so it wins) */
+video.kn-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+body.show{background:#000;margin:0;overflow:hidden;}
+body.show .slide-wrap{display:none;margin:0;box-shadow:none;}
+body.show .slide-wrap.current{display:block;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--show-fit,1));transform-origin:center;zoom:1;}
+body.show .show-help{position:fixed;left:0;right:0;bottom:16px;text-align:center;font:12px/1.4 -apple-system,system-ui,sans-serif;color:#8a8a8a;pointer-events:none;transition:opacity .6s;}
+body.show .show-help.hidden{opacity:0;}
 </style>
 </head>
 <body>
 ${html}
 <script>
-function fit(){var s=Math.min(1,(window.innerWidth-56)/1920);document.documentElement.style.setProperty('--fit',s);}
+function fit(){var s=Math.min(1,(window.innerWidth-56)/1920);document.documentElement.style.setProperty('--fit',s);
+  document.documentElement.style.setProperty('--show-fit',Math.min(window.innerWidth/1920,window.innerHeight/1080));}
 fit(); addEventListener('resize',fit);
+// ── show mode: one slide at a time, fullscreen, keyboard / clicker / click to advance.
+//    Enter with p or f, or open the file with #present. Esc leaves. The hash (#12) tracks the slide in both modes.
+(function(){
+  var wraps=Array.prototype.slice.call(document.querySelectorAll('.slide-wrap'));
+  if(!wraps.length) return;
+  var body=document.body, cur=0, help=null;
+  function clampIdx(i){return Math.max(0,Math.min(wraps.length-1,i));}
+  function hashIdx(){var m=(location.hash||'').match(/^#(\\d+)/);return m?clampIdx(parseInt(m[1],10)-1):null;}
+  function setHash(i,present){var h='#'+(i+1)+(present?'-present':'');if(location.hash!==h)history.replaceState(null,'',h);}
+  function showSlide(i){
+    cur=clampIdx(i);
+    wraps.forEach(function(w,k){w.classList.toggle('current',k===cur);
+      w.querySelectorAll('video').forEach(function(v){if(k===cur){try{v.currentTime=0;v.play();}catch(e){}}else{v.pause();}});});
+    setHash(cur,true);
+  }
+  function enter(i){
+    body.classList.add('show'); showSlide(i==null?cur:i);
+    if(document.fullscreenEnabled&&!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}
+    if(!help){help=document.createElement('div');help.className='show-help';help.textContent='→ next · ← back · Esc exit';body.appendChild(help);
+      setTimeout(function(){help.classList.add('hidden');},2500);}
+  }
+  function leave(){
+    body.classList.remove('show'); wraps.forEach(function(w){w.classList.remove('current');});
+    if(document.fullscreenElement){document.exitFullscreen().catch(function(){});}
+    setHash(cur,false); wraps[cur].scrollIntoView({block:'center'});
+  }
+  function inShow(){return body.classList.contains('show');}
+  addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    var k=e.key;
+    if(!inShow()){ if(k==='p'||k==='f'){e.preventDefault();enter(nearestIdx());} return; }
+    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();showSlide(cur+1);}
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='Backspace'){e.preventDefault();showSlide(cur-1);}
+    else if(k==='Home'){e.preventDefault();showSlide(0);}
+    else if(k==='End'){e.preventDefault();showSlide(wraps.length-1);}
+    else if(k==='Escape'){e.preventDefault();leave();}
+  });
+  addEventListener('click',function(e){ if(inShow()&&!e.target.closest('a')) showSlide(cur+1); });
+  document.addEventListener('fullscreenchange',function(){ if(!document.fullscreenElement&&inShow()) leave(); });
+  function nearestIdx(){var mid=window.innerHeight/2,best=0,bd=Infinity;wraps.forEach(function(w,k){var r=w.getBoundingClientRect(),d=Math.abs((r.top+r.bottom)/2-mid);if(d<bd){bd=d;best=k;}});return best;}
+  // track the scroll position in the hash while reading
+  var t=null; addEventListener('scroll',function(){ if(inShow()) return; clearTimeout(t); t=setTimeout(function(){cur=nearestIdx();setHash(cur,false);},150); });
+  // initial state from the hash
+  var h=hashIdx();
+  if(h!==null){cur=h; if(/-present$/.test(location.hash)||/#present$/.test(location.hash)) enter(cur); else wraps[cur].scrollIntoView({block:'center'});}
+  else if(location.hash==='#present'){enter(0);}
+})();
 // overflow probe: .slide clips silently (overflow:hidden), so report any slide
 // whose content exceeds the frame. exportPdf reads these console lines from
 // Chrome's stderr (--enable-logging=stderr) and surfaces them as warnings.

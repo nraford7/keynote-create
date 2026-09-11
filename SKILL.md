@@ -1,6 +1,6 @@
 ---
 name: keynote-create
-description: Transform raw text, research notes, brain-dumps, or source material into a presentation deck. Two modes — Keynote (image-led, ~80% full-bleed photography with fragment/one-word captions, an emotional or reveal arc; for talks, pitches, TED-style) and Boardroom (text-led Minto/McKinsey action-titles rendered in a serif + accent style; every title a complete story-beat sentence). A spine menu (Minto plus six keynote-native shapes) sets the narrative structure independently of mode. Stages — distill 2-3 candidate punchlines, confirm mode + punchline + length + density, pick a spine, draft titles and self-check them, polish via prose-craft, art-direct images (Keynote), then render to an HTML deck and export to PDF via headless Chrome. Markdown is the structural deliverable; HTML and PDF are the presentation deliverables. Style comes from a swappable style pack — a bundled neutral default, your configured house style, or a bring-your-own source (a reference deck, a URL, or a verbal brief); a project-local style guide is auto-detected when present. Does NOT generate .pptx. Trigger whenever the user wants to turn source material into a deck, presentation outline, slide structure, talk outline, keynote, or pitch — even when "narrative" or "story arc" is not mentioned. Also trigger on /keynote-create, "action titles", "narrative titles", "slide-as-beat", "keynote deck", "image-led deck", "McKinsey-style deck", "Minto pyramid", or any request for titles that "read as a story".
+description: Transform raw text, research notes, brain-dumps, or source material into a presentation deck. Two modes — Keynote (image-led, ~80% full-bleed photography with fragment/one-word captions, an emotional or reveal arc; for talks, pitches, TED-style) and Boardroom (text-led Minto/McKinsey action-titles rendered in a serif + accent style; every title a complete story-beat sentence). A spine menu (Minto plus six keynote-native shapes) sets the narrative structure independently of mode. Stages — distill 2-3 candidate punchlines, confirm mode + punchline + length + density, pick a spine, draft titles and self-check them, polish via prose-craft, art-direct images (Keynote), then render to an HTML deck and export to PDF via headless Chrome. Markdown is the structural deliverable; HTML and PDF are the presentation deliverables. Style comes from a swappable style pack — a bundled neutral default, your configured house style, or a bring-your-own source (a reference deck, a URL, or a verbal brief); a project-local style guide is auto-detected when present. Does NOT generate .pptx. Trigger whenever the user wants to turn source material into a deck, presentation outline, slide structure, talk outline, keynote, or pitch — even when "narrative" or "story arc" is not mentioned. Also trigger on /keynote-create, "action titles", "narrative titles", "slide-as-beat", "keynote deck", "image-led deck", "McKinsey-style deck", "Minto pyramid", or any request for titles that "read as a story". Two opt-in extensions widen the lifecycle — a talk kit for live talks (per-slide speaker notes at ~120 wpm with cumulative timings and a source-cautions block separating spoken copy from preparation-only evidence, plus a worksheet when the deck has activity slides) and a publish stage that takes a human-curated public HTML version through image optimization, meta/OG injection, and a Playwright verification suite, then publishes it to a registered website target — pushing always requires an explicit human yes. Also trigger on "publish this deck", "put it on my site", a request for speaker notes, or a talk kit.
 ---
 
 # Keynote Create
@@ -13,7 +13,7 @@ This skill outputs three artifacts in sequence: a **markdown outline** (the stru
 
 ## Workflow
 
-Five stages. **Do not skip the confirmation stage. Do not draft slides before the user has confirmed punchline, length, and density.**
+The build runs Stages 1–5 (with the **Stage 3.6 talk kit** offered when the deck fronts a live talk); **Stage 6** publishes a human-curated public version to a registered website target. **Do not skip the confirmation stage. Do not draft slides before the user has confirmed punchline, length, and density.**
 
 ### Stage 1 — Read and propose 2-3 candidate punchlines
 
@@ -64,7 +64,7 @@ After the user picks or edits a punchline, ask **mode**, length, and density in 
 > - **Keynote/sparse** — Most slides one line or one word; the body is near-empty because the image *is* the body. The default density inside Keynote mode.
 > - **ELI5** — Plain language, everyday analogies, no jargon. Concrete swaps for abstractions.
 
-**Also confirm style** (unless an explicit style source or a project style guide has already settled it — see "Style resolution precedence" in Stage 4):
+**Style: do not ask when a house pack is registered as the default.** Check `~/.claude/keynote-house-style.json` (or `node -e "import('scripts/house-style.mjs').then(m=>console.log(m.getDefault()))"`); if `default` names a pack, that pack is the style, silently, and you say one line: "Style: <name> (house default)." Only when no default is registered, or the user names another style, ask:
 
 > **Style?**
 > - **House style** — your saved house-style pack. The first time you pick this and none is configured, I'll ask you to point me at it (a folder, a style guide, or a reference deck) or describe it; I build the pack once, register it, and reuse it silently after. *(See "House-style first-run setup" below.)*
@@ -119,6 +119,18 @@ Once mode, punchline, length, and density are confirmed:
 
 10. **Output the markdown** in the format under "Output format" below. Always include mode, punchline, dramatic question, and the titles-only list at the top.
 
+### Stage 3.6 (opt-in) — Talk kit
+
+Offered when the deck fronts a **live talk or workshop**: the frontmatter carries `occasion: talk`, the user names a live event ("I'm giving this at MOD. Adelaide"), or the user asks for it directly. Offer in one line and wait for the go-ahead — never forced. Numbered 3.6 because it sits after the Keynote-mode art-direction pass (3.5, above) and before rendering — existing stages are never renumbered.
+
+Two deliverables, both landing **next to the deck** (same directory as the markdown):
+
+1. **Speaker notes** — per-slide spoken prose written for delivery at **~120 wpm**, with **cumulative timings** per slide ("3:12 by the end of this one"). Two clearly separated blocks per slide:
+   - **Spoken copy** — what the presenter actually says.
+   - **Source cautions** — preparation-only evidence notes, kept strictly separate from the spoken copy. A number, name, or citation that will be *spoken* must be verified before the talk; a claim that lives only in the caution block stays out of the spoken line until it is verified. This caution discipline is what keeps a deck's claims honest — pre-verified, never asserted.
+
+2. **Worksheet** — one A4 page, **only when the deck contains activity/exercise slides**. No activity slides, no worksheet.
+
 ### Stage 4 — Render, promote layouts, export
 
 Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export.
@@ -126,8 +138,9 @@ Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export
 **Style resolution precedence (applies to all sub-stages).** A deck is always rendered by a **style pack** — a directory the render script consumes (`pack.json` + `tokens.css` skin + `layouts.css` structure + `fonts.json` + `style-notes.md`; see `packs/neutral/REQUIRED-TOKENS.md`). Resolve which pack, in order:
 
 1. **Explicit style source in the request.** The user gave a reference deck / URL / verbal brief, or a `--style <path>`. Run the matching **producer** (below) or use the path. This skips the Stage 2 style question.
-2. **Project style detected.** If the working directory or any parent up to `$HOME` contains `DESIGN.md`, `tokens.css`, `deck.template.html`, `style-guide.html`, or a `CLAUDE.md` naming a deck style — adopt it via the **project adapter** and tell the user. This answers the Stage 2 style question rather than being asked.
-3. **Stage 2 style choice** — House style / Neutral / Bring-your-own — when neither 1 nor 2 fired.
+2. **Registered house default.** If the registry's `default` names a pack, use it: omit `--style` (the renderer resolves the default itself) and never substitute neutral. This is the normal case once a house pack exists.
+3. **Project style detected.** If the working directory or any parent up to `$HOME` contains `DESIGN.md`, `tokens.css`, `deck.template.html`, `style-guide.html`, or a `CLAUDE.md` naming a deck style — adopt it via the **project adapter** and tell the user. This answers the Stage 2 style question rather than being asked.
+4. **Stage 2 style choice** — House style / Neutral / Bring-your-own — only when none of 1 to 3 fired.
 4. **Neutral fallback** — the bundled `packs/neutral` pack when nothing above is specified.
 
 **Project adapter.** A project `tokens.css` that already defines the canonical token set (see `REQUIRED-TOKENS.md`) is used directly as a skin over the shared neutral `layouts.css`. A project `DESIGN.md` / `deck.template.html` that is *not* a canonical pack is run through the **from-reference** or **from-verbal** producer to synthesize a pack. Either way the result is finalized to a complete, `loadPack`-valid pack before use — this preserves project-style behavior instead of silently losing it.
@@ -138,15 +151,30 @@ Pass the resolved pack to the render script with `--style <pack-dir|name>`. An e
 
 **Keynote mode changes the visual system.** When `mode: keynote` is in the frontmatter, the render script routes every slide through the keynote layout family (full-bleed image + caption box, one-word-on-black, giant-number, wordless, recurring-motif) instead of the text layouts. The serif-title default does not apply to Keynote decks — the caption box over full-bleed photography is its own system. Boardroom mode renders exactly as before. Both families re-skin from the active pack's tokens.
 
+**Layout check after every slide change (mandatory).** Any time a slide is added or changed, run the guard and then look:
+
+```
+node scripts/keynote-check.mjs <deck.html> <slide numbers…> --out <dir>
+```
+
+It screenshots the slides and fails on anything that leaves the frame, crosses the footer band, or overlaps another text block. Then hand the screenshots to a Sonnet subagent with the slide's intent and ask for PASS/FAIL, misalignments with pixel positions, and one concrete adjustment. Fix, re-render, re-check. A slide is not done until both halves pass.
+
+**QA discipline (mandatory, on top of the layout check).** Every slide change — add, edit, reorder — also requires:
+
+1. **Snapshot before.** Before touching the file, record each slide's exact byte span — the `.slide-wrap` slice, by index.
+2. **Byte-proof after.** An **agent procedure, not a script** — it runs per manual slide edit and needs judgment about what counts as the changed unit. Extract each slide-wrap's exact byte span from the before and after files, compare slide-by-slide, and report **"only slide N changed; other M slides byte-identical."** A silent difference in any other slide is a failure, even if it renders fine.
+3. **PDF SHA** before/after, when a PDF is exported — unchanged slides must not re-render differently.
+4. **E2E navigation check.** The nav subset of `node scripts/keynote-verify.mjs <deck.html>` must pass before the change counts as done: synthetic `p`/Escape/arrow keys drive the deck, `#N` and `#present` deep-links resolve from a fresh page load. Decks without a show-mode handler report these lines as SKIPPED — SKIPPED never fails a run.
+
 #### Stage 4a — Baseline render
 
 Run the render script to produce a first-pass HTML deck and PDF. The script uses four default layouts: COVER (slide 1), CLOSING (last), VERDICT (short bold body-less middle slides), EDITORIAL TITLE (everything else).
 
 ```bash
-node ~/.claude/scripts/keynote-render.mjs <deck.md> [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>]
+node scripts/keynote-render.mjs <deck.md> [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>]
 ```
 
-`--style` takes a pack directory path or a name registered in the house-style registry; omit it for the bundled neutral pack. `--brand`/`--sublabel` default from the pack's `pack.json`.
+`--style` takes a pack directory path or a name registered in the house-style registry; omitted, the renderer uses the registry default and falls back to the bundled neutral pack only when no default is set — a registry default that is set but broken (moved directory, unregistered name) is a hard error, never a silent fallback. `--brand`/`--sublabel` default from the pack's `pack.json`.
 
 The script:
 1. Parses the markdown's YAML frontmatter + slides
@@ -184,13 +212,15 @@ If the deck is small (3-5 slides) and the baseline already looks right, or the p
 
 #### Stage 4c — Re-export
 
+After re-export, tell the user how to present: open the HTML and press `p` for show mode (fullscreen, arrow keys or a clicker to advance, Esc to leave; `#present` in the URL opens straight into it). Video slides use `![](clip.mp4)` and must ship the video file next to the HTML.
+
 After 4b, refresh the PDF from the modified HTML:
 
 ```bash
-node ~/.claude/scripts/keynote-render.mjs <deck.html>
+node scripts/keynote-render.mjs <deck.html>
 ```
 
-The script detects the `.html` extension and skips markdown parsing and font fetching — it just spawns Chrome with the same flags to refresh the PDF in place. Open the new PDF for visual review.
+The script now lives in the skill directory (`scripts/` in this repo's clone), so run it from the skill root. It detects the `.html` extension and skips markdown parsing and font fetching — it just spawns Chrome with the same flags to refresh the PDF in place. Open the new PDF for visual review.
 
 If a layout looks wrong, re-run 4b on the specific slide and re-export. The decision tree in the pack's `layout-catalog.md` is advisory, not binding — taste overrides rule when they conflict.
 
@@ -204,6 +234,36 @@ User can request compression passes anytime after delivery. When they say "tight
 4. Output the tighter markdown, then re-run the render script to refresh HTML + PDF.
 
 Repeatable until the user says stop.
+
+### Stage 6 — Publish
+
+Publishes a **human-curated public deck** to a registered website target. Stage 6 is mechanical only — it never edits content. What to trim, what the public intro slide says, and what stays talk-only is deck-specific judgment the human does **before** Stage 6; the skill never guesses.
+
+1. **Confirm the public HTML exists, is human-curated, and is separate from the source artifact (hard rule).** If the public version doesn't exist yet, stop and return the deck — the human curates first. Stage 6 never edits the talk artifact.
+2. **Resolve the target.** Explicit `--target <name>` > the registry's `default` > the onboarding flow (below) > **hard error**. Never a silent guess. The registry lives at `~/.claude/keynote-publish-targets.json` — see [`references/publish-targets.md`](references/publish-targets.md).
+3. **Copy-to-work.** Copy the deck to a working location. The talk artifact is the source of truth and is never edited — enforced, not convention.
+4. **`web-optimize`** — externalize base64 images and resize them to their measured rendered boxes:
+   ```bash
+   node scripts/web-optimize.mjs <work.html> [--out <dir>]
+   ```
+5. **`web-inject`** — meta/OG/Twitter tags + canonical URL, reading-mode hint, mobile present controls:
+   ```bash
+   node scripts/web-inject.mjs <work.html> --url <urlBase><slug> --description "<text>"
+   ```
+   The canonical URL is the target's `urlBase` + the deck slug; the `<title>` comes from the deck. **Confirm the description with the user** before injecting.
+6. **Site integration** per the target profile: the deck lands at the target's `deckPath`; a hub card, listing entry, and structured-data entry are added. **Card copy is approved by the user before anything is written.**
+7. **Build, then verify locally.** Run the target's `build`, then the assertion suite on the deck at its target path:
+   ```bash
+   node scripts/keynote-verify.mjs <target-repo>/<deckPath> [--mobile] [--throttle]
+   ```
+   Exit 0 required. Reading the report: geometry is slide-relative by construction; the pageno check requires each numbered slide's page number to **equal its 1-based slide index** (+1 apart — slides without a pageno, like the cover, are exempt); the reading-mode hint must appear within 3 s of load and auto-dismiss by **7.5 s** (6 s timeout + fade); under `--throttle`, first contentful paint must land under **2.5 s** at 1.6 Mbps / 150 ms. **SKIPPED lines are expected, not failures** — a nav-less deck (no show-mode handler) skips the present-flow checks; only a FAIL fails the run. `--mobile` re-runs geometry and present flows in a `hasTouch` context (never `isMobile` — it inflates `window.innerWidth` and poisons geometry), covering tap advance, swipe next/back, the exit button, and the rotate toast.
+8. **Commit** the site repo.
+9. **Push gate — explicit human yes, every time.** Never push on assumption or momentum; a go-ahead from earlier in the session is not a go-ahead now.
+10. **Deploy** per the target profile (e.g. push-to-main → GitHub Pages).
+11. **Re-run `keynote-verify` against the live URL** — the same suite, now on the deployed page. Exit 0 before the publish is called done.
+12. **Record the outcome** — what was published, where, and the verify results.
+
+**Onboarding flow** (first run against any unregistered site; later runs are silent): read the site repo — routing structure, static-asset conventions, hub/listing pages, any structured data (JSON-LD) on the hub that grows per published item, build and deploy mechanics — then propose a profile; the user confirms before it persists to `~/.claude/keynote-publish-targets.json`. See [`references/publish-targets.md`](references/publish-targets.md) for the schema.
 
 ## Spine menu
 
@@ -412,7 +472,7 @@ cover_image: "path-or-url to the cover full-bleed image (keynote, optional)"
 > Art: one oversized figure over a busy financial image; the number is the shock.
 ````
 
-The caption box sits **top-left**; the first bullet renders as a one-line **subcaption** beneath it (give most slides one). Recognised `> Layout:` hints in Keynote mode: `fullbleed` (default — image + caption box), `oneword`, `number`, `wordless`, `motif`, `caption-dark` (dark caption box, for light images). Omit the hint and the renderer picks heuristically (short numeric title → number; ≤2-word title → oneword; no title → wordless; else fullbleed).
+The caption box sits **top-left**; the first bullet renders as a one-line **subcaption** beneath it (give most slides one). Recognised `> Layout:` hints in Keynote mode: `fullbleed` (default — image + caption box), `oneword`, `number`, `wordless`, `motif`, `caption-dark` (dark caption box, for light images). Two text-family layouts also render straight from markdown: `triptych` (bullets `YEAR · label`, art line `three dated frames: a / b / c. Subtitle: …`) and `pair` (art line `two frames: a / b`, title optional). Omit the hint and the renderer picks heuristically (short numeric title → number; ≤2-word title → oneword; no title → wordless; else fullbleed).
 
 `---` is the standard slide separator used by Marp, reveal.js, and Slidev, so downstream HTML/PDF conversion is straightforward. Slide bodies stay terse — bullets and fragments, not paragraphs. The title carries the meaning; the body (Boardroom) or the image (Keynote) supports.
 
@@ -459,12 +519,18 @@ deferred follow-up — not yet built.
 - Does not skip the confirmation stage. The mode → punchline → length → density pause is the most important part of this skill.
 - Does not run prose-craft on slide bodies — titles only. (Bodies still get the step-6 hedge/AI-tell scan as part of the step-7b support audit.)
 - Does not override a project's own style guide when one is present in the working directory tree.
+- Does not curate the public version. What to trim, what the public intro slide says, and what stays talk-only is decided by hand, before Stage 6 — never guessed.
+- Does not push without an explicit human yes. The Stage 6 push gate applies every time, no exceptions.
 
 ## References
 
 - [`references/title-craft.md`](references/title-craft.md) — primary reference for Stage 3 title craft. Rules, failure modes, rewrite examples, the read-aloud test, and the Keynote fragment register.
 - [`references/keynote-devices.md`](references/keynote-devices.md) — primary reference for Keynote mode. The 16-device palette (with affordance triggers and anti-pastiche rules), the six narrative spines, and the corpus examples they come from.
 - [`references/layout-catalog.md`](references/layout-catalog.md) — primary reference for Stage 4b layout promotion in a `richPromotion` pack. The generic layout family (Boardroom) plus the keynote layout family, decision tree, content cues, rewrite procedure, common mistakes. A house pack may ship its own catalog + `template.html`.
-- `~/.claude/scripts/keynote-render.mjs` — render script. Takes `.md` for the full pipeline; takes `.html` for re-export only (used after Stage 4b). `--style <pack-dir|name>`.
-- `~/.claude/scripts/house-style.mjs` — the house-style registry (register/resolve a saved house pack).
+- [`references/publish-targets.md`](references/publish-targets.md) — primary reference for Stage 6. The publish-target registry (user-local `~/.claude/keynote-publish-targets.json`, never in this repo), its schema, the target resolution order, and the onboarding flow for unregistered sites.
+- `scripts/keynote-render.mjs` — render script. Takes `.md` for the full pipeline; takes `.html` for re-export only (used after Stage 4b). `--style <pack-dir|name>`.
+- `scripts/house-style.mjs` — the house-style registry (register/resolve a saved house pack).
+- `scripts/web-optimize.mjs` — Stage 6: extract base64 images, dedupe by content hash, resize to measured rendered boxes (1.35×, never upscaling), rewrite to lazy-loaded relative assets. Prints a before/after size report.
+- `scripts/web-inject.mjs` — Stage 6: inject the meta/OG/Twitter tags + canonical URL, the reading-mode hint pill, and the mobile present controls. `--url` required.
+- `scripts/keynote-verify.mjs` — Stage 6 + Stage 4 QA: the assertion suite (slide-relative geometry, images, hint lifecycle, present flows; `--mobile` adds touch-context checks, `--throttle` adds a throttled first-paint budget). Works on `file://` or a live URL; exit 0 on all-pass, 1 on any FAIL, 2 on usage error.
 - `packs/neutral/` — the bundled neutral style pack: `pack.json`, `tokens.css` (skin), `layouts.css` (shared structure), `fonts.json`, `style-notes.md`, and `REQUIRED-TOKENS.md` (the token contract every pack's `tokens.css` must satisfy).
