@@ -12,6 +12,7 @@ export function getPlaywright() {
   const candidates = [
     process.env.PLAYWRIGHT_MODULE,
     '/Users/zeigor/GitHub/diagramming/node_modules/playwright/index.mjs', // machine-specific example entry — override via PLAYWRIGHT_MODULE
+    '/Users/noahraford/Projects/bookie/node_modules/playwright/index.mjs', // machine-specific: NR's Mac
   ].filter(Boolean);
   for (const c of candidates) { try { return require(c); } catch {} }
   try { return require('playwright'); } catch {}

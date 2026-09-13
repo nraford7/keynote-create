@@ -33,7 +33,7 @@ A good punchline:
 - Is specific (numbers, names, verbs) — not "we should improve onboarding"
 - Implicitly answers a question the audience cares about
 
-A weak punchline ("The Golden Visa is a successful programme that faces challenges") is a topic with verbs glued on. A strong one ("Open the door to permanence — and lower the cost of walking through it") commits to a stance the rest of the deck has to earn.
+A weak punchline ("The Golden Visa is a successful programme that faces challenges") is a topic with verbs glued on. A strong one ("Open the door to permanence — and lower the cost of walking through it") commits to a stance the rest of the deck has to back.
 
 Present the three candidates like:
 
@@ -111,11 +111,11 @@ Once mode, punchline, length, and density are confirmed:
 
 7. **Fill in supporting content.** Short bullets, fragments, optional speaker notes. Calibrate to density. In Keynote/sparse this is often nothing — the image is the body.
 
-   **7b. Support audit — titles must be earned.** For every claim-bearing title (any title asserting a fact, number, cause, or recommendation), name its warrant: the bullet on the slide or the passage in the source that backs it. A title with no warrant gets softened, re-scoped, or cut — an assertive title the deck can't back is worse than a duller one it can. In **Evidence** density, every bullet must carry a number, a name, or a citation. Bodies also get the step-6 *scan list* (hedged verbs, AI tells, initialisms, sameness) — the scan applies to bodies; the prose-craft register rules do not, because bodies stay bullets and fragments.
+   **7b. Support audit — titles must be backed.** For every claim-bearing title (any title asserting a fact, number, cause, or recommendation), name its warrant: the bullet on the slide or the passage in the source that backs it. A title with no warrant gets softened, re-scoped, or cut — an assertive title the deck can't back is worse than a duller one it can. In **Evidence** density, every bullet must carry a number, a name, or a citation. Bodies also get the step-6 *scan list* (hedged verbs, AI tells, initialisms, sameness) — the scan applies to bodies; the prose-craft register rules do not, because bodies stay bullets and fragments.
 
 8. **Keynote mode only — art-direction pass (Stage 3.5).** Once the beat sequence is set, hand the deck to the **art-direct skill**. **Choose one global treatment first:** before any per-slide prompts, fix a single photographic treatment for the whole deck — grade, era, lens/film feel, palette temperature (e.g. "muted Kodachrome, 35mm, warm dusk, soft grain") — record it as `art_direction:` in the frontmatter, and append it verbatim to every per-slide AI-image prompt. Ten independently-prompted images with no shared treatment look like ten stock sites; the global treatment is what makes them one deck. Then, for each slide, art-direct returns an image concept, photography/style direction, mood, and an AI-image prompt. Hold to the **metaphor-not-illustration** principle the corpus uses (fire = "Volitocracy"; a broken foot beside a running shoe = "Fast inaction") — the image *stands for* the abstraction, it does not depict the words literally. Record each slide's direction on a `> Art:` line (presenter-only, like a speaker note) and, when an image file exists, an `![]()` or `> Image:` line. Boardroom mode skips this step.
 
-9. **Deploy keynote devices (Keynote mode).** Read [`references/keynote-devices.md`](references/keynote-devices.md) and select from the palette only what the content affords — a good deck uses maybe 4 of 16. Never manufacture a device the source doesn't earn (no invented coined words, no false dread, no fabricated authority quotes).
+9. **Deploy keynote devices (Keynote mode).** Read [`references/keynote-devices.md`](references/keynote-devices.md) and select from the palette only what the content affords — a good deck uses maybe 4 of 16. Never manufacture a device the source does not support (no invented coined words, no false dread, no fabricated authority quotes).
 
 10. **Output the markdown** in the format under "Output format" below. Always include mode, punchline, dramatic question, and the titles-only list at the top.
 
@@ -127,7 +127,7 @@ Two deliverables, both landing **next to the deck** (same directory as the markd
 
 1. **Speaker notes** — per-slide spoken prose written for delivery at **~120 wpm**, with **cumulative timings** per slide ("3:12 by the end of this one"). Two clearly separated blocks per slide:
    - **Spoken copy** — what the presenter actually says.
-   - **Source cautions** — preparation-only evidence notes, kept strictly separate from the spoken copy. A number, name, or citation that will be *spoken* must be verified before the talk; a claim that lives only in the caution block stays out of the spoken line until it is verified. This caution discipline is what keeps a deck's claims honest — pre-verified, never asserted.
+   - **Source cautions** — preparation-only evidence notes, kept strictly separate from the spoken copy. A number, name, or citation that will be *spoken* must be verified before the talk; a claim that lives only in the caution block stays out of the spoken line until it is verified. This caution discipline is what keeps a deck's claims defensible: pre-verified, never asserted.
 
 2. **Worksheet** — one A4 page, **only when the deck contains activity/exercise slides**. No activity slides, no worksheet.
 
@@ -230,7 +230,7 @@ User can request compression passes anytime after delivery. When they say "tight
 
 1. Re-confirm the punchline. Has the point drifted?
 2. Section pass: any slides that could merge or be cut?
-3. Per-title compression: cut filler, sharpen verbs, lose any title that doesn't earn its slide.
+3. Per-title compression: cut filler, sharpen verbs, lose any title that does not justify its slide.
 4. Output the tighter markdown, then re-run the render script to refresh HTML + PDF.
 
 Repeatable until the user says stop.
@@ -322,7 +322,7 @@ Use judgment based on the source. Multiple slides per act, possibly with sub-arc
 - A long Act 4 walking through consequences sector by sector
 - A multi-slide Act 5 covering opportunities, recommendations, and a closing landing
 
-Even at long lengths, no slide is allowed to be slack. If a slide doesn't earn its title, cut it.
+Even at long lengths, no slide is allowed to be slack. If a slide does not justify its title, cut it.
 
 ## Density calibration
 
@@ -349,7 +349,7 @@ Non-negotiable. The skill collapses if titles are weak.
 - **Length.** 4–10 words default; stretch to 15 when chaining demands it (see "Title length" below).
 - **One beat per slide.** A title doing two beats becomes two slides.
 - **Active voice.** "We missed the signal" beats "The signal was missed."
-- **Specific over abstract.** Numbers, names, concrete nouns earn attention. (In ELI5, concrete analogies also satisfy.)
+- **Specific over abstract.** Numbers, names, concrete nouns hold attention. (In ELI5, concrete analogies also satisfy.)
 - **Plain over clever.** A smart reader who hasn't read the source must understand each title alone. Compressed expert shorthand fails the stranger test.
 - **No throat-clearing.** Banish "Introduction," "Overview," "Background," "Agenda," "Conclusion," "Thank you," "Questions?"
 - **Forward motion.** If two adjacent titles can swap without loss, one isn't pulling weight.

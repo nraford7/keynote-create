@@ -30,7 +30,7 @@ A slide is a unit of story. One title = one move in the argument. If you find yo
 - Weak: "Customer feedback was mixed."
 - Strong: "Power users loved it; new users bounced."
 
-Numbers, names, and concrete nouns earn attention. Abstractions slide off.
+Numbers, names, and concrete nouns hold attention. Abstractions slide off.
 
 ### 6. Forward motion
 Each title should make the next feel inevitable. If adjacent titles can be swapped without loss of sense, the sequence isn't doing narrative work — it's listing.

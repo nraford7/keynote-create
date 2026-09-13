@@ -1,6 +1,6 @@
 # EMIR Deck Layouts — Catalog & Decision Table
 
-This catalog maps the 19 layouts of the EMIR text-deck template to the content shapes they fit. The template HTML itself is a local file kept outside this repo (next to your house pack — `deck.template.html`); this file is the picker. Use it in Stage 4b (Layout Promotion) to upgrade each slide from the baseline editorial layout to a layout that earns the content.
+This catalog maps the 19 layouts of the EMIR text-deck template to the content shapes they fit. The template HTML itself is a local file kept outside this repo (next to your house pack — `deck.template.html`); this file is the picker. Use it in Stage 4b (Layout Promotion) to upgrade each slide from the baseline editorial layout to a layout that fits the content.
 
 > **Boardroom mode only.** The 19 layouts below are the EMIR text-deck system used in **Boardroom mode**. **Keynote mode** uses a separate image-led family — see "Keynote layout family" at the bottom of this file. In Keynote mode the render script routes every slide through that family automatically; you do not promote to the EMIR layouts.
 
@@ -102,7 +102,7 @@ The render script's CSS hides `<div class="speaker-note">` with `display:none`. 
 
 - **Leaving the wrong theme class.** A VERDICT slide needs `.dk`, not `.lt`. Check after every rewrite.
 - **Downgrading the title to h3.** Even when copying scaffolding from the EMIR template's cards or stats slides, the title stays at h2.
-- **Adding a competing eyebrow above the title.** Drop it unless it earns its space as a breadcrumb.
+- **Adding a competing eyebrow above the title.** Drop it unless it does real work as a breadcrumb.
 - **Rendering speaker notes visibly.** The CSS hides them by default — do not override that.
 - **Over-using dark slides.** They're punctuation, not the body.
 - **Forgetting the title-rule.** Most layouts include `<div class="title-rule"></div>` — the gold accent that gives the type hierarchy its anchor.

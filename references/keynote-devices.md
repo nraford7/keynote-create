@@ -51,7 +51,7 @@ Each entry: **what** it is · *affords when* · a verbatim corpus example.
 
 ## Two recurring failure modes to avoid
 
-- **Manufactured drama.** Fear runs, coined words, and authority quotes are powerful *when earned*. On flat or technical content they read as parody. When the source affords few devices, keep the base layouts and let the images do quiet work.
+- **Manufactured drama.** Fear runs, coined words, and authority quotes are powerful *when the content supports them*. On flat or technical content they read as parody. When the source affords few devices, keep the base layouts and let the images do quiet work.
 - **Caption-box residue.** Several corpus slides show an older title bleeding out from under a pasted white box (Singapore 26–36). When rendering, ensure each caption box fully covers any prior text — one clean box per slide.
 
 ---
