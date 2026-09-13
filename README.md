@@ -29,7 +29,6 @@ Markdown is the structural deliverable; HTML + PDF are the presentation delivera
 | `scripts/keynote-verify.mjs` | Publish assertion suite: slide-relative geometry, images, hint, present flow, mobile touch flows, throttled FCP — works on a local file or a live URL. |
 | `scripts/lib/` | Shared helpers: playwright resolution, image extraction/measurement, the site-additions CSS/JS templates. |
 | `packs/neutral/` | The bundled neutral style pack (the default) + `REQUIRED-TOKENS.md` token contract. |
-| `references/emir-layouts.md` | The 19-layout Boardroom catalog + decision table for Stage 4b layout promotion. |
 | `references/publish-targets.md` | The publish-target registry schema and onboarding flow (the registry itself is user-local, never in this repo). |
 | `docs/fixtures/` | Test fixtures: `sample-public.html` (self-contained publish-stage fixture) + its generator, plus sample Boardroom/Keynote decks. |
 | `KEYNOTE-MODE-SPEC.md` | Design spec for the Keynote-mode addition (kept for provenance). |
