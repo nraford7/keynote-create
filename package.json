@@ -1,0 +1,14 @@
+{
+  "name": "keynote-create-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Build/publish scripts for keynote-create decks (web-optimize, web-inject, keynote-verify). Playwright is resolved at runtime — see scripts/lib/playwright.mjs (PLAYWRIGHT_MODULE env var, known-good path, then bare require).",
+  "peerDependencies": {
+    "playwright": "*"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  }
+}
