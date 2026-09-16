@@ -10,6 +10,6 @@
 | Layout guard | All 6 fixture slides pass. Representative middle-slide screenshots inspected for visible evidence and layout. Keynote uses labeled missing-image placeholders, as expected for this rendering fixture. |
 | PDF inspection | Boardroom is 3 pages at 1440×810 points (1920×1080 CSS pixels); PDF font inspection confirms embedded Inter and Georgia fallback. The renderer's size-based warning fired despite embedded fonts, demonstrating that file size alone is only a heuristic. |
 | Independent review | Baseline and revised pressure-scenario workflow simulations; final recheck found no remaining blocking errors. Not a repeated empirical agent benchmark. |
-| `git diff --check` | Pass. |
+| Whitespace check of committed changes | First-party changes pass. The pinned upstream snapshot retains two upstream whitespace warnings (SKILL EOF blank line and communication-frameworks trailing spaces); they are preserved rather than silently altering the snapshot. |
 
 No website was deployed, installed skill copy replaced, or upstream main branch changed by this validation.
