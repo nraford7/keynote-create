@@ -4,7 +4,7 @@
 |---|---|
 | `npm test` | 20/20 pass: NE renderer handoff, legacy input, numeric evidence retention, bundle integrity/required inventory and web injection. |
 | `npm run test:browser` | 20/20 pass: image optimization and publishing verification, including mobile/throttled fixtures. |
-| `npm run test:render` | 41 pass, 1 fail: Google-font embedding assertion. The unchanged baseline reproduces the same failed Google Fonts CSS resolution and system fallback. This suite is not claimed fully green. |
+| `npm run test:render` | 42/42 pass on the final run. An earlier run had one Google-font embedding failure, also reproduced on the unchanged baseline; the subsequent complete run resolved it. Remote font availability remains an environmental dependency. |
 | `node scripts/narrative-sync.mjs --check --source ../Narrative-Engine` | 23 runtime files match pinned upstream `f682a293f488bbec7d9e04a62db3d39c22d67a49` and the declared finite adaptations. |
 | Real NE fixture → HTML/PDF | Boardroom and Keynote each export exactly 3 slides/pages with `--no-cover`, using a temporary local-font pack to avoid the failing remote fetch. |
 | Layout guard | All 6 fixture slides pass. Representative middle-slide screenshots inspected for visible evidence and layout. Keynote uses labeled missing-image placeholders, as expected for this rendering fixture. |
