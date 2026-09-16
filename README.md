@@ -1,124 +1,162 @@
-# keynote-create
+# Keynote Create
 
-A Claude Code skill that turns raw source material — research notes, a brain-dump, an essay, a strategy memo — into a presentation deck, then renders it to an HTML deck and a PDF.
+**Turn source material into a presentation whose headlines tell the whole argument.**
 
-*Originally by Noah Raford, evolved locally.*
+Give it research notes, a report, a draft, interview findings or an existing deck. It helps identify the point, builds a connected headline sequence, checks the claims against your material, then produces slides you can present in a browser or share as a PDF.
 
-## Two modes
+Keynote Create is an agent skill for **Claude Code and Codex**. “Keynote” describes a presentation style: it does **not** create Apple Keynote `.key` files or PowerPoint `.pptx` files.
 
-- **Keynote** — image-led. ~80% full-bleed photography with a hard-edged caption box (top-left) plus a one-line subcaption; titles are fragments, one-word beats, questions, or coined terms. For talks, pitches, TED-style. Uses an available art-direction skill or creates image briefs directly. Derived from a slide-by-slide study of real image-led keynote decks.
-- **Boardroom** — text-led. Every title a complete Minto/McKinsey action-title sentence, rendered in the default house style (a serif + grotesk pairing, a restrained accent). The skill's original behaviour.
+## What you get
 
-**Register and narrative shape are independent.** The bundled [Narrative Engine integration](references/narrative-engine-integration.md) defaults to an answer-first argument in both modes. Reveals require genuine surprise; named arcs require source-supported beats. Its minimal builder feeds four gates: shape support, blind focal fidelity, humanizing checks, and independent evidence review. Keynote Create then handles art direction, styles, rendering and publication.
+- **An editable Markdown deck:** the headlines, supporting content and delivery notes.
+- **An HTML presentation:** open it in a browser; press `p` to present, use the arrow keys to advance, and press Escape to leave presentation mode.
+- **A PDF:** for review, sharing or printing.
+- **Separate review records:** the writing brief, source notes and checks stay outside the presentation.
 
-The snapshot is pinned to NE commit `f682a293f488bbec7d9e04a62db3d39c22d67a49` (2026-09-16). It runs without another installed NE skill. Fast mode consolidates discovery into one brief; **both modes must carry the complete argument in their headline sequence alone**, using sentences or connected fragments. Written narration adds depth and remains separately reviewable. See [the audit](docs/narrative-engine-audit.md) for the comparison, conflicts, validation and remaining improvements.
+Optional extras include a full speaker script with timings, a workshop worksheet when there are activities, and publishing a separately prepared public version to your website.
 
-Markdown is the structural deliverable; HTML + PDF are the presentation deliverables. The skill does **not** generate `.pptx`.
+## One rule, two presentation styles
 
-## Repository layout
+**Read the headlines in order and you should understand the entire argument.** Each headline introduces a point, builds on the previous one or takes the argument to its conclusion. Supporting text, images and narration add depth; they cannot fill gaps in the reasoning.
 
-| Path | Purpose |
-|---|---|
-| `vendor/narrative-engine/` | Pinned NE runtime references and prompts, with source hashes and portable path adaptations. |
-| `references/narrative-engine-integration.md` | Ownership, compiled deck contract, agent isolation, repair and rendering handoff. |
-| `scripts/narrative-sync.mjs` | Offline bundle integrity check and explicit updates from an upstream checkout. |
-| `SKILL.md` | The skill definition (frontmatter + workflow). |
-| `references/title-craft.md` | Title-craft rules, failure modes, and the Keynote fragment register. |
-| `references/keynote-devices.md` | The 16-device Keynote palette (affordance triggers + anti-pastiche rules) and the six spines. |
-| `references/layout-catalog.md` | The generic Boardroom layouts plus the Keynote layout family. |
-| `scripts/keynote-render.mjs` | Node renderer: markdown → self-contained HTML → 1920×1080 PDF via headless Chrome, fonts base64-embedded. Handles both modes; consumes a style pack. |
-| `scripts/house-style.mjs` | House-style registry (register/resolve a saved house pack). Imported by the renderer. |
-| `scripts/keynote-check.mjs` | Layout guard: screenshots each slide, reports anything leaving the 1920×1080 frame, crossing the footer band, or overlapping. |
-| `scripts/web-optimize.mjs` | Web publish step 1: extracts base64 images to asset files (content-deduped), resizes them to their measured rendered boxes, adds lazy-loading. |
-| `scripts/web-inject.mjs` | Web publish step 2: injects meta/OG/Twitter tags + canonical URL, the reading-mode hint, and mobile present controls. Idempotent. |
-| `scripts/keynote-verify.mjs` | Publish assertion suite: slide-relative geometry, images, hint, present flow, mobile touch flows, throttled FCP — works on a local file or a live URL. |
-| `scripts/lib/` | Shared helpers: playwright resolution, image extraction/measurement, the site-additions CSS/JS templates. |
-| `packs/neutral/` | The bundled neutral style pack (the default) + `REQUIRED-TOKENS.md` token contract. |
-| `references/publish-targets.md` | The publish-target registry schema and onboarding flow (the registry itself is user-local, never in this repo). |
-| `docs/fixtures/` | Test fixtures: `sample-public.html` (self-contained publish-stage fixture) + its generator, plus sample Boardroom/Keynote decks. |
-| `KEYNOTE-MODE-SPEC.md` | Design spec for the Keynote-mode addition (kept for provenance). |
+| | Boardroom | Keynote |
+|---|---|---|
+| Best for | Decisions, strategy, research and material people will read independently | Talks, pitches and presentations delivered by a speaker |
+| Visual approach | Text, evidence, charts and structured layouts | Large images, sparse captions and visual contrasts |
+| Headlines | Usually complete sentences | Connected fragments, clauses or short sentences |
+| Supporting detail | More of it appears on the slide | More of it can sit in delivery notes |
+| What stays the same | The headline sequence carries the complete argument | The headline sequence carries the complete argument |
 
-## Deployment
+A Keynote headline does not need to be a complete sentence. **The sequence does need to be a complete argument.** A list such as “The problem / Our findings / Next steps” fails in either mode, even if a spoken script explains it beautifully.
 
-This repo is the **canonical source**. Clone it to your runtime's skill directory, or copy the **whole** checkout (excluding `.git`) there. Keep `scripts/`, `references/`, `packs/`, and `vendor/` beside `SKILL.md`; copying only the skill file no longer installs a working skill. Run commands from that root. Local style and publishing registries remain outside the repo.
+## A worked example
+
+Suppose your source says:
+
+> Twenty employees volunteered for a four-week pilot of a new tool. All twenty reported satisfaction. Productivity was not measured, there was no control group, and operating costs are unknown. The team recommends a capped four-week extension to measure productivity and costs before deciding on wider expansion.
+
+The audience is the operations director. The decision is whether to approve the extension.
+
+The same argument could become:
+
+| Slide | Boardroom headline | Keynote headline |
+|---|---|---|
+| 1 | Extend the pilot to gather evidence before deciding on wider expansion. | A limited extension before wider expansion. |
+| 2 | All twenty pilot volunteers reported satisfaction. | Twenty satisfied volunteers. |
+| 3 | Productivity was unmeasured, there was no control group, and costs remain unknown. | But productivity unmeasured, no control, costs unknown. |
+| 4 | Approve four more weeks to measure productivity and costs. | Approve four more weeks to measure productivity and costs. |
+
+Read either column from top to bottom. The recommendation, evidence, limitations and decision are all there without a speaker filling in the logic.
+
+The source does **not** support “The pilot proved productivity gains.” The evidence review should reject that claim, however persuasive the slide looks. The review compares your deck with the material you supplied; it does not independently establish that every statement in that material is true.
+
+A [small example deck](docs/fixtures/sample-ne.md) is included so you can inspect the Markdown format and try the renderer.
+
+## How it works
+
+1. **Understand the material and the audience.** Establish who the deck is for and what they should understand, decide or do. Read the source for its strongest evidence, limitations and possible main points.
+2. **Agree on the argument.** Build a plain outline before choosing a storytelling structure. The default puts the answer early. A reveal or dramatic arc is used only when the source supports it.
+3. **Draft the headlines first.** Make the complete argument work as a sequence. Then add support, citations, written narration and visual suggestions. Keynote includes actual narration lines, not imagined delivery.
+4. **Review and repair.** Check that the structure fits the material, a fresh reader can recover the argument, the writing avoids repetitive or forced structure, and the claims preserve the source's evidence and uncertainty. Problems return to the writer for correction; unresolved problems are surfaced rather than quietly passed.
+5. **Design and render.** Apply a style pack, prepare images or diagrams, render HTML and PDF, and check slide layout. Changes to the argument or claims go back through the relevant writing checks.
+
+The narrative work comes from a bundled, versioned copy of [Narrative Engine](https://github.com/nraford7/Narrative-Engine). Keynote Create handles the presentation style, assets, rendering and optional publication. You do not need to install Narrative Engine separately.
+
+### Fast or Guided
+
+- **Fast:** infer sensible choices from your material and instructions, then show one compact brief for corrections or confirmation. If you explicitly ask it to proceed without questions, it does so with stated assumptions.
+- **Guided:** work through the audience, main point, style and other choices together.
+
+A point you explicitly supply remains your point. Reviewers may recommend a different angle, but do not silently replace it. Length follows the material and your slide or speaking-time budget; the process does not pad a deck to fit a formula.
+
+## Install
+
+The current renderer targets **macOS**: PDF export expects Google Chrome at `/Applications/Google Chrome.app`. You also need **Git**, **Node.js with npm**, and Claude Code or Codex with local file and command access. Independent narrative reviews require a host that supports isolated subagents.
+
+Choose the installation for your agent. These commands are for a **new installation**; if the destination already exists, follow [Updating an existing installation](#updating-an-existing-installation) instead.
+
+### Claude Code
 
 ```sh
+mkdir -p ~/.claude/skills
 git clone https://github.com/nraford7/keynote-create.git ~/.claude/skills/keynote-create
-# For Codex, use ~/.agents/skills/keynote-create instead.
-node ~/.claude/skills/keynote-create/scripts/narrative-sync.mjs --check
+cd ~/.claude/skills/keynote-create
+node scripts/narrative-sync.mjs --check
 ```
 
-Update the canonical checkout first, review changes, then update any deployment copy. The bundled NE process never invokes another installed NE or recursively re-enters Keynote Create discovery.
-
-## Security & threat model
-
-This is a **local, single-user CLI**. Style packs are chosen by the person
-running it. The renderer applies defense-in-depth against a naive malicious
-pack — it rejects `</style>`/`<script>` breakouts in pack CSS, sanitises font
-family/weight/style and image `url()` values, confines `local` font files to
-the pack directory (realpath, no symlink/`../` escape), bounds remote font
-fetches (timeout, hard deadline across redirects, 8 MB cap, redirect cap,
-http(s) only, face cap), and blocks literal loopback/private/link-local/metadata
-IPs for `url`-source fonts.
-
-It is **not** a sandbox against a determined hostile pack: it does not resolve
-DNS names to check the target address (a hostname pointing at a private IP is
-not caught), and headless Chrome still fetches a pack's image `url()`s during
-PDF export outside these guards. Treat an untrusted third-party pack the way you
-would any untrusted code you run locally. Producers that fetch from a URL must
-apply the same private-host refusal (see SKILL.md → Producers → from-url).
-
-## Rendering a deck
+### Codex
 
 ```sh
-node scripts/keynote-render.mjs <deck.md>        # markdown → HTML + PDF
-node scripts/keynote-render.mjs <deck.html>      # re-export PDF from edited HTML
-# NE body-only output; register is supplied separately and all planned slides already exist:
-node scripts/keynote-render.mjs <ne-output.md> --mode keynote --no-cover
+mkdir -p ~/.agents/skills
+git clone https://github.com/nraford7/keynote-create.git ~/.agents/skills/keynote-create
+cd ~/.agents/skills/keynote-create
+node scripts/narrative-sync.mjs --check
 ```
 
-Keynote decks add per-slide `![](img)` / `> Image:`, `> Art:`, and `> Layout:` lines; a missing image renders a labelled placeholder carrying the art direction, so an image-less draft still exports.
+Install the **whole folder**, including `scripts`, `references`, `packs` and `vendor`. Copying only `SKILL.md` is not enough. The integrity check confirms that the bundled Narrative Engine files match the recorded version; it does not run the writing process.
 
-## Publishing a deck to the web
+### Enable visual checks
 
-Stages 1–5 produce the talk artifact; **Stage 6** (see `SKILL.md`) publishes a **human-curated public copy** to a registered website target. Stage 6 is mechanical only — what to trim for the public version is human judgment done *before* Stage 6, and the push gate is an explicit human yes, every time. Three scripts carry it:
+From the installed skill directory:
 
 ```sh
-# 1. externalize images: base64 → asset files, content-deduped, resized to
-#    their measured rendered boxes, lazy-loaded
-node scripts/web-optimize.mjs <deck.html> [--out <dir>]
-
-# 2. inject meta/OG/Twitter + canonical URL, the reading-mode hint, and
-#    mobile present controls (idempotent — safe to re-run)
-node scripts/web-inject.mjs <deck.html> --url <canonical-url> [--description <text>]
-
-# 3. assert: slide-relative geometry, images, hint, present flow, mobile
-#    touch flows, throttled first paint — local file or live URL
-node scripts/keynote-verify.mjs <deck.html | URL> [--mobile] [--throttle]
+npm install --no-save playwright
+npx playwright install chromium
 ```
 
-`keynote-verify` doubles as the Stage 4 QA discipline (its navigation subset runs after every slide change) and re-runs against the **live URL** after deploy — exit 0 before a publish is called done. SKIPPED lines are expected for decks without a show-mode handler; only a FAIL fails a run.
+Playwright is used for slide screenshots, layout checks and browser testing. The basic renderer can produce HTML/PDF without it, but the full visual-check workflow needs it. For web publishing's image optimization, also install **ImageMagick 7**, which provides the `magick` command.
 
-**Publish targets are user-local, never in this repo.** The registry lives at `~/.claude/keynote-publish-targets.json` — same pattern as the house-style registry (`~/.claude/keynote-house-style.json`): each target is a concrete profile (repo, deck path, hub page, build, deploy), resolved as explicit `--target` > registry default > onboarding flow > **hard error, never a silent guess**. Schema and onboarding: [`references/publish-targets.md`](references/publish-targets.md).
+The bundled neutral style fetches Google Fonts over the network. A style pack with local font files supports rendering without those downloads. Creating new images requires an available image tool; otherwise the skill can prepare image briefs and render clearly labeled placeholders.
 
-**Talk kit (opt-in, Stage 3.6).** When a deck fronts a live talk, the skill can also produce a talk kit next to the deck: speaker notes — per-slide spoken prose written for ~120 wpm delivery, with cumulative timings and a source-cautions block kept strictly separate from the spoken copy — plus a one-page worksheet, only when the deck contains activity slides.
+### Updating an existing installation
 
-## Requirements
-
-- Node.js (no mandatory npm dependencies — playwright is an optional peer, see `package.json`).
-- Google Chrome at `/Applications/Google Chrome.app` for PDF export.
-- Network on first render to fetch + cache the two Google Fonts (cached in `~/.claude/cache/fonts/`).
-- For the publish scripts: a Playwright install, resolved via the `PLAYWRIGHT_MODULE` env var (point it at an existing `node_modules/playwright/index.mjs`) or a plain `npm i playwright`; plus ImageMagick 7 (`magick`) for `web-optimize`'s resizing.
-
-## Validation and upstream updates
+If you installed by cloning the repository, enter that directory and run:
 
 ```sh
-npm test                         # offline handoff, sync integrity and web injection tests
-npm run test:render               # full legacy renderer suite; font downloads on first run
-npm run test:browser              # Playwright + ImageMagick publish suites
-node scripts/narrative-sync.mjs --check --source /path/to/Narrative-Engine
-# Explicit update after reviewing a newer upstream commit:
-node scripts/narrative-sync.mjs --update --source /path/to/Narrative-Engine --revision <commit>
+git status --short
+git pull --ff-only
+node scripts/narrative-sync.mjs --check
 ```
 
-Tests validate scripts and renderer contracts; they do not certify LLM judgments. The narrative gates are agent procedures. The sync checker verifies the pinned bytes, not upstream freshness. Hidden presenter notes remain in HTML source; remove private content from a public copy before publishing.
+Preserve any local changes before updating. If your skill folder is a copied directory or a symlink, update its source checkout and synchronize the complete folder instead. Keep personal style packs and publishing settings outside the repository; the [technical guide](docs/technical-guide.md) explains their locations.
+
+## Use it
+
+Once installed, ask your agent to use `keynote-create` and provide the source text or file. For example:
+
+> Use keynote-create to turn these research notes into a Boardroom deck for the investment committee. The decision is whether to fund the next pilot. Use Fast mode, keep it within eight slides, and preserve uncertainty in the evidence.
+
+> Use keynote-create to turn this essay into a ten-minute Keynote talk for a general audience. Use connected headline fragments so the full argument reads without the speaker. Make image briefs and include delivery notes.
+
+> Use keynote-create to tighten this existing deck. Keep the main point, remove repetition and check that the headlines still tell the whole argument.
+
+For a visual style, ask for the bundled neutral style, a saved house style, or provide a reference deck, screenshots or a style description. A saved default is reused unless you ask for another style.
+
+## Try the renderer directly
+
+From the installed skill directory:
+
+```sh
+node scripts/keynote-render.mjs docs/fixtures/sample-ne.md \
+  --mode boardroom --no-cover --style packs/neutral --out ./demo-output
+```
+
+This creates `demo-output/sample-ne.html` and `demo-output/sample-ne.pdf`. Change `--mode boardroom` to `--mode keynote` to see the other visual treatment. The example has no image files, so Keynote shows placeholders. Add `--no-pdf` if you only want HTML.
+
+`--no-cover` keeps the example's exact slide count; it already specifies every slide. The renderer only converts an existing deck. It does not generate the argument or run the narrative reviews by itself.
+
+## Optional talk kits and publishing
+
+A **talk kit** expands delivery notes into a timed script, keeping preparation-only source cautions separate from spoken copy. An activity deck can also produce a worksheet.
+
+**Publishing** starts from a separate, human-curated public copy. The workflow optimizes its images, adds page metadata, checks it in a browser and publishes to a configured website target after your approval. Hidden speaker notes are still present in HTML source: remove private notes from the public copy before publishing.
+
+## Further reading
+
+- [Technical guide](docs/technical-guide.md): scripts, style packs, dependencies, publishing and maintenance.
+- [Narrative Engine integration](references/narrative-engine-integration.md): ownership, headline rule, review handoff and repair process.
+- [Title craft](references/title-craft.md): connected headlines, failure modes and examples.
+- [Audit and recommendations](docs/narrative-engine-audit.md): what changed and what could improve next.
+- [Validation record](docs/narrative-engine-validation.md): automated checks and their limits.
+
+The bundled Narrative Engine version and file hashes are recorded in its [manifest](vendor/narrative-engine/manifest.json). Updates are explicit; the skill does not silently change its narrative process during a deck build.
