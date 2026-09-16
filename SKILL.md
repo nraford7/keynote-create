@@ -5,7 +5,7 @@ description: "Use when turning source material into a presentation, keynote, pit
 
 # Keynote Create
 
-Turn source material into a source-supported argument, then into an HTML deck and PDF. Markdown is the structural deliverable. **Boardroom** uses complete action-title sentences; **Keynote** uses image-led fragments with written narration. Register determines presentation, not the argument's shape.
+Turn source material into a source-supported argument, then into an HTML deck and PDF. Markdown is the structural deliverable. **Boardroom** favors complete action-title sentences; **Keynote** uses image-led fragments with written narration. **In both modes, the headline sequence alone must communicate the complete argument.** Each headline advances or connects to the next; Keynote may use connected fragments. Images, bodies and narration add evidence or depth, never missing reasoning. Register determines presentation, not narrative rigor.
 
 ## Workflow
 
@@ -29,7 +29,7 @@ Create a unique `RUN_DIR` and write the source and compiled brief. Dispatch the 
 
 Run NE's gates and shared repair loop:
 1. **Shape support** before drafting (Stage 2).
-2. **Blind focal fidelity** after drafting: a fresh judge reads the body, records its cold read, reads the source, then the brief. Dispatch audience/ask/register only, never the focal, sidecar or inherited conversation. Keynote judges read actual written narration, not an imagined line.
+2. **Blind focal fidelity** after drafting: a fresh judge reads the body, records its cold read, reads the source, then the brief. Dispatch audience/ask/register only, never the focal, sidecar or inherited conversation. In both modes the judge first reads and records the complete headline sequence alone, before bodies or narration. A broken argument chain requires revision even when narration explains it. Then check actual written narration for consistency and evidence. Pass the content-neutral headline override from the integration reference in every judge dispatch.
 3. **Humanizing check**, flag-only by the orchestrator; the builder makes repairs.
 4. **Evidence review** with source and sidecar: unsupported claims, stripped qualifications, missing reasoning, overreaching asks and provenance mistakes. Never remove evidentiary “may”, “estimated”, “preliminary” or “correlational” to make a title punchier.
 
@@ -213,10 +213,10 @@ In **ELI5** mode, the title-craft rule "specific over abstract" is satisfied by 
 
 ## Title craft
 
-**The sentence and continuous-prose rules below apply to Boardroom.** Keynote uses fragments plus explicit narration; only a designated chained-caption run receives the strict titles-only test. Both registers preserve evidence qualifications and undergo the independent gates.
+**The full-deck headline-chain rule applies to both modes.** Boardroom normally uses complete sentences; Keynote may use connected fragments or clauses. Read in order, headlines alone must communicate the entire argument, including its qualifications and ask. Written narration adds depth, not missing logic.
 
 - **Spoken prose, not a list.** The whole sequence read aloud must sound like spoken delivery, not a glossary. Each title carries its setup with it or resolves the previous title's open thread. *(This is the primary rule. The titles-only test below enforces it.)*
-- **Sentences, not labels.** "Adoption stalled in Q3" — never "Adoption" or "Q3 Numbers."
+- **Argument beats, not labels.** Boardroom favors sentences; Keynote permits connected fragments. "Adoption stalled in Q3" advances a claim; "Adoption" alone does not.
 - **Length.** 4–10 words default; stretch to 15 when chaining demands it (see "Title length" below).
 - **One beat per slide.** A title doing two beats becomes two slides.
 - **Active voice.** "We missed the signal" beats "The signal was missed."
@@ -230,7 +230,7 @@ See [`references/title-craft.md`](references/title-craft.md) for failure modes (
 
 ## The titles-only test (the structural check)
 
-**Boardroom:** apply this test to the full title chain. **Keynote:** apply the beat + written narration test instead; use this strict test only for a designated chained-caption run. These self-checks supplement, never replace, the blind focal judge.
+**Apply this test to the entire deck in both modes, before reading bodies, images or narration.** Keynote fragments need not be individually complete sentences, but must connect into an intelligible argument. Do not invent connective language while reading. These self-checks supplement, never replace, the blind focal judge.
 
 Before producing final output, write every title — *literally, every one, in order* — as a single concatenated paragraph. Then:
 

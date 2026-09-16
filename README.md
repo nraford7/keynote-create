@@ -11,7 +11,7 @@ A Claude Code skill that turns raw source material — research notes, a brain-d
 
 **Register and narrative shape are independent.** The bundled [Narrative Engine integration](references/narrative-engine-integration.md) defaults to an answer-first argument in both modes. Reveals require genuine surprise; named arcs require source-supported beats. Its minimal builder feeds four gates: shape support, blind focal fidelity, humanizing checks, and independent evidence review. Keynote Create then handles art direction, styles, rendering and publication.
 
-The snapshot is pinned to NE commit `f682a293f488bbec7d9e04a62db3d39c22d67a49` (2026-09-16). It runs without another installed NE skill. Fast mode consolidates discovery into one brief; written narration makes Keynote fragment chains reviewable. See [the audit](docs/narrative-engine-audit.md) for the comparison, conflicts, validation and remaining improvements.
+The snapshot is pinned to NE commit `f682a293f488bbec7d9e04a62db3d39c22d67a49` (2026-09-16). It runs without another installed NE skill. Fast mode consolidates discovery into one brief; **both modes must carry the complete argument in their headline sequence alone**, using sentences or connected fragments. Written narration adds depth and remains separately reviewable. See [the audit](docs/narrative-engine-audit.md) for the comparison, conflicts, validation and remaining improvements.
 
 Markdown is the structural deliverable; HTML + PDF are the presentation deliverables. The skill does **not** generate `.pptx`.
 

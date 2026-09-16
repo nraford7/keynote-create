@@ -13,3 +13,7 @@
 | Whitespace check of committed changes | First-party changes pass. The pinned upstream snapshot retains two upstream whitespace warnings (SKILL EOF blank line and communication-frameworks trailing spaces); they are preserved rather than silently altering the snapshot. |
 
 No website was deployed, installed skill copy replaced, or upstream main branch changed by this validation.
+
+## Headline-discipline refinement
+
+A fresh reviewer checked the new shared rule against two sequences. Connected fragments (twenty satisfied volunteers → no proof of productivity → measure before expanding) can pass; isolated labels (the pilot → the gap → what next) fail even with a complete narration script. Confirmed the rule is sent directly to the blind judge before its brief read. Removed the residual climax-only exception in the device reference. Renderer code and the pinned NE snapshot were unchanged; snapshot integrity and first-party whitespace checks pass.
