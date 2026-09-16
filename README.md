@@ -6,10 +6,12 @@ A Claude Code skill that turns raw source material — research notes, a brain-d
 
 ## Two modes
 
-- **Keynote** — image-led. ~80% full-bleed photography with a hard-edged caption box (top-left) plus a one-line subcaption; titles are fragments, one-word beats, questions, or coined terms. For talks, pitches, TED-style. Hands each slide to the `art-direct` skill for image briefs. Derived from a slide-by-slide study of real image-led keynote decks.
+- **Keynote** — image-led. ~80% full-bleed photography with a hard-edged caption box (top-left) plus a one-line subcaption; titles are fragments, one-word beats, questions, or coined terms. For talks, pitches, TED-style. Uses an available art-direction skill or creates image briefs directly. Derived from a slide-by-slide study of real image-led keynote decks.
 - **Boardroom** — text-led. Every title a complete Minto/McKinsey action-title sentence, rendered in the default house style (a serif + grotesk pairing, a restrained accent). The skill's original behaviour.
 
-**Mode and spine are independent.** The *spine* (narrative structure) is picked separately from a menu of seven: Minto/pyramid plus six keynote-native shapes (emotional arc, reveal/misdirection, framework-build, forecast-cascade, teaching/method, scenario-parallel). Minto is the Boardroom default and stays on the menu in either mode.
+**Register and narrative shape are independent.** The bundled [Narrative Engine integration](references/narrative-engine-integration.md) defaults to an answer-first argument in both modes. Reveals require genuine surprise; named arcs require source-supported beats. Its minimal builder feeds four gates: shape support, blind focal fidelity, humanizing checks, and independent evidence review. Keynote Create then handles art direction, styles, rendering and publication.
+
+The snapshot is pinned to NE commit `f682a293f488bbec7d9e04a62db3d39c22d67a49` (2026-09-16). It runs without another installed NE skill. Fast mode consolidates discovery into one brief; written narration makes Keynote fragment chains reviewable. See [the audit](docs/narrative-engine-audit.md) for the comparison, conflicts, validation and remaining improvements.
 
 Markdown is the structural deliverable; HTML + PDF are the presentation deliverables. The skill does **not** generate `.pptx`.
 
@@ -17,6 +19,9 @@ Markdown is the structural deliverable; HTML + PDF are the presentation delivera
 
 | Path | Purpose |
 |---|---|
+| `vendor/narrative-engine/` | Pinned NE runtime references and prompts, with source hashes and portable path adaptations. |
+| `references/narrative-engine-integration.md` | Ownership, compiled deck contract, agent isolation, repair and rendering handoff. |
+| `scripts/narrative-sync.mjs` | Offline bundle integrity check and explicit updates from an upstream checkout. |
 | `SKILL.md` | The skill definition (frontmatter + workflow). |
 | `references/title-craft.md` | Title-craft rules, failure modes, and the Keynote fragment register. |
 | `references/keynote-devices.md` | The 16-device Keynote palette (affordance triggers + anti-pastiche rules) and the six spines. |
@@ -35,25 +40,15 @@ Markdown is the structural deliverable; HTML + PDF are the presentation delivera
 
 ## Deployment
 
-This repo is the **canonical source**. The live skill runs from copies under `~/.claude`:
+This repo is the **canonical source**. Clone it to your runtime's skill directory, or copy the **whole** checkout (excluding `.git`) there. Keep `scripts/`, `references/`, `packs/`, and `vendor/` beside `SKILL.md`; copying only the skill file no longer installs a working skill. Run commands from that root. Local style and publishing registries remain outside the repo.
 
 ```sh
-# skill files (SKILL.md, references, and the bundled packs)
-cp SKILL.md KEYNOTE-MODE-SPEC.md ~/.claude/skills/keynote-create/
-cp references/*.md               ~/.claude/skills/keynote-create/references/
-cp -R packs                      ~/.claude/skills/keynote-create/     # bundled neutral pack — required for default resolution
-# render scripts — legacy layout: SKILL.md used to reference ~/.claude/scripts
-# hardcoded paths. The current SKILL.md runs the scripts from this repo's
-# scripts/ dir (clone the repo and run from the skill root); keep the copies
-# below only if you still run an older deployed SKILL.md.
-# keynote-render.mjs imports house-style.mjs — copy BOTH or it fails with ERR_MODULE_NOT_FOUND.
-cp scripts/keynote-render.mjs scripts/house-style.mjs ~/.claude/scripts/
+git clone https://github.com/nraford7/keynote-create.git ~/.claude/skills/keynote-create
+# For Codex, use ~/.agents/skills/keynote-create instead.
+node ~/.claude/skills/keynote-create/scripts/narrative-sync.mjs --check
 ```
 
-The renderer finds the bundled neutral pack via `$KEYNOTE_PACKS_DIR`, then
-`~/.claude/skills/keynote-create/packs/neutral`, then a `packs/neutral` dir
-walking up from the script — so the split between `~/.claude/scripts` and the
-skill dir resolves. Edit here, then sync out — never edit the deployment copies in place.
+Update the canonical checkout first, review changes, then update any deployment copy. The bundled NE process never invokes another installed NE or recursively re-enters Keynote Create discovery.
 
 ## Security & threat model
 
@@ -78,6 +73,8 @@ apply the same private-host refusal (see SKILL.md → Producers → from-url).
 ```sh
 node scripts/keynote-render.mjs <deck.md>        # markdown → HTML + PDF
 node scripts/keynote-render.mjs <deck.html>      # re-export PDF from edited HTML
+# NE body-only output; register is supplied separately and all planned slides already exist:
+node scripts/keynote-render.mjs <ne-output.md> --mode keynote --no-cover
 ```
 
 Keynote decks add per-slide `![](img)` / `> Image:`, `> Art:`, and `> Layout:` lines; a missing image renders a labelled placeholder carrying the art direction, so an image-less draft still exports.
@@ -112,3 +109,16 @@ node scripts/keynote-verify.mjs <deck.html | URL> [--mobile] [--throttle]
 - Google Chrome at `/Applications/Google Chrome.app` for PDF export.
 - Network on first render to fetch + cache the two Google Fonts (cached in `~/.claude/cache/fonts/`).
 - For the publish scripts: a Playwright install, resolved via the `PLAYWRIGHT_MODULE` env var (point it at an existing `node_modules/playwright/index.mjs`) or a plain `npm i playwright`; plus ImageMagick 7 (`magick`) for `web-optimize`'s resizing.
+
+## Validation and upstream updates
+
+```sh
+npm test                         # offline handoff, sync integrity and web injection tests
+npm run test:render               # full legacy renderer suite; font downloads on first run
+npm run test:browser              # Playwright + ImageMagick publish suites
+node scripts/narrative-sync.mjs --check --source /path/to/Narrative-Engine
+# Explicit update after reviewing a newer upstream commit:
+node scripts/narrative-sync.mjs --update --source /path/to/Narrative-Engine --revision <commit>
+```
+
+Tests validate scripts and renderer contracts; they do not certify LLM judgments. The narrative gates are agent procedures. The sync checker verifies the pinned bytes, not upstream freshness. Hidden presenter notes remain in HTML source; remove private content from a public copy before publishing.
