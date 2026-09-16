@@ -20,7 +20,7 @@ A label asks the audience to figure out what matters. A sentence tells them.
 4–10 words. Past 12 and the eye starts skipping. The audience reads the title in the time you take to advance the slide; budget your words accordingly.
 
 ### 3. One beat per slide
-A slide is a unit of story. One title = one move in the argument. If you find yourself wanting to write two sentences, split into two slides.
+A slide is a unit of story. One title = one move in the argument. If a headline carries two distinct argument beats, split them into two slides. Two short sentences may express one beat, as in “Measure first. Then expand.”
 
 ### 4. Active voice
 - Weak: "Adoption was hindered by onboarding friction."
