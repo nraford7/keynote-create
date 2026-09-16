@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "repository": "https://github.com/nraford7/Narrative-Engine",
+  "revision": "f682a293f488bbec7d9e04a62db3d39c22d67a49",
+  "adaptations": [
+    [
+      "/Users/noahraford/.claude/skills/Narrative-Engine/",
+      "NE_ROOT/"
+    ],
+    [
+      "~/.claude/skills/keynote-create/references/keynote-devices.md",
+      "../../references/keynote-devices.md"
+    ]
+  ],
+  "files": {
+    "SKILL.md": {
+      "upstreamSha256": "b89478a80aca58bdd3351a9dde954a107a1ec25e570a74523c6eab8106550045",
+      "bundledSha256": "b89478a80aca58bdd3351a9dde954a107a1ec25e570a74523c6eab8106550045"
+    },
+    "agent-reference-persuasion.md": {
+      "upstreamSha256": "2f502e5ab1f7b8bd14c243de31ff90294daa669d595d7b88d88df17d4a234d77",
+      "bundledSha256": "2f502e5ab1f7b8bd14c243de31ff90294daa669d595d7b88d88df17d4a234d77"
+    },
+    "agent-reference-verification.md": {
+      "upstreamSha256": "a15b241b2c72e85b0598e6dca8f0221ca18a52435a2b57fa56f2daee32da8296",
+      "bundledSha256": "a15b241b2c72e85b0598e6dca8f0221ca18a52435a2b57fa56f2daee32da8296"
+    },
+    "agent-reference-visual.md": {
+      "upstreamSha256": "a348e89cc5deee45993babe36314bcbd319d85d5cca0d13e47275d4431505859",
+      "bundledSha256": "a348e89cc5deee45993babe36314bcbd319d85d5cca0d13e47275d4431505859"
+    },
+    "attention-loop.md": {
+      "upstreamSha256": "e361c58d64ac578c31052765680630c274f92d17975344c933a9cfc882f65a9a",
+      "bundledSha256": "e361c58d64ac578c31052765680630c274f92d17975344c933a9cfc882f65a9a"
+    },
+    "audience-profiles.md": {
+      "upstreamSha256": "a900dba4b4841d43bcd418e8ec72761aa677de9e5c2789170072454254e24ecd",
+      "bundledSha256": "a900dba4b4841d43bcd418e8ec72761aa677de9e5c2789170072454254e24ecd"
+    },
+    "checklists.md": {
+      "upstreamSha256": "c0958c10b3153690e8654d8b7b237ec2a4944357217aa92c0932f9756da030d4",
+      "bundledSha256": "c0958c10b3153690e8654d8b7b237ec2a4944357217aa92c0932f9756da030d4"
+    },
+    "communication-frameworks.md": {
+      "upstreamSha256": "f9a9d8615a9a5b411c6dc2cd45bf9ce82bd3230bc6ff1b9955066a1a7d1652e5",
+      "bundledSha256": "f9a9d8615a9a5b411c6dc2cd45bf9ce82bd3230bc6ff1b9955066a1a7d1652e5"
+    },
+    "deck-title-craft.md": {
+      "upstreamSha256": "420eb3f2fd11c799470b056181fd5fb79b37b8f4bfb838f8cb35ada133f92194",
+      "bundledSha256": "2163b5a2699ae5d6b51fdb5548b17efab115398643a682b3ef0c9b20cae16cc7"
+    },
+    "emotional-arcs.md": {
+      "upstreamSha256": "5f25557bc0c52d29a279e6efc9ce65fc777c81228f601c02436301684e267c9c",
+      "bundledSha256": "5f25557bc0c52d29a279e6efc9ce65fc777c81228f601c02436301684e267c9c"
+    },
+    "framework-selection.md": {
+      "upstreamSha256": "18299c42fd1073a4b3817642f9e4b081e7bf5eb4501ae987a5bc0eb96a6c29cc",
+      "bundledSha256": "18299c42fd1073a4b3817642f9e4b081e7bf5eb4501ae987a5bc0eb96a6c29cc"
+    },
+    "humanizing-pass.md": {
+      "upstreamSha256": "41da4d231f89da013a07b495f0f6187ea18d0ddac78e4f9a47fdfd30950334e6",
+      "bundledSha256": "41da4d231f89da013a07b495f0f6187ea18d0ddac78e4f9a47fdfd30950334e6"
+    },
+    "narrative-arcs.md": {
+      "upstreamSha256": "09ab31ce5e59ca530abc142239077eea80130fa609eaa4214a6d27a71248851f",
+      "bundledSha256": "09ab31ce5e59ca530abc142239077eea80130fa609eaa4214a6d27a71248851f"
+    },
+    "opening-closing-strategies.md": {
+      "upstreamSha256": "f295f62ccc5587d76eac4a8e9c2b1d45c102b2a5e5491f942892e29fcd948459",
+      "bundledSha256": "f295f62ccc5587d76eac4a8e9c2b1d45c102b2a5e5491f942892e29fcd948459"
+    },
+    "prompts/builder.md": {
+      "upstreamSha256": "e8b013bc10b52ff619e21136ccad9846113599619ac19edb1ed20d9005a14d75",
+      "bundledSha256": "8191af896d2f0babe58d88b228dc2710f910f8cec96960fae6909e120adaa8bb"
+    },
+    "prompts/evidence-reviewer.md": {
+      "upstreamSha256": "5886936b74b908021f7da85e3e81f143e22ea57823157792bf4410b55c219028",
+      "bundledSha256": "5886936b74b908021f7da85e3e81f143e22ea57823157792bf4410b55c219028"
+    },
+    "prompts/focal-fidelity-judge.md": {
+      "upstreamSha256": "68d1e035247e848d858203fe6e10ead2716781dd2eced22c82078deef2a4423b",
+      "bundledSha256": "c0e24a7fe1b7bac0002c6a6cb40158669bceb839fc1bdc11834f3167f6836b89"
+    },
+    "prompts/reviewer.md": {
+      "upstreamSha256": "f9a8f6e6ab004413952eabda32fc4fc88fa319d11cfa8cda3c45942cd5be708d",
+      "bundledSha256": "d3c86ecc66f2ebbed25a242ac08b21b31bee4e1c3b283d68cef4f80e9c07c0e2"
+    },
+    "prompts/stress-tester.md": {
+      "upstreamSha256": "4ef25a19736a29974cf2834790c82ba156da99bca26698748c24dbd4c9d330d4",
+      "bundledSha256": "4ef25a19736a29974cf2834790c82ba156da99bca26698748c24dbd4c9d330d4"
+    },
+    "prose-craft-constructions.md": {
+      "upstreamSha256": "0468a2cf734cb1809a104a4411f7e060632977da155251192c7bb6fa337b6966",
+      "bundledSha256": "0468a2cf734cb1809a104a4411f7e060632977da155251192c7bb6fa337b6966"
+    },
+    "prose-craft.md": {
+      "upstreamSha256": "e109dbdcd317e7e530f533365d7fb23efbcbed5f1fa7c65875594fa4de8759da",
+      "bundledSha256": "e109dbdcd317e7e530f533365d7fb23efbcbed5f1fa7c65875594fa4de8759da"
+    },
+    "rhetorical-figures.md": {
+      "upstreamSha256": "9dddb9e85dca133371ae7b76735a653e0229c36aa07c054173737ea0f8ea2bc6",
+      "bundledSha256": "9dddb9e85dca133371ae7b76735a653e0229c36aa07c054173737ea0f8ea2bc6"
+    },
+    "voice-profiles.md": {
+      "upstreamSha256": "7db8293181f4095e9d5add09e1572669a3ff77418e0c213867d660da008f354e",
+      "bundledSha256": "7db8293181f4095e9d5add09e1572669a3ff77418e0c213867d660da008f354e"
+    }
+  }
+}

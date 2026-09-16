@@ -6,7 +6,7 @@
 //
 // Usage:
 //   Full pipeline (markdown → HTML → PDF):
-//     keynote-render.mjs <input.md> [--out <dir>] [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>] [--no-pdf]
+//     keynote-render.mjs <input.md> [--out <dir>] [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>] [--no-pdf] [--mode boardroom|keynote] [--no-cover]
 //
 //   Re-export only (existing HTML → PDF, used after Stage 4b layout promotion):
 //     keynote-render.mjs <input.html>
@@ -85,7 +85,7 @@ function isBlockedHost(hostname) {
 // ── args ──
 const args = process.argv.slice(2);
 if (!args.length || args[0] === '--help' || args[0] === '-h') {
-  console.log('Usage: keynote-render.mjs <input.md> [--out <dir>] [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>] [--no-pdf]');
+  console.log('Usage: keynote-render.mjs <input.md> [--out <dir>] [--style <pack-dir|name>] [--brand <name>] [--sublabel <text>] [--no-pdf] [--mode boardroom|keynote] [--no-cover]');
   process.exit(args[0] === '--help' || args[0] === '-h' ? 0 : 1);
 }
 const input = path.resolve(args[0]);
@@ -96,6 +96,8 @@ let styleFlag = null;          // null → bundled neutral pack
 let cliBrand = null;           // overrides pack.json brand when set
 let cliSublabel = null;        // overrides pack.json sublabel when set
 let makePdf = true;
+let cliMode = null;
+let includeCover = true;
 const needVal = (a, v) => {
   if (v === undefined || (typeof v === 'string' && v.startsWith('--'))) {
     console.error(`[args] ${a} requires a value`); process.exit(1);
@@ -109,7 +111,13 @@ for (let i = 1; i < args.length; i++) {
   else if (a === '--brand')    cliBrand = needVal(a, args[++i]);
   else if (a === '--sublabel') cliSublabel = needVal(a, args[++i]);
   else if (a === '--no-pdf')   makePdf = false;
+  else if (a === '--mode') cliMode = needVal(a, args[++i]).toLowerCase();
+  else if (a === '--no-cover') includeCover = false;
   else { console.error(`[args] unknown argument: ${a}`); process.exit(1); }
+}
+
+if (cliMode != null && !['boardroom', 'keynote'].includes(cliMode)) {
+  console.error('[args] --mode must be boardroom or keynote'); process.exit(1);
 }
 
 // brand/sublabel are resolved from the pack after loadPack (CLI overrides win).
@@ -317,7 +325,7 @@ if (cliBrand == null) brand = pack.brand;
 if (cliSublabel == null) sublabel = pack.sublabel;
 
 // ── parse markdown ──
-const raw = fs.readFileSync(input, 'utf8');
+const raw = fs.readFileSync(input, 'utf8').replace(/\r\n/g, '\n');
 
 function parseFrontmatter(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -331,6 +339,12 @@ function parseFrontmatter(text) {
 }
 
 const { meta, body } = parseFrontmatter(raw);
+if (cliMode != null) meta.mode = cliMode;
+if (meta.mode && !['boardroom', 'keynote'].includes(meta.mode.toLowerCase())) {
+  console.error('[input] mode must be boardroom or keynote'); process.exit(1);
+}
+// Body-only NE output has no YAML; keep its audience-facing deck title.
+if (!meta.title) meta.title = body.match(/^#\s+(.+)$/m)?.[1] || baseName;
 // deck frontmatter `sublabel` names the client / project / talk in the footer slot;
 // precedence: --sublabel CLI > deck frontmatter > pack.json
 if (cliSublabel == null && typeof meta.sublabel === 'string' && meta.sublabel.trim()) sublabel = meta.sublabel.trim();
@@ -373,6 +387,16 @@ function parseSlide(chunk) {
   for (; i < lines.length; i++) {
     const l = lines[i].trim();
     if (!l) continue;
+    // Narrative Engine's labeled fields; metadata sidecars are never renderer inputs.
+    const field = l.match(/^\*\*(Headline|Spotlight(?:\s*\([^)]*\))?|Design note|Narration|Speaker note):\*\*\s*(.*)$/i);
+    if (field) {
+      const key = field[1].toLowerCase(), value = field[2].trim();
+      if (key === 'headline') title = value;
+      else if (key.startsWith('spotlight')) { if (value) bullets.push(value); }
+      else if (key === 'design note') art = value;
+      else speakerNote = [speakerNote, value].filter(Boolean).join(' ');
+      continue;
+    }
     // keynote directives — matched before the generic "> " catch-all
     const imgMd = l.match(/^!\[[^\]]*\]\(([^)]+)\)/);
     if (imgMd) { image = imgMd[1].trim(); continue; }
@@ -386,8 +410,12 @@ function parseSlide(chunk) {
     } else if (l.startsWith('> ')) {
       // generic blockquote — treat as additional speaker note line
       speakerNote = (speakerNote ? speakerNote + ' ' : '') + l.replace(/^>\s*/, '');
+    } else {
+      // Preserve ordinary supporting prose instead of silently dropping it.
+      bullets.push(l);
     }
   }
+  title = title.replace(/^Slide\s+\d+\s*[—–:]\s*/i, '');
   return { title, bullets, speakerNote, image, art, layout };
 }
 
@@ -395,6 +423,7 @@ function parseSlide(chunk) {
 // carry an image, art direction, or an explicit layout (e.g. wordless beats).
 const slides = slideChunks.map(parseSlide)
   .filter(s => s.title || s.image || s.art || s.layout);
+if (!slides.length) { console.error('[input] no slides found'); process.exit(1); }
 
 // ── font fetching + base64 (pack-driven) ──
 // A pack's fonts.json declares families with one of three sources:
@@ -730,6 +759,7 @@ function renderClosing(slide, pageno, punchline) {
     <p class="h-accent" style="max-width:1400px;">${esc(slide.title || punchline || '')}</p>
     ${slide.bullets.length ? `<p class="body" style="margin-top:24px;color:var(--dk-muted);max-width:1100px;">${esc(slide.bullets.join(' · '))}</p>` : ''}
   </div>
+  ${slide.speakerNote ? `<div class="speaker-note">${esc(slide.speakerNote)}</div>` : ''}
   <div class="footer"><span class="brand">${esc(brand)}<span class="sub">${esc(sublabel)}</span></span><span class="pageno">${String(pageno).padStart(2,'0')}</span></div>
 </div></div>`;
 }
@@ -943,7 +973,7 @@ function pickKnLayout(slide) {
   if (!t) return 'wordless';
   const words = t.split(/\s+/).length;
   // giant number: short title carrying a prominent numeral
-  if (words <= 3 && /\d/.test(t) && /[\$€£]?\d[\d,\.]*\s*(%|bn|billion|million|m|k)?\b/i.test(t)) return 'number';
+  if (slide.bullets.length === 0 && words <= 3 && /\d/.test(t) && /[\$€£]?\d[\d,\.]*\s*(%|bn|billion|million|m|k)?\b/i.test(t)) return 'number';
   if (words <= 2 && slide.bullets.length === 0) return 'oneword';
   // a light image drowns the default white caption box — flip to the dark box
   if (/\b(light|bright|white|pale|overexposed|snow|fog|daylit|sunlit)\b/i.test(slide.art || '')) return 'caption-dark';
@@ -993,13 +1023,13 @@ function buildHtml(meta, slides, fontCss) {
   let html = '';
   if (keynote) {
     // Keynote mode: image-led family. Cover from frontmatter, then one keynote slide each.
-    html += renderKnCover(meta, 1);
-    slides.forEach((s, i) => { html += renderKnSlide(s, i + 2); });
+    if (includeCover) html += renderKnCover(meta, 1);
+    slides.forEach((s, i) => { html += renderKnSlide(s, i + (includeCover ? 2 : 1)); });
   } else {
     // Boardroom mode: text layouts from the active pack.
-    html += renderCover(meta, 1);
+    if (includeCover) html += renderCover(meta, 1);
     slides.forEach((s, i) => {
-      const pageno = i + 2;
+      const pageno = i + (includeCover ? 2 : 1);
       const layout = pickLayout(s, i, slides.length, punchline);
       if (layout === 'closing') html += renderClosing(s, pageno, punchline);
       else if (layout === 'verdict') html += renderVerdict(s, pageno);
@@ -1137,13 +1167,13 @@ function exportPdf(htmlPath, pdfPath) {
   }
   const html = buildHtml(meta, slides, fontCss);
   fs.writeFileSync(htmlOut, html, 'utf8');
-  console.log(`[html] ${htmlOut}  (${slides.length + 1} slides, ${(fs.statSync(htmlOut).size/1024).toFixed(0)}KB)`);
+  console.log(`[html] ${htmlOut}  (${slides.length + Number(includeCover)} slides, ${(fs.statSync(htmlOut).size/1024).toFixed(0)}KB)`);
   if (makePdf) {
     const ok = exportPdf(htmlOut, pdfOut);
     if (ok) {
       const sz = fs.statSync(pdfOut).size;
       const kb = (sz/1024).toFixed(0);
-      const slideCount = slides.length + 1;
+      const slideCount = slides.length + Number(includeCover);
       console.log(`[pdf]  ${pdfOut}  (${kb}KB, ${slideCount} pages)`);
       // Chrome subsets fonts during PDF generation, so deck PDFs are smaller than
       // their A4-memo cousins. ~30KB/slide is a reasonable floor for a properly

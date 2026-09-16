@@ -1,5 +1,7 @@
 # Keynote Devices — Palette & Spines
 
+> **Keynote Create integration rule:** the entire headline sequence must carry the argument without narration in both modes. Device examples below are a palette, not permission to substitute isolated labels or dramatic beats for missing logic. Chained-caption climax runs are optional; the full-deck headline test always applies.
+
 Primary reference for **Keynote mode**. Everything here was extracted slide-by-slide from a corpus of real image-led keynote decks (Oxford Future of Cities; UNDP Asia Climate, Istanbul, two Bangkok talks; Etihad/Dubai Culture Museum; Singapore Cultural Institute; UoD TedX; Abu Dhabi School of Government). The techniques are **content-agnostic** — they depend on properties of the *argument*, not the subject matter, so they transfer to a SaaS pitch, a research readout, or a personal talk.
 
 ## Four framing rules (read before using the palette)
@@ -33,7 +35,7 @@ Each entry: **what** it is · *affords when* · a verbatim corpus example.
 
 9. **Recurring visual motif / diagram** — a single spine object reused as a build across the deck. · *Affords when:* the argument has a repeatable structure or a returning frame. · The pyramid filled tier by tier (Singapore); the 2×2 matrix re-shown to locate each scenario (Oxford); the "Outline" divider lit in red for the active act (Istanbul).
 
-10. **Chained-caption climax** — captions that grammatically complete across consecutive slides ("…which will lead to… / …but at a cost…"), so clicking through *is* reading a sentence aloud. **This is the one place the strict spoken-prose / titles-only test applies** — reserve it for a climax run, not the whole deck. · *Affords when:* a causal cascade or scenario needs to feel inevitable. · The ten-slide forecast run to *"guberment"* (Istanbul 75–82); the Asia Climate cascade (10–24).
+10. **Chained-caption climax** — captions that grammatically complete across consecutive slides ("…which will lead to… / …but at a cost…"), so clicking through *is* reading a sentence aloud. **This adds grammatical continuity across a climax run.** The whole deck already has to pass the headline-only argument test; this device makes adjacent captions literally complete a sentence. · *Affords when:* a causal cascade or scenario needs to feel inevitable. · The ten-slide forecast run to *"guberment"* (Istanbul 75–82); the Asia Climate cascade (10–24).
 
 11. **Bookend** — open and close on the same image family. · *Affords when:* the deck has a clear first image worth returning to. · Opens on a rainy street, closes on a flood (Oxford); opens and closes on earth-from-space (Istanbul, Abu Dhabi).
 

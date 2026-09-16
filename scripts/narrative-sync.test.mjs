@@ -1,0 +1,35 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+test('bundled NE integrity check passes and detects a changed prompt', t => {
+  const script = path.join(root, 'scripts/narrative-sync.mjs');
+  assert.ok(fs.existsSync(script), 'sync checker must exist');
+  const run = target => spawnSync(process.execPath, [script, '--check', '--target', target], {encoding:'utf8'});
+  const vendor = path.join(root, 'vendor/narrative-engine');
+  assert.equal(run(vendor).status, 0);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ne-sync-'));
+  t.after(() => fs.rmSync(tmp, {recursive:true, force:true}));
+  fs.cpSync(vendor, tmp, {recursive:true});
+  fs.appendFileSync(path.join(tmp, 'prompts/builder.md'), '\nUntracked instruction\n');
+  const altered = run(tmp);
+  assert.notEqual(altered.status, 0);
+  assert.match(altered.stderr, /prompts\/builder.md/);
+});
+test('an empty or incomplete manifest cannot certify the runtime', t => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ne-incomplete-'));
+  t.after(() => fs.rmSync(tmp, {recursive:true, force:true}));
+  fs.cpSync(path.join(root, 'vendor/narrative-engine'), tmp, {recursive:true});
+  const manifestPath = path.join(tmp, 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  delete manifest.files['prompts/builder.md'];
+  fs.rmSync(path.join(tmp, 'prompts/builder.md'));
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+  const r = spawnSync(process.execPath, [path.join(root, 'scripts/narrative-sync.mjs'), '--check', '--target', tmp], {encoding:'utf8'});
+  assert.notEqual(r.status, 0, 'missing builder must fail integrity check');
+  assert.match(r.stderr, /missing.*prompts\/builder.md/i);
+});

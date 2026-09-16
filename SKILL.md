@@ -1,123 +1,45 @@
 ---
 name: keynote-create
-description: Transform raw text, research notes, brain-dumps, or source material into a presentation deck. Two modes — Keynote (image-led, ~80% full-bleed photography with fragment/one-word captions, an emotional or reveal arc; for talks, pitches, TED-style) and Boardroom (text-led Minto/McKinsey action-titles rendered in a serif + accent style; every title a complete story-beat sentence). A spine menu (Minto plus six keynote-native shapes) sets the narrative structure independently of mode. Stages — distill 2-3 candidate punchlines, confirm mode + punchline + length + density, pick a spine, draft titles and self-check them, polish via prose-craft, art-direct images (Keynote), then render to an HTML deck and export to PDF via headless Chrome. Markdown is the structural deliverable; HTML and PDF are the presentation deliverables. Style comes from a swappable style pack — a bundled neutral default, your configured house style, or a bring-your-own source (a reference deck, a URL, or a verbal brief); a project-local style guide is auto-detected when present. Does NOT generate .pptx. Trigger whenever the user wants to turn source material into a deck, presentation outline, slide structure, talk outline, keynote, or pitch — even when "narrative" or "story arc" is not mentioned. Also trigger on /keynote-create, "action titles", "narrative titles", "slide-as-beat", "keynote deck", "image-led deck", "McKinsey-style deck", "Minto pyramid", or any request for titles that "read as a story". Two opt-in extensions widen the lifecycle — a talk kit for live talks (per-slide speaker notes at ~120 wpm with cumulative timings and a source-cautions block separating spoken copy from preparation-only evidence, plus a worksheet when the deck has activity slides) and a publish stage that takes a human-curated public HTML version through image optimization, meta/OG injection, and a Playwright verification suite, then publishes it to a registered website target — pushing always requires an explicit human yes. Also trigger on "publish this deck", "put it on my site", a request for speaker notes, or a talk kit.
+description: "Use when turning source material into a presentation, keynote, pitch, slide outline, or action-title deck, or when rendering, tightening, preparing a talk kit, or publishing an existing deck. Combines a pinned Narrative Engine workflow with Boardroom sentence titles or Keynote image-led fragments, style packs, HTML and PDF output. Does not generate .pptx or .key files."
 ---
 
 # Keynote Create
 
-Shape source material — research notes, a brain-dump, an article draft, interview transcripts, a strategy memo, a personal essay — into a presentation outline structured as a five-act dramatic arc.
-
-The defining constraint: **every slide title is a short complete sentence that delivers one beat of the story**. Read the titles top-to-bottom and you should hear the whole narrative — no slide bodies needed.
-
-This skill outputs three artifacts in sequence: a **markdown outline** (the structural deliverable), an **HTML deck** rendered by a **style pack** (the bundled neutral default, your configured house style, or a bring-your-own source), and a **PDF export** for review. It does not generate `.pptx`.
+Turn source material into a source-supported argument, then into an HTML deck and PDF. Markdown is the structural deliverable. **Boardroom** favors complete action-title sentences; **Keynote** uses image-led fragments with written narration. **In both modes, the headline sequence alone must communicate the complete argument.** Each headline advances or connects to the next; Keynote may use connected fragments. Images, bodies and narration add evidence or depth, never missing reasoning. Register determines presentation, not narrative rigor.
 
 ## Workflow
 
-The build runs Stages 1–5 (with the **Stage 3.6 talk kit** offered when the deck fronts a live talk); **Stage 6** publishes a human-curated public version to a registered website target. **Do not skip the confirmation stage. Do not draft slides before the user has confirmed punchline, length, and density.**
+**Narrative Engine owns the narrative stages; Keynote Create owns production.** Read [`references/narrative-engine-integration.md`](references/narrative-engine-integration.md), then the pinned [`vendor/narrative-engine/SKILL.md`](vendor/narrative-engine/SKILL.md) for narrative orchestration. These are embedded files, not calls to another installed skill. The integration reference resolves the boundaries and presentation contract; do not recursively invoke either skill. Existing deck rendering or publishing starts at its relevant production stage, without restarting discovery.
 
-### Stage 1 — Read and propose 2-3 candidate punchlines
+### Stage 1 — Import, audience, material, focal point
 
-**First: know the room.** If the request doesn't already name the audience and the ask, ask one line before drafting anything:
+Use NE Phases 1–2: Fast/Guided discovery, audience and ask, Material Read, and 2–3 stance-committing focal candidates. Capture the One Thing, Ask, Through-Line and `focal_origin`. An explicitly supplied point is `user-stated`, never `inferred`. Default to Fast when the user asks for speed or provides clear instructions. Surface assumptions in one consolidated brief; do not repeat already-answered questions. Honor an explicit instruction to proceed without questions.
 
-> Who is this deck for, and what should they decide, do, or feel when it ends?
+### Stage 2 — Argument outline and compiled brief
 
-The same source yields different punchlines for a board, a conference hall, or a skeptical technical review — never pick a governing thought blind. If the request already makes audience and ask clear, don't re-ask: state your reading in one line and move on.
+Use NE Phases 2.5–3.5. Write the plain argument outline first; **answer-first is the default in both registers**. Admit a withheld reveal only when the Material Read identifies a genuine surprise. Named arcs, including the local spine menu, require quoted source support for essential beats and a passing skeleton stamp test. No required five-act arc, minimum slide count, obligatory emotional reversal, or prewritten killer line.
 
-Read the source material carefully. Identify what's at stake, what tension drives the piece, what the central insight or turn is, and what changes by the end — *for this audience*.
+Compile the brief with focal origin, audience/ask, full Material Read, argument outline, approved shape and kept beats, register, density, voice and audience essentials. Include the renderer contract from the integration reference verbatim. Length is content-driven within the user's actual slide/time budget; count every visible slide, including any cover. Keynote/sparse is a visual density alias of High-Impact, not a new narrative shape.
 
-Then draft **2 or 3 candidate punchlines**, each a single sentence, each committing to a different stance. For each, write one short line of reasoning: why this could be the spine of the deck. Present them numbered so the user can pick, edit, or write their own.
+Resolve style using Stage 4's precedence. Present one consolidated confirmation in Fast mode, unless the user already authorized proceeding; use guided questions only for unresolved choices. Keep visual style details with the orchestrator, outside the builder's small reading list.
 
-A good punchline:
-- Is one sentence, short enough to say in a single breath
-- States a claim, a recommendation, or a reframing — not a topic
-- Is specific (numbers, names, verbs) — not "we should improve onboarding"
-- Implicitly answers a question the audience cares about
+### Stage 3 — Build and four gates
 
-A weak punchline ("The Golden Visa is a successful programme that faces challenges") is a topic with verbs glued on. A strong one ("Open the door to permanence — and lower the cost of walking through it") commits to a stance the rest of the deck has to back.
+Create a unique `RUN_DIR` and write the source and compiled brief. Dispatch the embedded NE builder with a fresh context. It writes `ne-output.md` (body only) and `ne-output-meta.md` (focal, shape, sourcing and revisions). **Do not send the builder this entire skill or the reference catalogs.**
 
-Present the three candidates like:
+Run NE's gates and shared repair loop:
+1. **Shape support** before drafting (Stage 2).
+2. **Blind focal fidelity** after drafting: a fresh judge reads the body, records its cold read, reads the source, then the brief. Dispatch audience/ask/register only, never the focal, sidecar or inherited conversation. In both modes the judge first reads and records the complete headline sequence alone, before bodies or narration. A broken argument chain requires revision even when narration explains it. Then check actual written narration for consistency and evidence. Pass the content-neutral headline override from the integration reference in every judge dispatch.
+3. **Humanizing check**, flag-only by the orchestrator; the builder makes repairs.
+4. **Evidence review** with source and sidecar: unsupported claims, stripped qualifications, missing reasoning, overreaching asks and provenance mistakes. Never remove evidentiary “may”, “estimated”, “preliminary” or “correlational” to make a title punchier.
 
-> Based on the source, here are three angles the deck could land:
-> 1. **[Punchline A]** — [one-line reason]
-> 2. **[Punchline B]** — [one-line reason]
-> 3. **[Punchline C]** — [one-line reason]
->
-> Which one is the spine? You can pick, edit, or write your own.
+Use upstream verdict routing, trigger priority, report archives, judge counter and two-evidence-reviews-per-draft cap. Do not treat PASS at the focal gate as permission to deliver. Run targeted review automatically for high-stakes content and offer it otherwise; offer stress tests only where NE calls for them. Revisions after review must re-enter the affected gates. See the integration reference for limitations when isolated agents are unavailable.
 
-### Stage 2 — Confirm mode, punchline, length, density
+### Stage 3.5 — Art direction and production handoff
 
-After the user picks or edits a punchline, ask **mode**, length, and density in one turn. **Mode is the first question** — it decides the visual system, the title register, and how the rest of the stages behave.
+After narrative gates and any selected reviews pass, freeze the accepted slide sequence. For Keynote, choose one global photographic treatment, then record per-slide image direction and assets with `> Art:`, `> Image:` / `![]()`, and optional `> Layout:`. Use an available art-direction skill or write briefs directly; a missing external skill must not block an otherwise usable deck. Select devices from [`references/keynote-devices.md`](references/keynote-devices.md) only where source material supports them. There is no device or imagery quota. Evidence diagrams and literal images are valid when clearer than metaphor.
 
-> **Mode?**
-> - **Keynote** — Image-led. ~80% full-bleed photography with a small caption box; titles are fragments, one-word beats, questions, or coined terms; the story lives in the image sequence plus your spoken delivery. For talks, pitches, TED-style, public keynotes. *(Default when the source reads as a spoken talk or a pitch.)*
-> - **Boardroom** — Text-led. Every title a complete action-title sentence; serif titles + a single accent; minimal imagery. For memos-as-decks, strategy readouts, technical or skeptical audiences. *(This is the classic Minto/McKinsey deck — the skill's original behaviour, unchanged.)*
->
-> **Length?**
-> - **Small** — 3 to 5 slides. High-impact compression.
-> - **Medium** — 5 to 15 slides. Full arc with room for nuance.
-> - **Extended** — as long as it needs to be. Comprehensive treatment.
->
-> **Density?**
-> - **High-Impact** — Maximum compression. One punch per slide. Titles do heavy lifting; bodies near-empty.
-> - **Narrative** — Default. Beats get room to land. Bodies carry supporting fragments.
-> - **Evidence** — Denser supporting material. Multiple proof points per body. For skeptics and technical audiences.
-> - **Keynote/sparse** — Most slides one line or one word; the body is near-empty because the image *is* the body. The default density inside Keynote mode.
-> - **ELI5** — Plain language, everyday analogies, no jargon. Concrete swaps for abstractions.
-
-**Style: do not ask when a house pack is registered as the default.** Check `~/.claude/keynote-house-style.json` (or `node -e "import('scripts/house-style.mjs').then(m=>console.log(m.getDefault()))"`); if `default` names a pack, that pack is the style, silently, and you say one line: "Style: <name> (house default)." Only when no default is registered, or the user names another style, ask:
-
-> **Style?**
-> - **House style** — your saved house-style pack. The first time you pick this and none is configured, I'll ask you to point me at it (a folder, a style guide, or a reference deck) or describe it; I build the pack once, register it, and reuse it silently after. *(See "House-style first-run setup" below.)*
-> - **Neutral** — the bundled generic default (clean serif + grotesk, restrained accent). The fallback when nothing else is specified.
-> - **Bring-your-own** — give me a source now: a reference deck / screenshots, a URL, or a one-line verbal brief. I derive a one-off pack for this deck. *(See "Producers".)*
-
-If the source reads as a spoken talk or a pitch, propose **Keynote** as the default and say so; the user can flip to Boardroom. Default density follows mode (Keynote → Keynote/sparse; Boardroom → Narrative) unless the user picks otherwise.
-
-**Stop and wait.** Do not proceed until mode, punchline, length, density, and style are confirmed — and restate the audience and the ask in one line as part of the confirmation ("For the board; the ask is approval of the Q3 plan"). Acknowledge edits briefly and move on — don't re-litigate.
-
-**Mode and spine are two independent dials.** Mode (above) sets the visual system and title register. The *spine* — the narrative structure — is chosen separately in Stage 3 from a menu that includes Minto and six keynote-native shapes. Minto is the Boardroom default and is never removed; it stays on the menu in either mode.
-
-### Stage 3 — Build the deck (with cold-read gate and prose-craft polish)
-
-Once mode, punchline, length, and density are confirmed:
-
-1. **Name the dramatic question.** The punchline is the answer; the dramatic question is what it answers. Surface it explicitly — it goes in the output frontmatter.
-
-2. **Pick the spine.** Read the source, suggest the fitting spine, and name one alternative — the user picks, swaps, or combines. The menu is a default-with-suggestion, never forced. See "Spine menu" below. Boardroom defaults to Minto; Keynote gets a spine suggested from the source (Minto still available).
-
-3. **Sketch act assignments calibrated to length and spine.** See "Act structure by length" and "Spine menu" below.
-
-4. **Draft the title sequence first, before any slide bodies.** Numbered list.
-   - **Boardroom mode:** each title is a short complete sentence — a story beat that reads top-to-bottom.
-   - **Keynote mode:** titles are beats/captions — fragments, one-to-three-word punches, pivot questions, or coined terms are the preferred register. Complete sentences are *rationed* — reserved for the 3–4 lines meant to land (the turn, the thesis, the closing aphorism). The story is carried by the image sequence plus spoken delivery, not by titles read alone.
-
-5. **Self-check the sequence.**
-   - **Boardroom mode — cold-read test.** Re-read the numbered title sequence as a paragraph, *ignoring the punchline*. Write one sentence: "Reading these titles cold, this is a deck about X, arguing Y, landing on Z." Compare to the confirmed punchline. If the cold-read story diverges (different stake, different ask, different landing), rewrite and re-read. Do not move on until the cold-read story matches the punchline.
-   - **Keynote mode — beat + narration read.** Read the caption sequence *with one imagined spoken line per slide*. The deck should track as a told story, not self-narrate from titles alone. The strict titles-only / spoken-prose test applies **only** to a designated chained-caption climax run (see [`references/keynote-devices.md`](references/keynote-devices.md), device #10) — not deck-wide.
-
-6. **Prose-craft pass on titles only.** Run the title sequence through prose-craft discipline (Strunk floor + writing-tropes filter). In **Keynote mode**, tune this looser — fragments, one-word beats, and coined terms are the register, not errors; still cut hedges, AI tells, and accidental sameness. Scan for and fix:
-   - **Clarity (the stranger test).** Read each title without the source in front of you. If a smart reader who hasn't read the source would ask "what does that mean?" — rewrite to plain. Compressed expert-shorthand ("Golden Visa thresholds lift the rent floor") fails this test even when it is specific, short, and active. See [`references/title-craft.md`](references/title-craft.md) for the opaque-title failure mode and rewrite examples.
-   - **The flat test.** Restate each title in the dullest possible language. If the flat version is clearer than the polished one, you over-compressed — rewrite to plain.
-   - "Not X, but Y" parallelism repeated across slides
-   - Three-item lists that are really two ideas
-   - Em-dash dramatic pauses used more than once or twice
-   - Hedged verbs that pretend to commit ("may," "could potentially," "appears to")
-   - Sameness across adjacent titles (same opening word, same sentence shape)
-   - Meta-language commenting on the argument instead of making it ("viewed from the other side," "the same problem")
-   - Initialisms unless the audience definitely knows them (ICV, capex, BPO, OOH, KPI)
-   - AI tells: "lean into," "unlock," "leverage," "robust," "seamless," "in today's [adjective] landscape"
-
-   Bodies are bullets and fragments — prose-craft does not apply to them. Titles only.
-
-7. **Fill in supporting content.** Short bullets, fragments, optional speaker notes. Calibrate to density. In Keynote/sparse this is often nothing — the image is the body.
-
-   **7b. Support audit — titles must be backed.** For every claim-bearing title (any title asserting a fact, number, cause, or recommendation), name its warrant: the bullet on the slide or the passage in the source that backs it. A title with no warrant gets softened, re-scoped, or cut — an assertive title the deck can't back is worse than a duller one it can. In **Evidence** density, every bullet must carry a number, a name, or a citation. Bodies also get the step-6 *scan list* (hedged verbs, AI tells, initialisms, sameness) — the scan applies to bodies; the prose-craft register rules do not, because bodies stay bullets and fragments.
-
-8. **Keynote mode only — art-direction pass (Stage 3.5).** Once the beat sequence is set, hand the deck to the **art-direct skill**. **Choose one global treatment first:** before any per-slide prompts, fix a single photographic treatment for the whole deck — grade, era, lens/film feel, palette temperature (e.g. "muted Kodachrome, 35mm, warm dusk, soft grain") — record it as `art_direction:` in the frontmatter, and append it verbatim to every per-slide AI-image prompt. Ten independently-prompted images with no shared treatment look like ten stock sites; the global treatment is what makes them one deck. Then, for each slide, art-direct returns an image concept, photography/style direction, mood, and an AI-image prompt. Hold to the **metaphor-not-illustration** principle the corpus uses (fire = "Volitocracy"; a broken foot beside a running shoe = "Fast inaction") — the image *stands for* the abstraction, it does not depict the words literally. Record each slide's direction on a `> Art:` line (presenter-only, like a speaker note) and, when an image file exists, an `![]()` or `> Image:` line. Boardroom mode skips this step.
-
-9. **Deploy keynote devices (Keynote mode).** Read [`references/keynote-devices.md`](references/keynote-devices.md) and select from the palette only what the content affords — a good deck uses maybe 4 of 16. Never manufacture a device the source does not support (no invented coined words, no false dread, no fabricated authority quotes).
-
-10. **Output the markdown** in the format under "Output format" below. Always include mode, punchline, dramatic question, and the titles-only list at the top.
+Keep production metadata outside the judged body. Make `deck.md` as a production copy only after review; the accepted NE body remains the comparison reference. Adding assets is permitted; changing claims, captions, narration, order or count invalidates the affected narrative checks. New talk-kit claims also need source review.
 
 ### Stage 3.6 (opt-in) — Talk kit
 
@@ -141,7 +63,7 @@ Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export
 2. **Registered house default.** If the registry's `default` names a pack, use it: omit `--style` (the renderer resolves the default itself) and never substitute neutral. This is the normal case once a house pack exists.
 3. **Project style detected.** If the working directory or any parent up to `$HOME` contains `DESIGN.md`, `tokens.css`, `deck.template.html`, `style-guide.html`, or a `CLAUDE.md` naming a deck style — adopt it via the **project adapter** and tell the user. This answers the Stage 2 style question rather than being asked.
 4. **Stage 2 style choice** — House style / Neutral / Bring-your-own — only when none of 1 to 3 fired.
-4. **Neutral fallback** — the bundled `packs/neutral` pack when nothing above is specified.
+5. **Neutral fallback** — the bundled `packs/neutral` pack when nothing above is specified.
 
 **Project adapter.** A project `tokens.css` that already defines the canonical token set (see `REQUIRED-TOKENS.md`) is used directly as a skin over the shared neutral `layouts.css`. A project `DESIGN.md` / `deck.template.html` that is *not* a canonical pack is run through the **from-reference** or **from-verbal** producer to synthesize a pack. Either way the result is finalized to a complete, `loadPack`-valid pack before use — this preserves project-style behavior instead of silently losing it.
 
@@ -157,13 +79,13 @@ Pass the resolved pack to the render script with `--style <pack-dir|name>`. An e
 node scripts/keynote-check.mjs <deck.html> <slide numbers…> --out <dir>
 ```
 
-It screenshots the slides and fails on anything that leaves the frame, crosses the footer band, or overlaps another text block. Then hand the screenshots to a Sonnet subagent with the slide's intent and ask for PASS/FAIL, misalignments with pixel positions, and one concrete adjustment. Fix, re-render, re-check. A slide is not done until both halves pass.
+It screenshots the slides and fails on anything that leaves the frame, crosses the footer band, or overlaps another text block. Then hand the screenshots to an available vision-capable reviewer with the slide's intent and ask for PASS/FAIL, misalignments with pixel positions, and one concrete adjustment. Fix, re-render, re-check. A slide is not done until both halves pass.
 
 **QA discipline (mandatory, on top of the layout check).** Every slide change — add, edit, reorder — also requires:
 
 1. **Snapshot before.** Before touching the file, record each slide's exact byte span — the `.slide-wrap` slice, by index.
 2. **Byte-proof after.** An **agent procedure, not a script** — it runs per manual slide edit and needs judgment about what counts as the changed unit. Extract each slide-wrap's exact byte span from the before and after files, compare slide-by-slide, and report **"only slide N changed; other M slides byte-identical."** A silent difference in any other slide is a failure, even if it renders fine.
-3. **PDF SHA** before/after, when a PDF is exported — unchanged slides must not re-render differently.
+3. **Rendered-page comparison** before/after PDF export: compare corresponding unchanged page images. A whole-file PDF hash changes with metadata or any edited page and cannot prove that unchanged slides look identical.
 4. **E2E navigation check.** The nav subset of `node scripts/keynote-verify.mjs <deck.html>` must pass before the change counts as done: synthetic `p`/Escape/arrow keys drive the deck, `#N` and `#present` deep-links resolve from a fresh page load. Decks without a show-mode handler report these lines as SKIPPED — SKIPPED never fails a run.
 
 #### Stage 4a — Baseline render
@@ -205,7 +127,7 @@ If the deck is small (3-5 slides) and the baseline already looks right, or the p
 
 **Layout promotion constraints — non-negotiable:**
 
-- **Title size stays at h2 (64px serif weight 300).** Some pack templates use h3 (46px) for certain layouts (cards, stats) by convention. Override that — in our narrative-title model, the title carries the story and must remain visually dominant. When promoting a slide, set the title as `<h2 class="h2">` even if the source template uses `<h3 class="h3">`.
+- **Boardroom title hierarchy follows the active pack; Keynote retains its caption/device layout.** Some pack templates use h3 (46px) for certain layouts (cards, stats) by convention. Override that — in our narrative-title model, the title carries the story and must remain visually dominant. For Boardroom, prefer `<h2 class="h2">` when the pack supports it; use its tokens rather than forcing a font or size across registers.
 - **Drop eyebrows by default.** Eyebrows ("THREE PRESSURES SIT BENEATH THE RENT LINE" in tracked uppercase) compete with the title for the eye. Only include an eyebrow if it is a quiet act-label or section breadcrumb (e.g. "Act 1 · Context"), and keep it visually small. When in doubt, omit.
 - **Speaker notes do not render.** They exist in the HTML source as `<div class="speaker-note">` for the model and user to reference, but the CSS hides them from the rendered slide. They are presenter-only context. Do not place them where they could visually overflow into the content area or footer.
 - **Footer stays consistent.** Every slide carries the same `<div class="footer">` with brand + page number. Don't strip it.
@@ -231,7 +153,7 @@ User can request compression passes anytime after delivery. When they say "tight
 1. Re-confirm the punchline. Has the point drifted?
 2. Section pass: any slides that could merge or be cut?
 3. Per-title compression: cut filler, sharpen verbs, lose any title that does not justify its slide.
-4. Output the tighter markdown, then re-run the render script to refresh HTML + PDF.
+4. Re-run craft and humanizing checks. Route changed claims, ask, climax, close, sourced material or narration through the affected NE gates and shared repair loop; preserve report counters. Then render the tighter markdown with the same mode and cover policy to refresh HTML + PDF.
 
 Repeatable until the user says stop.
 
@@ -265,64 +187,13 @@ Publishes a **human-curated public deck** to a registered website target. Stage 
 
 **Onboarding flow** (first run against any unregistered site; later runs are silent): read the site repo — routing structure, static-asset conventions, hub/listing pages, any structured data (JSON-LD) on the hub that grows per published item, build and deploy mechanics — then propose a profile; the user confirms before it persists to `~/.claude/keynote-publish-targets.json`. See [`references/publish-targets.md`](references/publish-targets.md) for the schema.
 
-## Spine menu
+## Spine menu — optional, source-licensed structures
 
-The **spine** is the narrative structure, chosen in Stage 3 independently of mode. The skill suggests a fitting spine plus one alternative; the user picks, swaps, or combines. **Minto is never removed** — it is the Boardroom default and stays on the menu in either mode.
+A plain answer-first argument is a complete result. Minto's grouped reasons and vertical Q&A are useful when the material supports them, in either register. There is no mandatory mid-deck turn.
 
-- **Spine 0 — Minto / McKinsey pyramid.** *(Default in Boardroom; available in Keynote. Works at any length.)* Answer-first, grouped supporting arguments, action-titles that read top-to-bottom. An image-led deck can run on it — Oxford's 2×2 scenario matrix and Singapore's 4-stage pyramid are essentially Minto with photographs.
+The local palette remains available: emotional arc, reveal/misdirection, framework build, forecast cascade, teaching/method, and scenario-parallel. Read [`references/keynote-devices.md`](references/keynote-devices.md) as an orchestrator reference. Its example pacing and slide counts are illustrative, not minimums. Apply NE Gate 1 to each proposed structure: quote support for essential beats, test the focal and ask against the landing, reject unsupported beats rather than manufacture them. Forecasts stay conditional; scenarios remain scenarios.
 
-  **Minto discipline (spine 0 only).** Minto is a method, not a title register. When this spine is chosen:
-  - **Answer by slide 2.** The punchline lands up front; the deck then defends it. No mid-deck turn — the five-act arc does not apply (see "Act structure by length").
-  - **Group the middle.** The supporting slides form 2–4 named argument groups. Check MECE-lite: do any two groups make the same argument (overlap)? Is there an obvious objection no group answers (gap)?
-  - **Vertical Q&A.** Each group's lead title answers the question the punchline raises ("why?" / "how?" / "why now?"); each slide inside a group answers the question its group lead raises. A title that doesn't answer the level above belongs elsewhere — or nowhere.
-
-The six additional spines (Keynote-native, but pairable with either mode):
-
-1. **Emotional arc** — Dread → Turn → Reframe → Hope → Answer → Exhale. Fear accumulates across sparse slides, snaps on a word or black slide ("Normal," "It did," "Hope | Fear"), reframes ("Great Transition"), reveals the answer, exhales on a wordless image or the speaker's own line. *(Needs Medium or longer — dread must accumulate over ~6+ slides.)*
-2. **Reveal / misdirection** — a long setup that recontextualizes at a hinge (a nine-slide dread run revealed as history: "It did / 1895–1945"; a glut of trend-reports revealed as a pathology: "there is no list!"). *(Needs ~8+ slides — the setup IS the deck. At Small length the hinge has no room; pick another spine.)*
-3. **Framework build** — a recurring motif or diagram assembled across the deck (a pyramid filled tier by tier; a 2×2 whose quadrants become the acts; "Four Lessons" planted then walked one per section). *(Needs one slide per tier/quadrant plus a planting slide — minimum ~5–6.)*
-4. **Forecast cascade → implication** — chained consequences, each slide's caption grammatically completing the last, then a pivot to "what this means for *you*." *(Works from ~5 slides — each link needs its own slide.)*
-5. **Teaching / method** — problem → concept → how-to steps → proof. The most content-neutral spine; the default fallback when nothing else fits. *(Works at any length.)*
-6. **Scenario-parallel** — name N futures up front, walk each as a mini-arc under a repeated divider template, land on a synthesis. *(Needs roughly 2×N+2 slides for N scenarios — divider + beat each, plus setup and synthesis.)*
-
-**Cross-cutting permissions (all spines):**
-- **Spines compose** — a Framework build can open with an Emotional dread run; a Minto pyramid can be delivered in Keynote visuals.
-- **Late thesis follows the spine, not the mode.** The Reveal and Emotional-arc spines may land the thesis late (past mid-deck) in *either* mode — the spine defines that contract. All other spines keep the question live by slide 2; **Minto keeps answer-first everywhere.**
-- **Check spine × length before drafting.** If the chosen spine's minimum (noted above) exceeds the confirmed length, say so and offer two ways out: stretch the length, or swap to a spine that fits. Never silently compress a Reveal into 4 slides.
-- If the source fits no spine cleanly, default to **Minto** (Boardroom) or **Teaching/method** (Keynote) rather than inventing structure.
-
-## Act structure by length
-
-The five-act arc is the same in every length — exposition, rising action, climax, falling action, resolution. What changes is how compressed each act is. **Exception — Minto (spine 0) does not use the dramatic arc:** it is answer-first (punchline by slide 2, grouped defense, a landing that returns to the answer), with no mid-deck turn. The Keynote spines map their own beats onto the rising-then-resolving shape.
-
-### Small (3–5 slides)
-
-The arc compresses to its skeleton. Each slide does double duty.
-
-- **3 slides:** Setup (Acts 1+2) → Turn (Act 3) → Landing (Acts 4+5)
-- **4 slides:** Setup → Tension → Turn → Landing
-- **5 slides:** Exposition → Rising tension → Turn → Consequence → Resolution
-
-At this length, the punchline often becomes the final title verbatim, or very close to it. Every slide must carry weight; there is no room for a slide that only sets up another slide.
-
-### Medium (5–15 slides)
-
-The standard mode. Each act gets one to three slides depending on content density.
-
-- **5–7 slides:** one slide per act, with one act getting an extra beat
-- **8–12 slides:** balanced — typically 2-3-1-2-2 or 2-2-2-2-2
-- **13–15 slides:** expanded falling action and resolution; more room for evidence and implication
-
-### Extended (as long as needed)
-
-Use judgment based on the source. Multiple slides per act, possibly with sub-arcs within an act. Common shapes:
-
-- A long Act 2 with several rising complications, each a distinct beat
-- A two-slide climax (the finding + its mechanism)
-- A long Act 4 walking through consequences sector by sector
-- A multi-slide Act 5 covering opportunities, recommendations, and a closing landing
-
-Even at long lengths, no slide is allowed to be slack. If a slide does not justify its title, cut it.
+Choose a different shape if the required beats cannot fit the user's budget. Never pad to satisfy an arc. Compile only the selected, supported beats into the brief; the builder does not read the menu.
 
 ## Density calibration
 
@@ -342,10 +213,10 @@ In **ELI5** mode, the title-craft rule "specific over abstract" is satisfied by 
 
 ## Title craft
 
-Non-negotiable. The skill collapses if titles are weak.
+**The full-deck headline-chain rule applies to both modes.** Boardroom normally uses complete sentences; Keynote may use connected fragments or clauses. Read in order, headlines alone must communicate the entire argument, including its qualifications and ask. Written narration adds depth, not missing logic.
 
 - **Spoken prose, not a list.** The whole sequence read aloud must sound like spoken delivery, not a glossary. Each title carries its setup with it or resolves the previous title's open thread. *(This is the primary rule. The titles-only test below enforces it.)*
-- **Sentences, not labels.** "Adoption stalled in Q3" — never "Adoption" or "Q3 Numbers."
+- **Argument beats, not labels.** Boardroom favors sentences; Keynote permits connected fragments. "Adoption stalled in Q3" advances a claim; "Adoption" alone does not.
 - **Length.** 4–10 words default; stretch to 15 when chaining demands it (see "Title length" below).
 - **One beat per slide.** A title doing two beats becomes two slides.
 - **Active voice.** "We missed the signal" beats "The signal was missed."
@@ -359,7 +230,7 @@ See [`references/title-craft.md`](references/title-craft.md) for failure modes (
 
 ## The titles-only test (the structural check)
 
-**This is the most important test in the skill. If you skip it, the deck fails.**
+**Apply this test to the entire deck in both modes, before reading bodies, images or narration.** Keynote fragments need not be individually complete sentences, but must connect into an intelligible argument. Do not invent connective language while reading. These self-checks supplement, never replace, the blind focal judge.
 
 Before producing final output, write every title — *literally, every one, in order* — as a single concatenated paragraph. Then:
 
@@ -404,14 +275,16 @@ Past 15 words: the title has become two beats — split into two slides or compr
 
 ## Output format
 
-A single markdown document. YAML frontmatter, then punchline and titles-only list, then slides separated by `---`.
+**Primary NE handoff:** body-only `ne-output.md` plus a private `ne-output-meta.md` sidecar, as defined in the integration reference. Render the reviewed body with `--mode boardroom|keynote --no-cover`; it already contains every planned visible slide. No sidecar is read by the renderer.
+
+**Legacy/production format:** the following combined Markdown remains supported for existing decks and production copies. Never use its focal/shape frontmatter as input to a blind judge. By default the legacy renderer adds one cover; use `--no-cover` if the slides already include it. The parser supports simple one-line frontmatter values, not general YAML.
 
 ````markdown
 ---
 title: "Deck title"
 subtitle: "Optional subtitle"
 mode: "keynote | boardroom"
-spine: "minto | emotional | reveal | framework | cascade | teaching | scenario"
+spine: "answer-first | withheld-reveal | approved named arc"
 punchline: "The one-line message, confirmed with the user"
 audience: "Who the deck is for, in a few words"
 ask: "What the audience should decide, do, or feel at the end"
@@ -439,7 +312,7 @@ cover_image: "path-or-url to the cover full-bleed image (keynote, optional)"
 - Short supporting bullet
 - Short supporting bullet
 
-> Speaker note: optional context for delivery.
+> Speaker note: required spoken line for a Keynote fragment; optional in Boardroom.
 
 ---
 
@@ -516,9 +389,9 @@ deferred follow-up — not yet built.
 
 - Does not generate `.pptx`. For PowerPoint, hand off to a separate skill.
 - Does not write long-form prose in slide bodies. Keep bodies sparse.
-- Does not skip the confirmation stage. The mode → punchline → length → density pause is the most important part of this skill.
-- Does not run prose-craft on slide bodies — titles only. (Bodies still get the step-6 hedge/AI-tell scan as part of the step-7b support audit.)
-- Does not override a project's own style guide when one is present in the working directory tree.
+- Confirms unresolved narrative choices in one Fast brief or Guided discovery; honors explicit authorization to proceed without questions.
+- Applies sentence craft to titles and source fidelity to all visible content and narration; supporting fragments need not become full sentences.
+- Resolves explicit style, house default, project style and neutral fallback using Stage 4 precedence.
 - Does not curate the public version. What to trim, what the public intro slide says, and what stays talk-only is decided by hand, before Stage 6 — never guessed.
 - Does not push without an explicit human yes. The Stage 6 push gate applies every time, no exceptions.
 

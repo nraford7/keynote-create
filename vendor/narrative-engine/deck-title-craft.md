@@ -1,10 +1,17 @@
-# Title Craft: Deep Guide
+# Deck Title Craft (embedded module)
+
+> **This is a verbatim embed of keynote-create's `references/title-craft.md`, copied into Narrative
+> Engine so the deck build is self-contained — the build subagent never has to reach into another
+> skill at dispatch time.** Source: `~/.claude/skills/keynote-create/references/title-craft.md` ·
+> embedded 2026-06-22 · re-synced 2026-09-16. If keynote-create changes, re-sync this file. The render
+> stage (Stage 4 — `keynote-render.mjs` + `/impeccable` + style-pack layouts) runs in the orchestrator,
+> not the subagent, so it legitimately still calls keynote-create; only the *title build* is embedded here.
 
 Slide titles in this skill carry the story. The body of each slide supports the title; the title delivers the takeaway. This document goes deeper than the core rules in `SKILL.md`.
 
 ## The core principle
 
-A great deck title delivers one beat of the argument: normally a short complete sentence in Boardroom, or a connected fragment in Keynote. Read in sequence, the titles tell the whole narrative without needing the slide bodies at all.
+A great deck title is a complete short sentence that delivers one beat of the story. Read in sequence, the titles tell the whole narrative without needing the slide bodies at all.
 
 This is sometimes called the **action title** or **narrative title** approach. It is the opposite of *label titles* ("Background," "Methodology," "Results"), which sort content into bins but leave the audience to construct meaning themselves.
 
@@ -20,7 +27,7 @@ A label asks the audience to figure out what matters. A sentence tells them.
 4–10 words. Past 12 and the eye starts skipping. The audience reads the title in the time you take to advance the slide; budget your words accordingly.
 
 ### 3. One beat per slide
-A slide is a unit of story. One title = one move in the argument. If a headline carries two distinct argument beats, split them into two slides. Two short sentences may express one beat, as in “Measure first. Then expand.”
+A slide is a unit of story. One title = one move in the argument. If you find yourself wanting to write two sentences, split into two slides.
 
 ### 4. Active voice
 - Weak: "Adoption was hindered by onboarding friction."
@@ -48,9 +55,10 @@ Titles that name what's on the slide rather than what it means.
 - Weak: "Revenue by Region, Q1–Q3"
 - Strong: "The West region carried us; the East fell off a cliff."
 
-### The hedge problem — rhetorical filler only
-
-Remove redundant rhetorical hesitation, but preserve the source's uncertainty, scope, estimates and causal status. “The pilot may help” must not become “The pilot works” unless the source supports that stronger claim. Correlation does not establish causation. Prefer “Early results suggest onboarding contributed to lower adoption” when that is what the evidence says. The evidence gate outranks punchiness.
+### The hedge problem
+Titles that bury the takeaway in qualification.
+- Weak: "It appears adoption may have been affected by some onboarding issues."
+- Strong: "Onboarding broke adoption."
 
 ### The list problem
 Sequential titles with parallel structure, suggesting items rather than narrative motion.
@@ -220,24 +228,16 @@ The single most useful diagnostic: read your title sequence aloud as if it were 
 
 When unsure between two candidate titles, pick the one a friend would more likely repeat back to you the next day.
 
-## Keynote mode — connected fragments, complete argument
+## Keynote mode — the fragment register
 
-**The headline-chain test governs the entire deck in both modes.** Keynote changes the visual and grammatical register, not the requirement that the headline sequence alone communicate the complete argument.
+**Everything above is written for Boardroom mode**, where each title is a complete self-reading sentence and the titles-only test governs. **Keynote mode is different.** The story is carried by the image sequence plus the speaker's live delivery — the titles are *beats and captions*, not self-contained arguments. In this register:
 
-Fragments, clauses and questions are valid when their meaning connects to the preceding and following headlines. Each headline introduces a necessary premise, adds evidence, preserves a qualification, draws an implication or lands the ask. One-word beats are allowed only if the sequence remains understandable without narration. There is no quota rationing complete sentences; use one whenever the argument needs it.
+- **Fragments are correct**, not lazy: "Warlord tax collectors," "Persistent basic needs," "Two worlds in one."
+- **One-to-three-word punches** are the strongest beats: "Bonkers," "Normal," "It did," "Accelerating," "Six days."
+- **Pivot questions** mark the turns: "What can we do about it?", "What about government?"
+- **Coined terms** carry concepts the deck wants you to leave with: "Volitocracy," "guberment" — but only invent them when the source has a genuinely new idea to name (see the anti-pastiche rule in [`keynote-devices.md`](../../references/keynote-devices.md)).
+- **Complete sentences are rationed** — spend them on the 3–4 lines meant to land: the turn, the thesis, the closing aphorism ("Analysis is focused on what is. Design is focused on what can be.").
 
-Read every headline in order before looking at bodies, images or narration. Do not supply imagined bridge sentences. A listener should be able to recover the point, the reasoning and the conclusion from that sequence alone. Pronouns and ellipses need recoverable antecedents. Evidence qualifications must survive in the headlines when necessary to avoid overstating the argument.
+**The titles-only / spoken-prose test does not govern a Keynote deck as a whole.** Reading Keynote captions top-to-bottom will *not* narrate the talk — and that is by design. The strict chained-caption test applies **only to a designated climax run** (device #10 in `keynote-devices.md`), where captions grammatically complete across slides ("…which will lead to… / …but at a cost…"). Everywhere else, use the **beat + narration read**: imagine one spoken line per slide and check the sequence tracks as a told story.
 
-**Pass — connected fragments:**
-1. Twenty satisfied volunteers.
-2. But no proof of productivity.
-3. Measure first. Then expand.
-
-**Fail — labels whose reasoning exists only in narration:**
-1. The pilot.
-2. The gap.
-3. What's next?
-
-Even a perfect spoken script cannot make the second headline chain pass. Rewrite the headlines first. Written narration remains required for Keynote delivery review, but it elaborates the already-readable argument. A chained-caption climax is an optional rhetorical device, not the only part of a Keynote that must connect.
-
-Keep source qualifications, plain language and forward movement. The distinction is grammatical completeness of each headline versus argumentative completeness of the sequence: the former can vary; the latter cannot.
+What still applies in Keynote mode: cut hedges, cut AI tells, avoid accidental sameness across adjacent beats, and keep the stranger test for anything that isn't a deliberately withheld setup. A fragment can still be opaque — "Regulatory ambiguity defers capex" is a bad beat in either mode.
