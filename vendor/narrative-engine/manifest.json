@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "repository": "https://github.com/nraford7/Narrative-Engine",
-  "revision": "9eb3560a4921f8507da0255c81f58d848cca01ee",
+  "revision": "6edd20bb351bc784d95ab2be5ce4aa9b4469747d",
   "adaptations": [
     [
       "/Users/noahraford/.claude/skills/Narrative-Engine/",
@@ -94,8 +94,8 @@
       "bundledSha256": "47b6c9daee4d3d72da82aa495d08bee117ded6dbf10504ad8be31d8c0538eb8a"
     },
     "prose-craft.md": {
-      "upstreamSha256": "fabb294e28f44e34831d0274139260cff5a5f06e3b9beebce749b726005d6e4a",
-      "bundledSha256": "fabb294e28f44e34831d0274139260cff5a5f06e3b9beebce749b726005d6e4a"
+      "upstreamSha256": "e5b1f38b5a58de6cc3f25b15e9af5a076bc80b9429ef367bc186ff2ed5e24062",
+      "bundledSha256": "e5b1f38b5a58de6cc3f25b15e9af5a076bc80b9429ef367bc186ff2ed5e24062"
     },
     "rhetorical-figures.md": {
       "upstreamSha256": "10508d9a70079bcb0760ef7f9561d54b021732805674865d302807818e210f35",
