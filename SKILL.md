@@ -21,7 +21,7 @@ Turn source material into a source-supported argument, then into an HTML deck an
 
 ### Stage 1 — Shared assignment and source analysis
 
-Use NE Phases 1–1.75. For each new narrative, require an explicit **Fast or Deep** choice and wait if absent. Never infer Fast from urgency, “quick,” “no questions,” or generic permission to proceed. An existing choice for this piece carries forward.
+Use NE Phases 1–1.75. For each new narrative, require a **Fast or Deep** choice and wait if absent. NE's one shortcut applies: a stated main point plus a speed signal ("quick", "no questions") selects Fast, and the Fast brief still goes for approval. Without a stated main point, urgency or generic permission to proceed never selects a mode. An existing choice for this piece carries forward.
 
 NE owns purpose, success condition, audience and starting position, source analysis and evidence boundaries. Confirm supplied answers once; ask only unresolved questions. Keynote Create contributes **delivery context before drafting**: live talk / workshop / read-alone / both; speaking-time and slide limits; required outputs, accessibility needs and assets. Presentation is already selected by this task; do not ask whether the user wants prose unless their request leaves that unresolved. A request for both live and reading decks means two presentation variants, not NE's Prose/Presentation “Both” format.
 
@@ -101,7 +101,9 @@ node scripts/keynote-check.mjs <deck.html> <slide numbers…> --out <dir>
 
 It screenshots the slides and fails on anything that leaves the frame, crosses the footer band, or overlaps another text block. Then hand the screenshots to an available vision-capable reviewer with the slide's intent and ask for PASS/FAIL, misalignments with pixel positions, and one concrete adjustment. Fix, re-render, re-check. A slide is not done until both halves pass.
 
-**QA discipline (mandatory, on top of the layout check).** Every slide change — add, edit, reorder — also requires:
+**Light path for text-only edits.** A change to words on existing slides (a title, a caption, a body line) with no layout, order or style change needs only the layout check above plus one look at the changed slides. Anything else (adding, removing or reordering slides, changing a layout, or any pack/global style edit) takes the full QA below.
+
+**QA discipline (on top of the layout check, for every change outside the light path):**
 
 1. **Snapshot before.** Before touching the file, record each slide's exact byte span — the `.slide-wrap` slice, by stable `data-slide-id` (index only for legacy files without IDs).
 2. **Byte-proof after.** An **agent procedure, not a script** — it runs per manual slide edit and needs judgment about what counts as the changed unit. Extract each slide-wrap's exact byte span from the before and after files, compare slide-by-slide, and report **"only slide N changed; other M slides byte-identical."** A silent unrelated difference is a failure. For reordered slides, account for deliberate page-number changes by ID; for global style edits, declare all affected slides and inspect them. Do not make a single-slide byte-identity claim for a global change.
@@ -129,7 +131,7 @@ The HTML and PDF land next to the input markdown (`deck.md` → `deck.html`, `de
 
 #### Stage 4b — Layout promotion via `/impeccable`
 
-The baseline uses 4 layouts. **Rich promotion depends on the active pack.** A pack whose `pack.json` sets `richPromotion: true` ships a `template.html` (a catalog of layout scaffolds) and a `layout-catalog.md`; promote each slide to the layout its content wants. A pack with `richPromotion: false` (the neutral default and most bring-your-own packs) has no template — promote only *within* the baseline + keynote family, and tell the user "this pack has no rich layout template; keeping the baseline family" rather than silently doing nothing.
+The baseline uses 4 layouts. **Rich promotion depends on the active pack.** A pack whose `pack.json` sets `richPromotion: true` includes a `template.html` (a catalog of layout scaffolds) and a `layout-catalog.md`; promote each slide to the layout its content wants. A pack with `richPromotion: false` (the neutral default and most bring-your-own packs) has no template — promote only *within* the baseline + keynote family, and tell the user "this pack has no rich layout template; keeping the baseline family" rather than silently doing nothing.
 
 For a `richPromotion` pack:
 
@@ -154,7 +156,7 @@ If the deck is small (3-5 slides) and the baseline already looks right, or the p
 
 #### Stage 4c — Re-export
 
-After re-export, tell the user how to present: open the HTML and press `p` for show mode (fullscreen, arrow keys or a clicker to advance, Esc to leave; `#present` in the URL opens straight into it). Video slides use `![](clip.mp4)` and must ship the video file next to the HTML.
+After re-export, tell the user how to present: open the HTML and press `p` for show mode (fullscreen, arrow keys or a clicker to advance, Esc to leave; `#present` in the URL opens straight into it). Video slides use `![](clip.mp4)` and must include the video file next to the HTML.
 
 After 4b, refresh the PDF from the modified HTML:
 
@@ -230,7 +232,7 @@ Use NE's independent dimensions: detail, assumed knowledge, rhythm and tone. Leg
 - **Forward motion.** If two adjacent titles can swap without loss, one isn't pulling weight.
 - **The last title lands.** Fulfill the approved purpose: resolve, commit, clarify or open forward. A useful educational synthesis is valid.
 
-See [`references/title-craft.md`](references/title-craft.md) for failure modes (opaque title, disconnected sequence), rewrite examples across genres, and the antecedent test. This is the primary reference for Stage 3, step 3.
+See [`vendor/narrative-engine/deck-title-craft.md`](vendor/narrative-engine/deck-title-craft.md) (NE's title guide, the one canonical copy) for failure modes (opaque title, disconnected sequence), rewrite examples across genres, and the antecedent test. This is the primary reference when drafting titles in Stage 3 and running the titles-only test.
 
 ## The titles-only test (the structural check)
 
@@ -244,7 +246,7 @@ Read the paragraph aloud, as if you were *speaking the deck* to a stranger. It m
 
 If reading the paragraph produces questions like "to what?" / "what strategy?" / "what policies?" / "who is *they*?" / "who is *he*?" — the chain is broken. Rewrite the offending titles to carry their context.
 
-See [`references/title-craft.md`](references/title-craft.md) for the antecedent test and worked fail/pass examples.
+See [`vendor/narrative-engine/deck-title-craft.md`](vendor/narrative-engine/deck-title-craft.md) for the antecedent test and worked fail/pass examples.
 
 ### 2. The antecedent test
 
@@ -365,7 +367,7 @@ it. A half-built skin that fails validation is never registered.
 Fidelity is **tokens + mood** ("inspired-by"), not a pixel-faithful clone. A
 producer emits ~30 lines of tokens + a fonts list + a short mood note; it does
 **not** author custom layouts. All packs inherit the shared neutral
-`layouts.css` unless a pack deliberately ships its own (`layouts: "self"`).
+`layouts.css` unless a pack deliberately provides its own (`layouts: "self"`).
 
 1. **neutral-default** — the bundled `packs/neutral` pack. No derivation.
 2. **from-verbal** — the user describes the style in prose ("clean Swiss, navy +
@@ -393,7 +395,7 @@ deferred follow-up — not yet built.
 
 - Does not generate `.pptx`. For PowerPoint, hand off to a separate skill.
 - Does not write long-form prose in slide bodies. Keep bodies sparse.
-- Requires an explicit Fast or Deep choice before discovery; never infers a mode from urgency or permission to proceed. Confirms unresolved narrative choices in one Fast brief or Deep discovery.
+- Requires a Fast or Deep choice before discovery (NE's shortcut: a stated main point plus "quick" selects Fast); never infers a mode from urgency alone. Confirms unresolved narrative choices in one Fast brief or Deep discovery.
 - Applies sentence craft to titles and source fidelity to all visible content and narration; supporting fragments need not become full sentences.
 - Resolves explicit style, project style, house default and neutral fallback using Stage 4 precedence.
 - Does not curate the public version. What to trim, what the public intro slide says, and what stays talk-only is decided by hand, before Stage 6 — never guessed.
@@ -401,9 +403,9 @@ deferred follow-up — not yet built.
 
 ## References
 
-- [`references/title-craft.md`](references/title-craft.md) — primary reference for Stage 3 title craft. Rules, failure modes, rewrite examples, the read-aloud test, and the Keynote fragment register.
+- [`vendor/narrative-engine/deck-title-craft.md`](vendor/narrative-engine/deck-title-craft.md) — primary reference for Stage 3 title craft. Rules, failure modes, rewrite examples, the read-aloud test, and the Keynote fragment register.
 - [`references/keynote-devices.md`](references/keynote-devices.md) — primary reference for Keynote mode. The optional device palette and corpus examples; narrative arcs remain NE-owned.
-- [`references/layout-catalog.md`](references/layout-catalog.md) — primary reference for Stage 4b layout promotion in a `richPromotion` pack. The generic layout family (Boardroom) plus the keynote layout family, decision tree, content cues, rewrite procedure, common mistakes. A house pack may ship its own catalog + `template.html`.
+- [`references/layout-catalog.md`](references/layout-catalog.md) — primary reference for Stage 4b layout promotion in a `richPromotion` pack. The generic layout family (Boardroom) plus the keynote layout family, decision tree, content cues, rewrite procedure, common mistakes. A house pack may provide its own catalog + `template.html`.
 - [`references/publish-targets.md`](references/publish-targets.md) — primary reference for Stage 6. The publish-target registry (user-local `~/.claude/keynote-publish-targets.json`, never in this repo), its schema, the target resolution order, and the onboarding flow for unregistered sites.
 - `scripts/keynote-render.mjs` — render script. Takes `.md` for the full pipeline; takes `.html` for re-export only (used after Stage 4b). `--style <pack-dir|name>`.
 - `scripts/house-style.mjs` — the house-style registry (register/resolve a saved house pack).

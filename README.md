@@ -153,6 +153,6 @@ Optional extras include a timed speaker script, worksheets for activities, and p
 - [Technical guide](docs/technical-guide.md): rendering, dependencies, styles and publishing.
 - [Visual production](references/visual-production.md): slide planning, Art Direct, saved layouts and content checks.
 - [Narrative Engine integration](references/narrative-engine-integration.md): the narrative handoff and review process.
-- [Title craft](references/title-craft.md): headline examples and common failures.
+- [Title craft](vendor/narrative-engine/deck-title-craft.md): headline examples and common failures (Narrative Engine's title guide, the one canonical copy).
 
 The bundled Narrative Engine version is recorded in its [manifest](vendor/narrative-engine/manifest.json). Updates are deliberate; the narrative process does not change silently during a deck build.

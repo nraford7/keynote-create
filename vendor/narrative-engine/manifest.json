@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "repository": "https://github.com/nraford7/Narrative-Engine",
-  "revision": "6f035f1a7c48e3c5ac1bc790f160daa4c4aeb4b2",
+  "revision": "9eb3560a4921f8507da0255c81f58d848cca01ee",
   "adaptations": [
     [
       "/Users/noahraford/.claude/skills/Narrative-Engine/",
@@ -14,40 +14,40 @@
   ],
   "files": {
     "SKILL.md": {
-      "upstreamSha256": "e4ba724985ec7c19e06e806214c1e29450ddade781eaa96324f9150d89e88004",
-      "bundledSha256": "e4ba724985ec7c19e06e806214c1e29450ddade781eaa96324f9150d89e88004"
+      "upstreamSha256": "256f0ea1dda3327b3dd2edce9b391564fe9d2699348f4b072ff9cffead0a32d5",
+      "bundledSha256": "256f0ea1dda3327b3dd2edce9b391564fe9d2699348f4b072ff9cffead0a32d5"
     },
     "agent-reference-persuasion.md": {
-      "upstreamSha256": "2f502e5ab1f7b8bd14c243de31ff90294daa669d595d7b88d88df17d4a234d77",
-      "bundledSha256": "2f502e5ab1f7b8bd14c243de31ff90294daa669d595d7b88d88df17d4a234d77"
+      "upstreamSha256": "c131a544447a814a0b9d8119a97f1b3e615e78b83b6340bddd8345cbcf673fee",
+      "bundledSha256": "c131a544447a814a0b9d8119a97f1b3e615e78b83b6340bddd8345cbcf673fee"
     },
     "agent-reference-verification.md": {
-      "upstreamSha256": "a15b241b2c72e85b0598e6dca8f0221ca18a52435a2b57fa56f2daee32da8296",
-      "bundledSha256": "a15b241b2c72e85b0598e6dca8f0221ca18a52435a2b57fa56f2daee32da8296"
+      "upstreamSha256": "34bd35a4e7545661d7e5351f7c4c334012b95f76d4fbc6f01aac667d54ecc694",
+      "bundledSha256": "34bd35a4e7545661d7e5351f7c4c334012b95f76d4fbc6f01aac667d54ecc694"
     },
     "agent-reference-visual.md": {
-      "upstreamSha256": "a348e89cc5deee45993babe36314bcbd319d85d5cca0d13e47275d4431505859",
-      "bundledSha256": "a348e89cc5deee45993babe36314bcbd319d85d5cca0d13e47275d4431505859"
+      "upstreamSha256": "164d936e3f03cbacde6911c4cea9c361a107b2fe476fb8720252ff9ec8178bc2",
+      "bundledSha256": "164d936e3f03cbacde6911c4cea9c361a107b2fe476fb8720252ff9ec8178bc2"
     },
     "attention-loop.md": {
-      "upstreamSha256": "e361c58d64ac578c31052765680630c274f92d17975344c933a9cfc882f65a9a",
-      "bundledSha256": "e361c58d64ac578c31052765680630c274f92d17975344c933a9cfc882f65a9a"
+      "upstreamSha256": "408bbb5528e14d9477e64567ca903d44dd529bd8fefafa5b21b978c6d04846da",
+      "bundledSha256": "408bbb5528e14d9477e64567ca903d44dd529bd8fefafa5b21b978c6d04846da"
     },
     "audience-profiles.md": {
       "upstreamSha256": "71fb7d0ee79782f05bf6dfc894c5b81f2d5bc632fd249790583a6f8fde1d71e5",
       "bundledSha256": "71fb7d0ee79782f05bf6dfc894c5b81f2d5bc632fd249790583a6f8fde1d71e5"
     },
     "checklists.md": {
-      "upstreamSha256": "c0958c10b3153690e8654d8b7b237ec2a4944357217aa92c0932f9756da030d4",
-      "bundledSha256": "c0958c10b3153690e8654d8b7b237ec2a4944357217aa92c0932f9756da030d4"
+      "upstreamSha256": "4bc5aa4a3b3c9c77d98e4f5ef0ce929bb65c409597e30720763a9fc736148191",
+      "bundledSha256": "4bc5aa4a3b3c9c77d98e4f5ef0ce929bb65c409597e30720763a9fc736148191"
     },
     "communication-frameworks.md": {
-      "upstreamSha256": "912877aa23769abd44d59c63c6f382a2f1c6b66e966d06a0d1045e1f7d473bfe",
-      "bundledSha256": "912877aa23769abd44d59c63c6f382a2f1c6b66e966d06a0d1045e1f7d473bfe"
+      "upstreamSha256": "b311e9cb7ed5fcc5e97c6808aac0fb7e0c306b65163d9ed44ea14adea59c21a7",
+      "bundledSha256": "b311e9cb7ed5fcc5e97c6808aac0fb7e0c306b65163d9ed44ea14adea59c21a7"
     },
     "deck-title-craft.md": {
-      "upstreamSha256": "ef7afce6ce53f06d6e63bae2e7ef281e063373139d5b0633bdec67760eca383d",
-      "bundledSha256": "ef7afce6ce53f06d6e63bae2e7ef281e063373139d5b0633bdec67760eca383d"
+      "upstreamSha256": "4c21a58cbc60bef9a58e871d10bfbdb7f6c7487ec1b5e3fad80c0f5e974e3314",
+      "bundledSha256": "4c21a58cbc60bef9a58e871d10bfbdb7f6c7487ec1b5e3fad80c0f5e974e3314"
     },
     "emotional-arcs.md": {
       "upstreamSha256": "69e114d8e7192ce51949c608a1b906921dd10d6376c85cb3ded865a807ba08e0",
@@ -62,12 +62,12 @@
       "bundledSha256": "697a89db18c30e4ac6f9a359754dcbfd33a4748e2489a408497ae9c1b787f3f3"
     },
     "narrative-arcs.md": {
-      "upstreamSha256": "761c0f25b0998934fa5d40bc6a0015581e8adc5a263bba6a3a9c4c8de57bd370",
-      "bundledSha256": "761c0f25b0998934fa5d40bc6a0015581e8adc5a263bba6a3a9c4c8de57bd370"
+      "upstreamSha256": "109e034863e4c7057edbec9d632fd5f2aec58ba53368e4ea515bfd806a40b970",
+      "bundledSha256": "109e034863e4c7057edbec9d632fd5f2aec58ba53368e4ea515bfd806a40b970"
     },
     "opening-closing-strategies.md": {
-      "upstreamSha256": "f295f62ccc5587d76eac4a8e9c2b1d45c102b2a5e5491f942892e29fcd948459",
-      "bundledSha256": "f295f62ccc5587d76eac4a8e9c2b1d45c102b2a5e5491f942892e29fcd948459"
+      "upstreamSha256": "1870e2ff640bdc1884a828244d5e3660a1001784de9350fbd4aefcf24c7b87c1",
+      "bundledSha256": "1870e2ff640bdc1884a828244d5e3660a1001784de9350fbd4aefcf24c7b87c1"
     },
     "prompts/builder.md": {
       "upstreamSha256": "0b036824a61301ed4052883d04da8cb8d37ccdf747cc159f8f204886c6af1584",
@@ -90,16 +90,16 @@
       "bundledSha256": "4ef25a19736a29974cf2834790c82ba156da99bca26698748c24dbd4c9d330d4"
     },
     "prose-craft-constructions.md": {
-      "upstreamSha256": "0468a2cf734cb1809a104a4411f7e060632977da155251192c7bb6fa337b6966",
-      "bundledSha256": "0468a2cf734cb1809a104a4411f7e060632977da155251192c7bb6fa337b6966"
+      "upstreamSha256": "47b6c9daee4d3d72da82aa495d08bee117ded6dbf10504ad8be31d8c0538eb8a",
+      "bundledSha256": "47b6c9daee4d3d72da82aa495d08bee117ded6dbf10504ad8be31d8c0538eb8a"
     },
     "prose-craft.md": {
-      "upstreamSha256": "e109dbdcd317e7e530f533365d7fb23efbcbed5f1fa7c65875594fa4de8759da",
-      "bundledSha256": "e109dbdcd317e7e530f533365d7fb23efbcbed5f1fa7c65875594fa4de8759da"
+      "upstreamSha256": "fabb294e28f44e34831d0274139260cff5a5f06e3b9beebce749b726005d6e4a",
+      "bundledSha256": "fabb294e28f44e34831d0274139260cff5a5f06e3b9beebce749b726005d6e4a"
     },
     "rhetorical-figures.md": {
-      "upstreamSha256": "9dddb9e85dca133371ae7b76735a653e0229c36aa07c054173737ea0f8ea2bc6",
-      "bundledSha256": "9dddb9e85dca133371ae7b76735a653e0229c36aa07c054173737ea0f8ea2bc6"
+      "upstreamSha256": "10508d9a70079bcb0760ef7f9561d54b021732805674865d302807818e210f35",
+      "bundledSha256": "10508d9a70079bcb0760ef7f9561d54b021732805674865d302807818e210f35"
     },
     "voice-profiles.md": {
       "upstreamSha256": "27392fac53d62c077524b050f4d1b4f8d4a5e003fb23046d6bf8571f76b12b86",

@@ -11,7 +11,7 @@ Keynote Create bundles Narrative Engine's narrative process at the revision reco
 | Content-specific review and stress testing | NE Phases 5–5.5 |
 | Boardroom/Keynote visual register, assets, style packs, talk kit, HTML/PDF, publication | Keynote Create |
 
-The caller's instructions come first. Within these files, this integration contract specializes NE's generic presentation format and resolves renderer-specific conflicts. NE's source fidelity rules outrank legacy guidance to cut hedges, manufacture drama, fill a minimum number of slides, or force an emotional/reveal arc. The embedded title guide is a historical upstream copy: preserve its lineage, but compile the qualification-preservation rule below into every brief.
+The caller's instructions come first. Within these files, this integration contract specializes NE's generic presentation format and resolves renderer-specific conflicts. NE's source fidelity rules outrank legacy guidance to cut hedges, manufacture drama, fill a minimum number of slides, or force an emotional/reveal arc. The title guide is NE's `deck-title-craft.md` (the one canonical copy, read from the vendored NE). Still compile the qualification-preservation rule below into every brief.
 
 The dependency is one-way. Standalone NE produces narratives without Keynote Create. This skill uses a reviewed NE snapshot for narrative work, then resumes its own Stage 3.4. Already reviewed NE presentations enter production with their brief and records; format adaptation or substantive edits reopen affected checks. Missing records mean unverified input, not an automatic gate pass. An explicitly requested render-only task may proceed with that limitation disclosed.
 

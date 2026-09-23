@@ -9,7 +9,7 @@ Primary reference for **Keynote mode**. Everything here was extracted slide-by-s
 1. **Palette, not checklist.** Select only what the content affords. Use no devices when plain explanation works; there is no target count.
 2. **Affordance triggers.** Each device below carries an *affords-when* condition tied to a content property. Match devices to what the source actually contains — a number may invite emphasis only if its required scope and qualifications remain visible; a paradox invites the two-beat pair; a hinge that recontextualizes invites the reveal.
 3. **Anti-pastiche rule.** Never manufacture what the source lacks. No invented coined words for content with no new concept, no false dread, no fabricated authority quotes. Devices serve the argument; drama the content doesn't hold reads as parody.
-4. **Visual form follows the slide's job.** Charts, diagrams, comparisons, typography and documentary images are first-class choices in either register. Full-bleed photography is one treatment, not a universal grammar. Signature devices are opt-in and must earn their place.
+4. **Visual form follows the slide's job.** Charts, diagrams, comparisons, typography and documentary images are first-class choices in either register. Full-bleed photography is one treatment, not a universal grammar. Signature devices are opt-in and must each do a job.
 
 ---
 
@@ -25,7 +25,7 @@ Each entry: **what** it is · *affords when* · a verbatim corpus example.
 
 4. **Reused-photo run** — hold one image fixed across several slides while only the caption advances. · *Affords when:* one scene can host a multi-step point without a new image per step. · The same slum photo held across three consequence captions (Asia Climate 14–16).
 
-5. **Repeated-headline photo essay** *(body engine A)* — show different views of one subject only when each earns its time. Use advancing captions for new evidence; repeated titles are limited to optional illustration, never required reasoning. There is no slide-count target. · *Affords when:* one claim is best proven by accumulation, not enumeration. · *"People want to prototype social simulations of alternate worlds"* held across nine images (Singapore 28–36).
+5. **Repeated-headline photo essay** *(body engine A)* — show different views of one subject only when each justifies its time. Use advancing captions for new evidence; repeated titles are limited to optional illustration, never required reasoning. There is no slide-count target. · *Affords when:* one claim is best proven by accumulation, not enumeration. · *"People want to prototype social simulations of alternate worlds"* held across nine images (Singapore 28–36).
 
 6. **Two-beat tension pair** *(body engine B)* — force A on one slide, force B on the next; make the relationship explicit in the headline sequence; do not rely on the speaker to supply the inference. · *Affords when:* the idea is a tension or contradiction. · *"God-like technical capability"* → *"Persistent basic needs / 780 million people lacking clean water"* (Bangkok, "Achilles' Paradox").
 

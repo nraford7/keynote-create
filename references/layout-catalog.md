@@ -86,7 +86,7 @@ Stage 4b runs after the baseline render. For each slide in the generated HTML:
 3. **Rewrite** the slide's `<div class="slide-wrap"><div class="slide ...">…</div></div>` block in place, preserving the footer's brand + pageno.
 4. **Validate** div balance after every rewrite — the layout docs warn that imbalanced divs break the deck silently. After all rewrites, count `<div` and `</div>` in the file; they must match.
 5. **Save** the modified HTML.
-6. **Re-export** PDF: `node ~/.claude/scripts/keynote-render.mjs <path-to-edited.html>`.
+6. **Re-export** PDF: `node scripts/keynote-render.mjs <path-to-edited.html>` (run from the skill directory, same as SKILL.md Stage 4b).
 
 ## Title size and eyebrows — non-negotiable for promotion
 

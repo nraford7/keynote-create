@@ -177,7 +177,7 @@ test('kn-bg background image gets a measured box and is downscaled (C1 regressio
   assert.ok(fs.existsSync(file), `asset file exists: ${entry.file}`);
   const { w, h } = identify(file);
   assert.ok(Math.abs(w - 2592) <= TOL && Math.abs(h - 1458) <= TOL,
-    `disk ${w}x${h} != 2592x1458±2 — kn-bg shipped unmeasured`);
+    `disk ${w}x${h} != 2592x1458±2 — kn-bg written unmeasured`);
   // and the .kn-bg style block references the rewritten asset (span replacement
   // keeps the surrounding url('…') quoting from the fixture)
   assert.ok(outHtml.includes(`background-image:url('assets/${entry.file}')`),

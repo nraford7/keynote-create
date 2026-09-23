@@ -10,7 +10,7 @@ For installation and everyday use, start with the [README](../README.md).
 | `references/narrative-engine-integration.md` | Ownership, compiled deck contract, agent isolation, repair and rendering handoff. |
 | `scripts/narrative-sync.mjs` | Offline bundle integrity check and explicit updates from an upstream checkout. |
 | `SKILL.md` | The skill definition (frontmatter + workflow). |
-| `references/title-craft.md` | Title-craft rules, failure modes, and the Keynote fragment register. |
+| `vendor/narrative-engine/deck-title-craft.md` | Title-craft rules and failure modes (NE's canonical title guide, vendored). |
 | `references/keynote-devices.md` | The 16-device Keynote palette (affordance triggers + anti-pastiche rules) and the six spines. |
 | `references/layout-catalog.md` | The generic Boardroom layouts plus the Keynote layout family. |
 | `scripts/keynote-render.mjs` | Node renderer: markdown → self-contained HTML → 1920×1080 PDF via headless Chrome, fonts base64-embedded. Handles both modes; consumes a style pack. |
@@ -23,7 +23,7 @@ For installation and everyday use, start with the [README](../README.md).
 | `packs/neutral/` | The bundled neutral style pack (the default) + `REQUIRED-TOKENS.md` token contract. |
 | `references/publish-targets.md` | The publish-target registry schema and onboarding flow (the registry itself is user-local, never in this repo). |
 | `docs/fixtures/` | Test fixtures: `sample-public.html` (self-contained publish-stage fixture) + its generator, plus sample Boardroom/Keynote decks. |
-| `KEYNOTE-MODE-SPEC.md` | Design spec for the Keynote-mode addition (kept for provenance). |
+| `docs/archive-KEYNOTE-MODE-SPEC.md` | Retired design spec for the Keynote-mode addition (provenance only; superseded by SKILL.md). |
 
 ## Deployment
 
