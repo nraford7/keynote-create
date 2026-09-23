@@ -4,7 +4,7 @@
 
 The pacing, emotional textures and sample phrasing below are suggestions, not mandates; the supported outline and audience purpose take precedence. Never manufacture an event, emotional turn, false lead or quotable line.
 
-Detailed beat-by-beat structures for all 10 narrative arcs. They offer different information orders: some delay a reveal; others explain an outcome first, develop a plan or synthesize perspectives. They are options for both prose and presentations, not proven engagement improvements.
+Detailed beat-by-beat structures for all 10 narrative arcs. The "typical turn" percentages describe where the turn often falls; they are not targets. Adherence to a canonical shape did not predict success in large text studies, while real, supported reversals did (Research Bible 2026-09-23, S09), so place the turn where the source's reasoning puts it. They offer different information orders: some delay a reveal; others explain an outcome first, develop a plan or synthesize perspectives. They are options for both prose and presentations, not proven engagement improvements.
 
 ### Beat Weights
 
@@ -22,8 +22,8 @@ The Weight column indicates relative importance, not slide count. Content determ
 ## A) The Prestige
 
 **Source:** Magic trick structure (Pledge → Turn → Prestige)
-**Best for:** Counterintuitive findings, debunking conventional wisdom, "everything you thought was wrong"
-**Reveal position:** ~60%
+**Best for:** Counterintuitive findings where the audience demonstrably holds the old belief. Judge the arc by the completeness of its replacement account, not by where the old belief appears: correction format (myth-first or fact-first) makes little difference, while a full replacement explanation does (Research Bible 2026-09-23, S07).
+**Typical turn (descriptive only, not a target):** ~60%
 
 ### Beat Structure
 
@@ -33,13 +33,14 @@ The Weight column indicates relative importance, not slide count. Content determ
 | 2. Plant #1 | Subtle clue that will pay off later | brief |
 | 3. Deepening | More evidence supporting conventional view | standard |
 | 4. Plant #2 | Second subtle clue | brief |
+| 4a. Prediction (optional) | For decks and workshops only: ask the audience to commit to a prediction before the Turn ("Which group do you expect did better?"). Predicting before a surprising answer improves memory for it. | optional |
 | 5. **Turn [REVEAL]** | Contradictory fact that reframes everything | anchor |
 | 6. Misdirection addressed | Why we missed this before | standard |
-| 7. **Prestige** | The new understanding; what this means | anchor |
+| 7. **Prestige** | The new understanding as a causal replacement account (why the old belief failed and what explains the facts), not only a denial | anchor |
 | 8. Consequences | Implications and applications | standard |
 | 9. Limits | Plain caveats and boundaries | brief |
 | 10. Action | What to do with this knowledge | brief |
-| 11. Callback | Return to opening with new eyes | anchor |
+| 11. Callback | Return to opening with new eyes; end on the new account, not the old belief | anchor |
 
 ### Example Headlines by Beat
 
@@ -70,8 +71,8 @@ The Weight column indicates relative importance, not slide count. Content determ
 ## B) Mystery Box
 
 **Source:** J.J. Abrams storytelling philosophy
-**Best for:** Research with unexpected conclusions, investigative reports, "whodunit" analyses
-**Reveal position:** ~60%
+**Best for:** Research with unexpected conclusions, investigative reports, "whodunit" analyses, for readers who will stay to the reveal (talks, workshops, teaching). Curiosity raises engagement and memory for the answer; it has not been shown to persuade busy decision readers. For pre-reads, board papers and investor materials, rank below Columbo or answer-first unless the user picks it with the trade-off shown.
+**Typical turn (descriptive only, not a target):** ~60%
 
 ### Beat Structure
 
@@ -121,7 +122,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Heist film structure
 **Best for:** Strategy presentations, transformation roadmaps, "how we'll win" pitches
-**Reveal position:** ~75% (execution/payoff)
+**Typical turn (descriptive only, not a target):** ~75% (execution/payoff)
 
 ### Beat Structure
 
@@ -170,7 +171,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Scenario planning, strategic foresight
 **Best for:** Decision-point presentations, "two futures" framing, strategic planning
-**Reveal position:** ~55% (the fork)
+**Typical turn (descriptive only, not a target):** ~55% (the fork)
 
 ### Beat Structure
 
@@ -217,7 +218,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Improv comedy, paradigm shifts
 **Best for:** Introducing new mental models, winning over skeptics, "aha moment" content
-**Reveal position:** ~50% (the reframe)
+**Typical turn (descriptive only, not a target):** ~50% (the reframe)
 
 ### Beat Structure
 
@@ -264,8 +265,9 @@ The Weight column indicates relative importance, not slide count. Content determ
 ## F) Hero's Journey (for Ideas)
 
 **Source:** Joseph Campbell's monomyth, adapted for business
-**Best for:** Origin stories, transformation cases, founder narratives, change management
-**Reveal position:** ~65% (the ordeal)
+**Best for:** Origin stories, transformation cases, change management, peer and internal audiences.
+**Protagonist rule:** When readers judge the author's capability (investors, boards, committees, procurement), the protagonist is the customer, user, a team member or the data, and each Tests/Evidence beat carries a number from the source. In a field experiment with 188 angel investors, a narrative pitch raised identification but lowered perceived capability; narrative signals warmth and statistics signal competence (Research Bible 2026-09-23, S08). A founder story remains available for peer and internal audiences, or when the user asks for it with this trade-off shown.
+**Typical turn (descriptive only, not a target):** ~65% (the ordeal)
 
 ### Beat Structure
 
@@ -317,7 +319,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Gustav Freytag's dramatic structure
 **Best for:** Complex narratives needing emotional catharsis, literary/dramatic content
-**Reveal position:** ~60% (the climax)
+**Typical turn (descriptive only, not a target):** ~60% (the climax)
 
 ### Beat Structure
 
@@ -357,7 +359,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Inverted detective story (outcome known, method revealed)
 **Best for:** Post-mortems, root cause analyses, retrospectives
-**Reveal position:** ~70% (the howdunit)
+**Typical turn (descriptive only, not a target):** ~70% (the howdunit)
 
 ### Beat Structure
 
@@ -406,7 +408,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 
 **Source:** Upright Citizens Brigade improv comedy
 **Best for:** Pattern recognition, "here's the hidden dynamic," cross-domain insight transfer
-**Reveal position:** ~65%
+**Typical turn (descriptive only, not a target):** ~65%
 
 ### Beat Structure
 
@@ -453,8 +455,9 @@ The Weight column indicates relative importance, not slide count. Content determ
 ## J) Rashomon Perspective Pivot
 
 **Source:** Akira Kurosawa's film structure
-**Best for:** Controversial topics, multi-stakeholder situations, synthesis presentations
-**Reveal position:** ~70% (the integrative frame)
+**Best for:** Controversial topics, multi-stakeholder situations, synthesis presentations, and diagnosis (post-mortems, strategy reviews).
+**Entry and ending rules:** A view enters only with real source support; a weak rival account can strengthen the main one rather than balance it. A false claim inside a view is corrected in or right after that view. The Integrative Frame states which claims in each view survive; where evidence cannot decide, the close names what would decide it. Refutational synthesis beats non-refutational balance (Research Bible 2026-09-23, S07, S09).
+**Typical turn (descriptive only, not a target):** ~70% (the integrative frame)
 
 ### Beat Structure
 
@@ -466,7 +469,7 @@ The Weight column indicates relative importance, not slide count. Content determ
 | 4. View C (optional) | Third perspective if relevant | optional |
 | 5. Cross-Examination | Where the views conflict | standard |
 | 6. Missing Dimension | The axis none of them considered | anchor |
-| 7. **Integrative Frame [REVEAL]** | New understanding that accommodates all | anchor |
+| 7. **Integrative Frame [REVEAL]** | New understanding that says which claims in each view survive and why (refutational, not bare balance) | anchor |
 | 8. Re-read | How each view looks through new frame | standard |
 | 9. Consequences | What this integration implies | standard |
 | 10. Guardrails | When integration goes too far | brief |
