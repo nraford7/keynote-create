@@ -11,17 +11,29 @@ Turn source material into a source-supported argument, then into an HTML deck an
 
 **Narrative Engine owns the narrative stages; Keynote Create owns production.** Read [`references/narrative-engine-integration.md`](references/narrative-engine-integration.md), then the pinned [`vendor/narrative-engine/SKILL.md`](vendor/narrative-engine/SKILL.md) for narrative orchestration. These are embedded files, not calls to another installed skill. The integration reference resolves the boundaries and presentation contract; do not recursively invoke either skill. Existing deck rendering or publishing starts at its relevant production stage, without restarting discovery.
 
-### Stage 1 — Import, audience, material, focal point
+### Entry route — start at the work requested
 
-Use NE Phases 1–2: Fast/Guided discovery, audience and ask, Material Read, and 2–3 stance-committing focal candidates. Capture the One Thing, Ask, Through-Line and `focal_origin`. An explicitly supplied point is `user-stated`, never `inferred`. Default to Fast when the user asks for speed or provides clear instructions. Surface assumptions in one consolidated brief; do not repeat already-answered questions. Honor an explicit instruction to proceed without questions.
+| Input / request | Route |
+|---|---|
+| Raw material or a narrative needing substantive revision | Stages 1–3 with the bundled Narrative Engine, then production. |
+| Approved Narrative Engine presentation | Read the brief, actual body and review records; preserve the mode and decisions. Start at Stage 3.4. Missing records mean unverified input; offer the missing review or explicitly labeled render-only work. |
+| Existing deck needing visual changes, export or publication | Start at the relevant production stage. Do not restart discovery or demand Fast/Deep for a purely visual/export task. Reopen narrative checks if meaning changes. |
 
-### Stage 2 — Argument outline and compiled brief
+### Stage 1 — Shared assignment and source analysis
 
-Use NE Phases 2.5–3.5. Write the plain argument outline first; **answer-first is the default in both registers**. Admit a withheld reveal only when the Material Read identifies a genuine surprise. Named arcs, including the local spine menu, require quoted source support for essential beats and a passing skeleton stamp test. No required five-act arc, minimum slide count, obligatory emotional reversal, or prewritten killer line.
+Use NE Phases 1–1.75. For each new narrative, require an explicit **Fast or Deep** choice and wait if absent. Never infer Fast from urgency, “quick,” “no questions,” or generic permission to proceed. An existing choice for this piece carries forward.
 
-Compile the brief with focal origin, audience/ask, full Material Read, argument outline, approved shape and kept beats, register, density, voice and audience essentials. Include the renderer contract from the integration reference verbatim. Length is content-driven within the user's actual slide/time budget; count every visible slide, including any cover. Keynote/sparse is a visual density alias of High-Impact, not a new narrative shape.
+NE owns purpose, success condition, audience and starting position, source analysis and evidence boundaries. Confirm supplied answers once; ask only unresolved questions. Keynote Create contributes **delivery context before drafting**: live talk / workshop / read-alone / both; speaking-time and slide limits; required outputs, accessibility needs and assets. Presentation is already selected by this task; do not ask whether the user wants prose unless their request leaves that unresolved. A request for both live and reading decks means two presentation variants, not NE's Prose/Presentation “Both” format.
 
-Resolve style using Stage 4's precedence. Present one consolidated confirmation in Fast mode, unless the user already authorized proceeding; use guided questions only for unresolved choices. Keep visual style details with the orchestrator, outside the builder's small reading list.
+Live use requires realistic narration and time allowance for pauses, demonstrations and activities. A read-alone deck must expose the explanation and qualifications otherwise spoken. For both, agree whether one deck serves both uses or create separate reviewed variants. Keep verdicts and production files separate per variant.
+
+### Stage 2 — Treatment, point, structure and approved brief
+
+Follow NE Phases 2–3.5: resolve detail, assumed knowledge, rhythm and tone separately; develop provisional points; compare direct explanation with eligible source-supported arcs; then choose point and structure together. Run NE's required prebuild reviewers where applicable. NE owns the arc catalog and reasoning order; Keynote Create does not select a second spine.
+
+Resolve **Boardroom** (normally sentence-led) or **Keynote** (connected fragments with written narration) as a presentation register, independently of delivery context. Neither register mandates photographs or forbids charts. Audience type alone does not choose a register. Compile the presentation contract from the integration reference into NE's brief, alongside purpose-specific success checks and all visible-content requirements. Every slide, including covers, counts toward the budget.
+
+Resolve known style constraints using Stage 4's precedence, but keep CSS and image-generation detail out of the writer's inputs. Both Fast and Deep require approval of the **concrete completed brief** before drafting; generic earlier authorization does not approve unseen assumptions. Fast consolidates the same analysis and choices, rather than skipping them. NE's pre-build consistency check is the final framing step.
 
 ### Stage 3 — Build and four gates
 
@@ -29,25 +41,33 @@ Create a unique `RUN_DIR` and write the source and compiled brief. Dispatch the 
 
 Run NE's gates and shared repair loop:
 1. **Shape support** before drafting (Stage 2).
-2. **Blind focal fidelity** after drafting: a fresh judge reads the body, records its cold read, reads the source, then the brief. Dispatch audience/ask/register only, never the focal, sidecar or inherited conversation. In both modes the judge first reads and records the complete headline sequence alone, before bodies or narration. A broken argument chain requires revision even when narration explains it. Then check actual written narration for consistency and evidence. Pass the content-neutral headline override from the integration reference in every judge dispatch.
+2. **Blind focal fidelity** after drafting: a fresh judge reads the body, records its cold read, reads the source, then the brief. Dispatch audience/ask/register only, never the focal, sidecar or inherited conversation. In both modes the judge first reads and records the complete headline sequence alone, before bodies or narration. After its cold read, the judge checks the approved purpose and success criteria in the brief. A broken argument chain requires revision even when narration explains it. Then check actual written narration for consistency and evidence. Pass the content-neutral headline override from the integration reference in every judge dispatch.
 3. **Humanizing check**, flag-only by the orchestrator; the builder makes repairs.
 4. **Evidence review** with source and sidecar: unsupported claims, stripped qualifications, missing reasoning, overreaching asks and provenance mistakes. Never remove evidentiary “may”, “estimated”, “preliminary” or “correlational” to make a title punchier.
 
 Use upstream verdict routing, trigger priority, report archives, judge counter and two-evidence-reviews-per-draft cap. Do not treat PASS at the focal gate as permission to deliver. Run targeted review automatically for high-stakes content and offer it otherwise; offer stress tests only where NE calls for them. Revisions after review must re-enter the affected gates. See the integration reference for limitations when isolated agents are unavailable.
 
-### Stage 3.5 — Art direction and production handoff
+### Stage 3.4 — Slide plan and delivery feasibility
 
-After narrative gates and any selected reviews pass, freeze the accepted slide sequence. For Keynote, choose one global photographic treatment, then record per-slide image direction and assets with `> Art:`, `> Image:` / `![]()`, and optional `> Layout:`. Use an available art-direction skill or write briefs directly; a missing external skill must not block an otherwise usable deck. Select devices from [`references/keynote-devices.md`](references/keynote-devices.md) only where source material supports them. There is no device or imagery quota. Evidence diagrams and literal images are valid when clearer than metaphor.
+After narrative review, preserve the accepted body and records as the comparison reference. Make `deck.md` as a production copy and assign persistent `> Slide ID:` values. Read [visual production](references/visual-production.md) for the slide-plan fields, Art Direct handoff, revision procedure and fidelity checks.
 
-Keep production metadata outside the judged body. Make `deck.md` as a production copy only after review; the accepted NE body remains the comparison reference. Adding assets is permitted; changing claims, captions, narration, order or count invalidates the affected narrative checks. New talk-kit claims also need source review.
+For each slide record its argument job, approved claim, visible support/citations/qualifications, narration, visual job and form, assets and layout. Choose the form before an image: chart, comparison, diagram, documentary image, conceptual illustration, typography, or no additional visual. Narrative approval does not authorize production to remove support. Test live timing before expensive asset work; if adaptation changes content, order or count, return through the affected NE checks before freezing that variant.
+
+### Stage 3.5 — Art Direct and production handoff
+
+Use `/art-direct` when visual concepts or a visual-language review are useful and it is available. Pass the **approved brief and slide plan**, not a request to rediscover the audience, point or arc. With an approved house style, adapt it; otherwise propose 2–3 meaningful directions and obtain a selection before commissioning assets. Existing authorization for a full deck includes all required slide briefs; do not stop after demonstration slides merely because standalone Art Direct defaults to a sample.
+
+The [Art Direct handoff](references/visual-production.md#art-direct-handoff) governs its use inside this workflow. Literal, human, environmental, metaphorical and oblique images are alternatives, with no preferred cleverness ranking. Diagrams, charts, typography and no image are first-class choices. Source-backed evidence assets take precedence when a visual supports a factual claim; generated illustration is never documentary proof. The device palette expresses the approved narrative, never replaces it.
+
+Record approved direction, asset provenance, composition and placement in the slide plan; use `> Art:`, `> Image:` / `![]()` and `> Layout:` in `deck.md`. A missing Art Direct skill must not block the deck: prepare the same visual brief directly. Art Direct remains independently useful for other media; NE never requires it or Keynote Create.
 
 ### Stage 3.6 (opt-in) — Talk kit
 
-Offered when the deck fronts a **live talk or workshop**: the frontmatter carries `occasion: talk`, the user names a live event ("I'm giving this at MOD. Adelaide"), or the user asks for it directly. Offer in one line and wait for the go-ahead — never forced. Numbered 3.6 because it sits after the Keynote-mode art-direction pass (3.5, above) and before rendering — existing stages are never renumbered.
+Offered when the deck fronts a **live talk or workshop**: the frontmatter carries `occasion: talk`, the user names a live event ("I'm giving this at MOD. Adelaide"), or the user asks for it directly. Offer in one line and wait for the go-ahead — never forced. The basic narration and timing feasibility were established earlier; this stage polishes the optional full script and workshop materials.
 
 Two deliverables, both landing **next to the deck** (same directory as the markdown):
 
-1. **Speaker notes** — per-slide spoken prose written for delivery at **~120 wpm**, with **cumulative timings** per slide ("3:12 by the end of this one"). Two clearly separated blocks per slide:
+1. **Speaker notes** — per-slide spoken prose written for delivery using **~120 wpm as an initial estimate**, adjusted for the speaker, pauses and activities, with **cumulative timings** per slide ("3:12 by the end of this one"). Two clearly separated blocks per slide:
    - **Spoken copy** — what the presenter actually says.
    - **Source cautions** — preparation-only evidence notes, kept strictly separate from the spoken copy. A number, name, or citation that will be *spoken* must be verified before the talk; a claim that lives only in the caution block stays out of the spoken line until it is verified. This caution discipline is what keeps a deck's claims defensible: pre-verified, never asserted.
 
@@ -60,8 +80,8 @@ Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export
 **Style resolution precedence (applies to all sub-stages).** A deck is always rendered by a **style pack** — a directory the render script consumes (`pack.json` + `tokens.css` skin + `layouts.css` structure + `fonts.json` + `style-notes.md`; see `packs/neutral/REQUIRED-TOKENS.md`). Resolve which pack, in order:
 
 1. **Explicit style source in the request.** The user gave a reference deck / URL / verbal brief, or a `--style <path>`. Run the matching **producer** (below) or use the path. This skips the Stage 2 style question.
-2. **Registered house default.** If the registry's `default` names a pack, use it: omit `--style` (the renderer resolves the default itself) and never substitute neutral. This is the normal case once a house pack exists.
-3. **Project style detected.** If the working directory or any parent up to `$HOME` contains `DESIGN.md`, `tokens.css`, `deck.template.html`, `style-guide.html`, or a `CLAUDE.md` naming a deck style — adopt it via the **project adapter** and tell the user. This answers the Stage 2 style question rather than being asked.
+2. **Project style detected.** If the working directory or any parent up to `$HOME` contains `DESIGN.md`, `tokens.css`, `deck.template.html`, `style-guide.html`, or a `CLAUDE.md` naming a deck style — adopt it via the **project adapter** and tell the user. This answers the Stage 2 style question rather than being asked.
+3. **Registered house default.** If no explicit or project style applies, use the registered default; never substitute neutral for a broken default.
 4. **Stage 2 style choice** — House style / Neutral / Bring-your-own — only when none of 1 to 3 fired.
 5. **Neutral fallback** — the bundled `packs/neutral` pack when nothing above is specified.
 
@@ -69,9 +89,9 @@ Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export
 
 **House-style first-run setup.** When the user picks **House style** and none is registered: ask them to point me at it (a folder, a style guide, or a reference deck) or describe it; run the matching producer; **finalize** to a complete pack; register it with `scripts/house-style.mjs` (`registerPack`); reuse it silently on later runs. The registry and any house pack live in local config (`~/.claude/keynote-house-style.json`, `~/.claude/keynote-packs/…`) — never in this repo.
 
-Pass the resolved pack to the render script with `--style <pack-dir|name>`. An explicit but unresolvable `--style` is a hard error, never a silent neutral fallback.
+State the resolved style and its source once. The orchestrator detects/adapts project styles; the renderer does not scan projects. Pass the resolved pack to the render script with `--style <pack-dir|name>`. An explicit but unresolvable `--style` is a hard error, never a silent neutral fallback.
 
-**Keynote mode changes the visual system.** When `mode: keynote` is in the frontmatter, the render script routes every slide through the keynote layout family (full-bleed image + caption box, one-word-on-black, giant-number, wordless, recurring-motif) instead of the text layouts. The serif-title default does not apply to Keynote decks — the caption box over full-bleed photography is its own system. Boardroom mode renders exactly as before. Both families re-skin from the active pack's tokens.
+**Keynote mode selects a baseline layout family**, not compulsory imagery. The renderer supports caption, text emphasis, comparison and motif layouts; complex charts/diagrams may need an evidence asset or rich promotion. Select the visual form from the slide plan, then implement it with a compatible layout. Both registers use the active style pack; do not force a photograph to satisfy a baseline template.
 
 **Layout check after every slide change (mandatory).** Any time a slide is added or changed, run the guard and then look:
 
@@ -83,8 +103,8 @@ It screenshots the slides and fails on anything that leaves the frame, crosses t
 
 **QA discipline (mandatory, on top of the layout check).** Every slide change — add, edit, reorder — also requires:
 
-1. **Snapshot before.** Before touching the file, record each slide's exact byte span — the `.slide-wrap` slice, by index.
-2. **Byte-proof after.** An **agent procedure, not a script** — it runs per manual slide edit and needs judgment about what counts as the changed unit. Extract each slide-wrap's exact byte span from the before and after files, compare slide-by-slide, and report **"only slide N changed; other M slides byte-identical."** A silent difference in any other slide is a failure, even if it renders fine.
+1. **Snapshot before.** Before touching the file, record each slide's exact byte span — the `.slide-wrap` slice, by stable `data-slide-id` (index only for legacy files without IDs).
+2. **Byte-proof after.** An **agent procedure, not a script** — it runs per manual slide edit and needs judgment about what counts as the changed unit. Extract each slide-wrap's exact byte span from the before and after files, compare slide-by-slide, and report **"only slide N changed; other M slides byte-identical."** A silent unrelated difference is a failure. For reordered slides, account for deliberate page-number changes by ID; for global style edits, declare all affected slides and inspect them. Do not make a single-slide byte-identity claim for a global change.
 3. **Rendered-page comparison** before/after PDF export: compare corresponding unchanged page images. A whole-file PDF hash changes with metadata or any edited page and cannot prove that unchanged slides look identical.
 4. **E2E navigation check.** The nav subset of `node scripts/keynote-verify.mjs <deck.html>` must pass before the change counts as done: synthetic `p`/Escape/arrow keys drive the deck, `#N` and `#present` deep-links resolve from a fresh page load. Decks without a show-mode handler report these lines as SKIPPED — SKIPPED never fails a run.
 
@@ -116,9 +136,9 @@ For a `richPromotion` pack:
 1. **Invoke `/impeccable`** on the generated HTML. The skill applies design discipline (typography, the accent used as a scalpel, hierarchy from type scale, no chartjunk) to the rewrite work.
 2. **Read the active pack's `layout-catalog.md`** — the catalog of layouts with a decision tree and content cues for picking. (The bundled generic catalog is [`references/layout-catalog.md`](references/layout-catalog.md).)
 3. **Read the active pack's `template.html`** — the source-of-truth for layout markup. Each template slide is a working scaffold.
-4. **For each slide in the generated HTML**, classify by walking the decision tree in the catalog top-to-bottom; stop at first match.
-5. **Rewrite each slide's HTML in place**, copying the layout scaffold from `template.html` and filling in the slide's content. Preserve the footer (`brand` + `pageno`) on every slide.
-6. **Validate** light/dark rhythm: don't put more than 3 light slides in a row, more than 2 dark in a row. Dark layouts (VERDICT, PULL QUOTE, FULL-BLEED IMAGE, SECTION DIVIDER, HALF-BLEED) are punctuation between light editorial slides.
+4. **For each slide**, start with its visual job and required content from the slide plan. Consult the catalog for compatible layouts; a numeral or keyword does not determine the layout. Reject candidates that hide approved text, citations or evidence assets.
+5. **Rewrite each slide's HTML in place**, using the pack scaffold and preserving `data-slide-id`, approved content and footer. Save rich layouts as per-slide fragments with their source fingerprints using `scripts/keynote-promotions.mjs` (see visual production). Keep supported hints/assets in `deck.md`; generated HTML must not be the only record of a design decision.
+6. **Review** visual rhythm in context. Contrast can mark emphasis or a transition; no fixed light/dark quota overrides readability, evidence or the slide's job.
 7. **Validate div balance** after all rewrites: count `<div` vs `</div>` in the file; they must match. Imbalanced divs break the deck silently.
 
 The catalog also includes the common rewrite mistakes to avoid — wrong theme class, body text in the accent color, missing title-rule, stripped footer.
@@ -146,6 +166,8 @@ The script now lives in the skill directory (`scripts/` in this repo's clone), s
 
 If a layout looks wrong, re-run 4b on the specific slide and re-export. The decision tree in the pack's `layout-catalog.md` is advisory, not binding — taste overrides rule when they conflict.
 
+Before delivery, run the **production fidelity check** against `deck.md` after every render/promotion and compare that production copy with the accepted narrative. Mechanical text checks do not certify meaning, asset provenance, charts or layout; inspect those visually. Use Art Direct's critique mode when images need review against intent. Then complete geometry/screenshots, PDF inspection and delivery controls. See [visual production](references/visual-production.md#production-fidelity).
+
 ### Stage 5 (on-demand) — "Tighter"
 
 User can request compression passes anytime after delivery. When they say "tighter":
@@ -153,7 +175,7 @@ User can request compression passes anytime after delivery. When they say "tight
 1. Re-confirm the punchline. Has the point drifted?
 2. Section pass: any slides that could merge or be cut?
 3. Per-title compression: cut filler, sharpen verbs, lose any title that does not justify its slide.
-4. Re-run craft and humanizing checks. Route changed claims, ask, climax, close, sourced material or narration through the affected NE gates and shared repair loop; preserve report counters. Then render the tighter markdown with the same mode and cover policy to refresh HTML + PDF.
+4. Re-run craft and humanizing checks. Route changed claims, ask, climax, close, sourced material or narration through the affected NE gates and shared repair loop; preserve report counters. Reconcile revised narrative into `deck.md` by stable slide ID, retaining still-valid assets and hints. Render with the same mode/cover policy, then restore unchanged rich slide fragments; changed slides require renewed layout review. Run production fidelity and refresh HTML + PDF.
 
 Repeatable until the user says stop.
 
@@ -187,29 +209,11 @@ Publishes a **human-curated public deck** to a registered website target. Stage 
 
 **Onboarding flow** (first run against any unregistered site; later runs are silent): read the site repo — routing structure, static-asset conventions, hub/listing pages, any structured data (JSON-LD) on the hub that grows per published item, build and deploy mechanics — then propose a profile; the user confirms before it persists to `~/.claude/keynote-publish-targets.json`. See [`references/publish-targets.md`](references/publish-targets.md) for the schema.
 
-## Spine menu — optional, source-licensed structures
+## Narrative structure and writing treatment
 
-A plain answer-first argument is a complete result. Minto's grouped reasons and vertical Q&A are useful when the material supports them, in either register. There is no mandatory mid-deck turn.
+NE owns direct explanation and the ten narrative arcs. Read its framework-selection and narrative-arcs references during Stage 2 only; production uses the approved sequence. Devices are visual/rhetorical treatments, not another arc menu.
 
-The local palette remains available: emotional arc, reveal/misdirection, framework build, forecast cascade, teaching/method, and scenario-parallel. Read [`references/keynote-devices.md`](references/keynote-devices.md) as an orchestrator reference. Its example pacing and slide counts are illustrative, not minimums. Apply NE Gate 1 to each proposed structure: quote support for essential beats, test the focal and ask against the landing, reject unsupported beats rather than manufacture them. Forecasts stay conditional; scenarios remain scenarios.
-
-Choose a different shape if the required beats cannot fit the user's budget. Never pad to satisfy an arc. Compile only the selected, supported beats into the brief; the builder does not read the menu.
-
-## Density calibration
-
-Density modifies how the title sequence and bodies are tuned within the chosen length.
-
-| Density | Title style | Body style |
-|---|---|---|
-| High-Impact | Bone-bare, declarative, near-aphoristic | One bullet, often none |
-| Narrative | Conversational, beat-shaped, room to breathe | 2-3 short fragments |
-| Evidence | Specific, claim-bearing, numbers when possible | 3-4 bullets including a data point or citation |
-| Keynote/sparse | Fragment, one-word beat, question, or coined term | Near-empty — the image is the body |
-| ELI5 | Plain words, concrete nouns, no jargon | Short fragments with everyday analogies |
-
-**Keynote/sparse** is the default density inside Keynote mode: the caption is one line or one word, and the full-bleed image does the work the body would otherwise do. Even so, **give most slides a one-line subcaption** — a single short bullet that elaborates the beat. It renders as a small line beneath the top-left caption box (like the corpus close). Caption + subcaption is the standard keynote slide; leave the body empty only for deliberate wordless or one-word beats.
-
-In **ELI5** mode, the title-craft rule "specific over abstract" is satisfied by concrete analogies as well as numbers. "Our pipeline is a leaky bucket" beats "Conversion dropped 18% in funnel stage 3" if the audience won't recognise the latter.
+Use NE's independent dimensions: detail, assumed knowledge, rhythm and tone. Legacy density names are accepted as input hints, not bullet quotas. “Keynote/sparse” never permits hiding necessary evidence or replacing reasoning with an image. Non-specialist language can still require detailed support. A clear literal explanation is as valid as an analogy.
 
 ## Title craft
 
@@ -224,7 +228,7 @@ In **ELI5** mode, the title-craft rule "specific over abstract" is satisfied by 
 - **Plain over clever.** A smart reader who hasn't read the source must understand each title alone. Compressed expert shorthand fails the stranger test.
 - **No throat-clearing.** Banish "Introduction," "Overview," "Background," "Agenda," "Conclusion," "Thank you," "Questions?"
 - **Forward motion.** If two adjacent titles can swap without loss, one isn't pulling weight.
-- **The last title lands.** It should resolve, commit, reframe, or open forward. Never summarize.
+- **The last title lands.** Fulfill the approved purpose: resolve, commit, clarify or open forward. A useful educational synthesis is valid.
 
 See [`references/title-craft.md`](references/title-craft.md) for failure modes (opaque title, disconnected sequence), rewrite examples across genres, and the antecedent test. This is the primary reference for Stage 3, step 3.
 
@@ -253,8 +257,8 @@ For each title after the cover:
 
 - Does a stranger get the story from titles alone?
 - Is the question live by the second slide (or first, at small length)?
-- Is there an unmistakable turn near the middle? *(Arc spines only — a Minto deck has no turn; check instead that the answer lands by slide 2.)*
-- Does the last title land the punchline, not summarize?
+- Does the approved structure work, including a turn only when it actually calls for one? For answer-first, does the answer land by slide 2?
+- Does the ending fulfill the approved success condition?
 - Does the final title contain or directly set up the ask? ("Open forward" endings are allowed only when the confirmed ask is reflective — never on a decision deck.)
 - Can any adjacent pair be swapped without loss?
 
@@ -275,7 +279,7 @@ Past 15 words: the title has become two beats — split into two slides or compr
 
 ## Output format
 
-**Primary NE handoff:** body-only `ne-output.md` plus a private `ne-output-meta.md` sidecar, as defined in the integration reference. Render the reviewed body with `--mode boardroom|keynote --no-cover`; it already contains every planned visible slide. No sidecar is read by the renderer.
+**Primary NE handoff:** body-only `ne-output.md` plus a private `ne-output-meta.md` sidecar, as defined in the integration reference. Copy the reviewed body to `deck.md`, add stable IDs and approved production metadata, then render that copy with `--mode boardroom|keynote --no-cover`; it contains every planned visible slide. No sidecar is read by the renderer.
 
 **Legacy/production format:** the following combined Markdown remains supported for existing decks and production copies. Never use its focal/shape frontmatter as input to a blind judge. By default the legacy renderer adds one cover; use `--no-cover` if the slides already include it. The parser supports simple one-line frontmatter values, not general YAML.
 
@@ -291,7 +295,7 @@ ask: "What the audience should decide, do, or feel at the end"
 dramatic_question: "The central tension in one sentence"
 length: "small | medium | extended"
 density: "high-impact | narrative | evidence | keynote-sparse | eli5"
-art_direction: "one global photographic treatment appended verbatim to every image prompt (keynote)"
+art_direction: "approved visual language; apply its relevant rules to each asset type"
 cover_image: "path-or-url to the cover full-bleed image (keynote, optional)"
 ---
 
@@ -347,7 +351,7 @@ cover_image: "path-or-url to the cover full-bleed image (keynote, optional)"
 
 The caption box sits **top-left**; the first bullet renders as a one-line **subcaption** beneath it (give most slides one). Recognised `> Layout:` hints in Keynote mode: `fullbleed` (default — image + caption box), `oneword`, `number`, `wordless`, `motif`, `caption-dark` (dark caption box, for light images). Two text-family layouts also render straight from markdown: `triptych` (bullets `YEAR · label`, art line `three dated frames: a / b / c. Subtitle: …`) and `pair` (art line `two frames: a / b`, title optional). Omit the hint and the renderer picks heuristically (short numeric title → number; ≤2-word title → oneword; no title → wordless; else fullbleed).
 
-`---` is the standard slide separator used by Marp, reveal.js, and Slidev, so downstream HTML/PDF conversion is straightforward. Slide bodies stay terse — bullets and fragments, not paragraphs. The title carries the meaning; the body (Boardroom) or the image (Keynote) supports.
+`---` is the standard slide separator used by Marp, reveal.js, and Slidev, so downstream HTML/PDF conversion is straightforward. Keep support concise while preserving the explanation required for the delivery context. A read-alone deck may need complete paragraphs; private notes cannot replace visible reasoning. Either register can use text, charts, diagrams or images as support. Use `> Layout: text` for intentional text-only Keynote slides, including when the design note describes typography rather than an image.
 
 ## Producers (building a style pack)
 
@@ -389,16 +393,16 @@ deferred follow-up — not yet built.
 
 - Does not generate `.pptx`. For PowerPoint, hand off to a separate skill.
 - Does not write long-form prose in slide bodies. Keep bodies sparse.
-- Confirms unresolved narrative choices in one Fast brief or Guided discovery; honors explicit authorization to proceed without questions.
+- Requires an explicit Fast or Deep choice before discovery; never infers a mode from urgency or permission to proceed. Confirms unresolved narrative choices in one Fast brief or Deep discovery.
 - Applies sentence craft to titles and source fidelity to all visible content and narration; supporting fragments need not become full sentences.
-- Resolves explicit style, house default, project style and neutral fallback using Stage 4 precedence.
+- Resolves explicit style, project style, house default and neutral fallback using Stage 4 precedence.
 - Does not curate the public version. What to trim, what the public intro slide says, and what stays talk-only is decided by hand, before Stage 6 — never guessed.
 - Does not push without an explicit human yes. The Stage 6 push gate applies every time, no exceptions.
 
 ## References
 
 - [`references/title-craft.md`](references/title-craft.md) — primary reference for Stage 3 title craft. Rules, failure modes, rewrite examples, the read-aloud test, and the Keynote fragment register.
-- [`references/keynote-devices.md`](references/keynote-devices.md) — primary reference for Keynote mode. The 16-device palette (with affordance triggers and anti-pastiche rules), the six narrative spines, and the corpus examples they come from.
+- [`references/keynote-devices.md`](references/keynote-devices.md) — primary reference for Keynote mode. The optional device palette and corpus examples; narrative arcs remain NE-owned.
 - [`references/layout-catalog.md`](references/layout-catalog.md) — primary reference for Stage 4b layout promotion in a `richPromotion` pack. The generic layout family (Boardroom) plus the keynote layout family, decision tree, content cues, rewrite procedure, common mistakes. A house pack may ship its own catalog + `template.html`.
 - [`references/publish-targets.md`](references/publish-targets.md) — primary reference for Stage 6. The publish-target registry (user-local `~/.claude/keynote-publish-targets.json`, never in this repo), its schema, the target resolution order, and the onboarding flow for unregistered sites.
 - `scripts/keynote-render.mjs` — render script. Takes `.md` for the full pipeline; takes `.html` for re-export only (used after Stage 4b). `--style <pack-dir|name>`.

@@ -1,3 +1,5 @@
+> **Selection rule:** start with the approved slide plan's visual job and required content. The cues below suggest candidates; they never override evidence, qualifiers, assets or the headline chain. A number in a title does not by itself select a giant-number/verdict layout. Persist layout decisions by slide ID and check visible-content fidelity after promotion.
+
 # Deck Layouts — Catalog & Decision Table
 
 This catalog maps the 19 layouts in `the active pack's template.html` to the content shapes they fit. Use it in Stage 4b (Layout Promotion) to upgrade each slide from the baseline editorial layout to a layout that fits the content.
@@ -55,7 +57,7 @@ Walk this in order, top to bottom. Stop at the first match.
 
 ## Light vs dark, used as rhythm
 
-The layout family alternates. Don't put more than 3 light slides in a row, or more than 2 dark slides in a row. Use dark layouts (VERDICT, PULL QUOTE, FULL-BLEED IMAGE, SECTION DIVIDER, HALF-BLEED) as punctuation between light editorial slides.
+Review the sequence for readable, purposeful rhythm; there is no compulsory light/dark count. Use dark layouts (VERDICT, PULL QUOTE, FULL-BLEED IMAGE, SECTION DIVIDER, HALF-BLEED) as punctuation between light editorial slides.
 
 A small deck (3-5 slides) often reads best as: dark cover → light → dark verdict OR pull quote → light → dark closing.
 
@@ -138,3 +140,5 @@ When the deck frontmatter carries `mode: keynote`, the render script ignores the
 - A GIANT-NUMBER or ONE-WORD slide lands hardest right after a busy run — use them as punctuation, not filler.
 - Reserve the chained-caption climax (captions completing across slides) for one act; don't chain the whole deck.
 - One idea can span many slides via a repeated caption + changing image (the photo-essay engine) — this is expected, not repetition to cut.
+
+`> Layout: text` selects the text/evidence baseline inside Keynote mode. Use it for intentional typography-only slides; no missing-image placeholder is needed.

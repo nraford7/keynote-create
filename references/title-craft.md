@@ -36,7 +36,7 @@ Numbers, names, and concrete nouns hold attention. Abstractions slide off.
 Each title should make the next feel inevitable. If adjacent titles can be swapped without loss of sense, the sequence isn't doing narrative work — it's listing.
 
 ### 7. The turn is unmistakable
-Around the structural middle (Act 3), one title marks the pivot. The audience should feel "everything changes here" from the title alone.
+When the approved structure includes a turn, make it understandable in the headlines. Direct explanations and structures without a midpoint reversal need no invented pivot.
 
 ### 8. The last title lands
 The final title is the last thing the audience reads. It should resolve, reframe, commit, or open forward. Never "Thank you," "Questions?", or "In conclusion."

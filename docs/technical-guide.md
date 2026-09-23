@@ -103,3 +103,17 @@ node scripts/narrative-sync.mjs --update --source /path/to/Narrative-Engine --re
 ```
 
 Tests validate scripts and renderer contracts; they do not certify LLM judgments. The narrative gates are agent procedures. The sync checker verifies the pinned bytes, not upstream freshness. Hidden presenter notes remain in HTML source; remove private content from a public copy before publishing.
+
+
+## Production checks and saved layouts
+
+The current workflow and ownership contract live in `SKILL.md` and [visual production](../references/visual-production.md). Project style is resolved by the orchestrator before a house default, and passed explicitly to the renderer. The bare renderer resolves only an explicit style, registered default or neutral fallback; it does not inspect project design documents.
+
+- `npm test`: renderer, bundle integrity and web metadata regression tests.
+- `npm run test:production`: browser tests for visible-content fidelity and saved-layout restoration.
+- `npm run test:browser`: publication optimization and browser verification tests.
+- `node scripts/keynote-fidelity.mjs deck.md deck.html`: verify visible source text, slide count and IDs/order after production. Requires Playwright. Does not certify visual meaning, clipping or charts.
+- `node scripts/keynote-promotions.mjs capture deck.md deck.html deck.layouts.json`: save rich HTML by stable slide ID after review.
+- `node scripts/keynote-promotions.mjs apply deck.md deck.html deck.layouts.json`: restore unchanged designs after regeneration; changed source remains a fresh render for review, changed styles reject replay.
+
+Production Markdown uses `> Slide ID: stable-name`. Generic blockquotes are visible content; use explicit speaker-note or Narration fields for private notes. Restrictive Keynote layout hints fall back rather than dropping visible support. Saved layout records contain full HTML and may contain hidden notes: treat them as private working files.

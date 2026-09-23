@@ -58,3 +58,46 @@ test('short and numeric Keynote titles do not silently discard supporting eviden
     assert.ok(r.html.includes('Satisfaction only; productivity unmeasured.'), `Evidence lost for ${title}`);
   }
 });
+
+for (const [layout, count] of [['number', 2], ['oneword', 2], ['wordless', 2], ['verdict', 2], ['pair', 3], ['triptych', 4]]) {
+  test(`explicit ${layout} cannot discard visible support`, t => {
+    const support = Array.from({length: count}, (_, i) => `Qualification ${i + 1}: preliminary evidence only.`);
+    const r = render(t, `# Pilot\n\n---\n\n## 42%\n${support.map(s => '- ' + s).join('\n')}\n> Layout: ${layout}\n`, ['--mode', 'keynote', '--no-cover']);
+    assert.equal(r.status, 0, r.stderr);
+    for (const s of support) assert.ok(r.html.includes(s), `${layout} lost ${s}`);
+    assert.match(r.stderr, /preserv/i);
+  });
+}
+test('wordless hint cannot hide an approved headline', t => {
+  const r = render(t, '# Pilot\n\n---\n\n## This result does not establish causation.\n> Layout: wordless\n', ['--mode', 'keynote', '--no-cover']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.html, /kn-caption[^>]*>This result does not establish causation\./);
+});
+test('a titleless slide retains visible evidence and quotations', t => {
+  const r = render(t, '# Pilot\n\n---\n\n> Source: Pilot report, page 4.\n- Nonrandom sample.\n', ['--mode', 'keynote', '--no-cover']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.html, /Nonrandom sample/);
+  assert.match(r.html, /Source: Pilot report, page 4/);
+  assert.doesNotMatch(r.html, /speaker-note[^>]*>Source/);
+});
+test('stable slide IDs survive reordering without appearing as speaker notes', t => {
+  const a = '## First claim\n> Slide ID: pilot-result\n- First support.';
+  const b = '## Second claim\n> Slide ID: pilot-limit\n- Second support.';
+  for (const parts of [[a,b],[b,a]]) {
+    const r = render(t, '# Deck\n\n---\n\n' + parts.join('\n\n---\n\n'), ['--no-cover']);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.html, /data-slide-id="pilot-result"/);
+    assert.match(r.html, /data-slide-id="pilot-limit"/);
+    assert.doesNotMatch(r.html, /speaker-note[^>]*>Slide ID/);
+  }
+});
+test('duplicate slide IDs fail rather than making revision mappings ambiguous', t => {
+  const r = render(t, '# Deck\n\n---\n\n## A\n> Slide ID: same\n\n---\n\n## B\n> Slide ID: same\n', ['--no-cover']);
+  assert.notEqual(r.status, 0);
+  assert.match(r.stderr, /duplicate.*slide.*id/i);
+});
+test('an intentional text slide needs no image placeholder in Keynote mode',t=>{
+ const r=render(t,'# Deck\n\n---\n\n## Understand the evidence limit\n- This result is preliminary.\n> Art: Simple typographic explanation.\n> Layout: text\n',['--mode','keynote','--no-cover']);
+ assert.equal(r.status,0,r.stderr);const body=r.html.split('<body>')[1].split('<script>')[0];
+ assert.doesNotMatch(body,/Image needed/);assert.match(body,/This result is preliminary/);
+});

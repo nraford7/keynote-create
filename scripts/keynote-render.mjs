@@ -38,6 +38,7 @@ import { spawnSync } from 'node:child_process';
 import https from 'node:https';
 import http from 'node:http';
 import { resolveName, getDefault, registryPath } from './house-style.mjs';
+import { parseDeck } from './lib/deck-content.mjs';
 
 const HOME = os.homedir();
 const FONT_CACHE = path.join(HOME, '.claude/cache/fonts');
@@ -327,18 +328,7 @@ if (cliSublabel == null) sublabel = pack.sublabel;
 // ── parse markdown ──
 const raw = fs.readFileSync(input, 'utf8').replace(/\r\n/g, '\n');
 
-function parseFrontmatter(text) {
-  const m = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!m) return { meta: {}, body: text };
-  const meta = {};
-  for (const line of m[1].split('\n')) {
-    const kv = line.match(/^([\w-]+):\s*"?(.*?)"?\s*$/);
-    if (kv) meta[kv[1]] = kv[2];
-  }
-  return { meta, body: m[2] };
-}
-
-const { meta, body } = parseFrontmatter(raw);
+const { meta, body, slides } = parseDeck(raw);
 if (cliMode != null) meta.mode = cliMode;
 if (meta.mode && !['boardroom', 'keynote'].includes(meta.mode.toLowerCase())) {
   console.error('[input] mode must be boardroom or keynote'); process.exit(1);
@@ -349,80 +339,6 @@ if (!meta.title) meta.title = body.match(/^#\s+(.+)$/m)?.[1] || baseName;
 // precedence: --sublabel CLI > deck frontmatter > pack.json
 if (cliSublabel == null && typeof meta.sublabel === 'string' && meta.sublabel.trim()) sublabel = meta.sublabel.trim();
 
-// strip the leading "# Deck title" + "> Punchline" + "## Title sequence" block,
-// then split remainder on horizontal rule separators
-const slidesRaw = body.split(/\n---+\n/g).map(s => s.trim()).filter(Boolean);
-
-// the first chunk is the deck-level intro (title + punchline + title sequence); skip
-// once we hit a chunk whose first non-empty line is "## <something>" that isn't "Title sequence", we're in slides
-function isTitleSequence(chunk) {
-  const first = chunk.split('\n').find(l => l.trim());
-  return /^##\s+title\s+sequence/i.test(first || '');
-}
-function isDeckIntro(chunk) {
-  const first = chunk.split('\n').find(l => l.trim());
-  return first?.startsWith('# ');
-}
-
-const slideChunks = slidesRaw.filter(c => !isDeckIntro(c) && !isTitleSequence(c));
-
-function parseSlide(chunk) {
-  const lines = chunk.split('\n');
-  let title = '';
-  const bullets = [];
-  let speakerNote = '';
-  let image = '';    // keynote: full-bleed image src
-  let art = '';      // keynote: art-direction note (presenter-only)
-  let layout = '';   // keynote: explicit layout hint
-  let i = 0;
-  // pull title (## ...)
-  while (i < lines.length && !lines[i].trim()) i++;
-  if (lines[i] && lines[i].startsWith('## ')) {
-    title = lines[i].replace(/^##\s+/, '').trim();
-    i++;
-  } else if (lines[i] && lines[i].startsWith('# ')) {
-    title = lines[i].replace(/^#\s+/, '').trim();
-    i++;
-  }
-  for (; i < lines.length; i++) {
-    const l = lines[i].trim();
-    if (!l) continue;
-    // Narrative Engine's labeled fields; metadata sidecars are never renderer inputs.
-    const field = l.match(/^\*\*(Headline|Spotlight(?:\s*\([^)]*\))?|Design note|Narration|Speaker note):\*\*\s*(.*)$/i);
-    if (field) {
-      const key = field[1].toLowerCase(), value = field[2].trim();
-      if (key === 'headline') title = value;
-      else if (key.startsWith('spotlight')) { if (value) bullets.push(value); }
-      else if (key === 'design note') art = value;
-      else speakerNote = [speakerNote, value].filter(Boolean).join(' ');
-      continue;
-    }
-    // keynote directives — matched before the generic "> " catch-all
-    const imgMd = l.match(/^!\[[^\]]*\]\(([^)]+)\)/);
-    if (imgMd) { image = imgMd[1].trim(); continue; }
-    if (/^>\s*Image:/i.test(l))  { image  = l.replace(/^>\s*Image:\s*/i, '').trim(); continue; }
-    if (/^>\s*Art:/i.test(l))    { art    = l.replace(/^>\s*Art:\s*/i, '').trim(); continue; }
-    if (/^>\s*Layout:/i.test(l)) { layout = l.replace(/^>\s*Layout:\s*/i, '').trim().toLowerCase(); continue; }
-    if (l.startsWith('- ') || l.startsWith('* ')) {
-      bullets.push(l.replace(/^[-*]\s+/, ''));
-    } else if (l.startsWith('> Speaker note:') || l.startsWith('> Speaker Note:')) {
-      speakerNote = l.replace(/^>\s*Speaker [Nn]ote:\s*/, '');
-    } else if (l.startsWith('> ')) {
-      // generic blockquote — treat as additional speaker note line
-      speakerNote = (speakerNote ? speakerNote + ' ' : '') + l.replace(/^>\s*/, '');
-    } else {
-      // Preserve ordinary supporting prose instead of silently dropping it.
-      bullets.push(l);
-    }
-  }
-  title = title.replace(/^Slide\s+\d+\s*[—–:]\s*/i, '');
-  return { title, bullets, speakerNote, image, art, layout };
-}
-
-// Keep any slide with a title; in keynote mode also keep title-less slides that
-// carry an image, art direction, or an explicit layout (e.g. wordless beats).
-const slides = slideChunks.map(parseSlide)
-  .filter(s => s.title || s.image || s.art || s.layout);
 if (!slides.length) { console.error('[input] no slides found'); process.exit(1); }
 
 // ── font fetching + base64 (pack-driven) ──
@@ -939,7 +855,7 @@ function renderKnNumber(slide, pageno, cls) {
 // as a simple class token and added to the .slide element's class list so a
 // pack can style it. Unknown first words fall to the heuristic picker with a
 // one-line warning naming the slide and the hint.
-const KN_ALLOWLIST = ['fullbleed', 'caption-dark', 'motif', 'wordless', 'oneword', 'number', 'cover', 'object', 'triptych', 'pair', 'verdict'];
+const KN_ALLOWLIST = ['text', 'fullbleed', 'caption-dark', 'motif', 'wordless', 'oneword', 'number', 'cover', 'object', 'triptych', 'pair', 'verdict'];
 const KN_ALIASES = {
   'caption-dark': { layout: 'fullbleed', classes: ['dark'] },
   'object':       { layout: 'fullbleed', classes: ['object'] },
@@ -970,7 +886,7 @@ function resolveKnHint(slide, pageno) {
 // keynote layout picker — heuristic half only (no hint, or unknown hint)
 function pickKnLayout(slide) {
   const t = (slide.title || '').trim();
-  if (!t) return 'wordless';
+  if (!t) return slide.bullets.length ? 'fullbleed' : 'wordless';
   const words = t.split(/\s+/).length;
   // giant number: short title carrying a prominent numeral
   if (slide.bullets.length === 0 && words <= 3 && /\d/.test(t) && /[\$€£]?\d[\d,\.]*\s*(%|bn|billion|million|m|k)?\b/i.test(t)) return 'number';
@@ -983,6 +899,14 @@ function pickKnLayout(slide) {
 function renderKnSlide(slide, pageno) {
   const { layout: hintLayout, classes } = resolveKnHint(slide, pageno);
   let layout = hintLayout || pickKnLayout(slide);
+  // Explicit hints must preserve the same content as automatic layouts.
+  const capacities = {number: 0, oneword: 0, wordless: 0, verdict: 1, pair: 2, triptych: 3};
+  if ((layout === 'wordless' && slide.title) || slide.bullets.length > (capacities[layout] ?? Infinity)
+      || (slide.image && ['text', 'oneword', 'verdict', 'pair', 'triptych'].includes(layout))) {
+    process.stderr.write(`[layout] WARN: slide ${pageno}: ${layout} would omit content; using fullbleed to preserve it.\n`);
+    layout = 'fullbleed';
+    classes.length = 0;
+  }
   const clsList = ['kn', ...classes];
   if (layout === 'caption-dark') {           // one code path: fullbleed + dark class
     layout = 'fullbleed';
@@ -990,6 +914,7 @@ function renderKnSlide(slide, pageno) {
   }
   const cls = clsList.join(' ');
   switch (layout) {
+    case 'text': return renderEditorial(slide, pageno, '');
     case 'wordless': return renderKnWordless(slide, pageno, cls);
     case 'oneword':  return renderKnOneWord(slide, pageno, cls);
     case 'number':   return renderKnNumber(slide, pageno, cls);
@@ -1017,6 +942,10 @@ function pickLayout(slide, idx, total, punchline) {
   return 'editorial';
 }
 
+function identifySlide(html, slide) {
+  return slide.id ? html.replace('class="slide-wrap"', `class="slide-wrap" data-slide-id="${esc(slide.id)}"`) : html;
+}
+
 function buildHtml(meta, slides, fontCss) {
   const punchline = meta.punchline || '';
   const keynote = (meta.mode || '').toLowerCase() === 'keynote';
@@ -1024,16 +953,16 @@ function buildHtml(meta, slides, fontCss) {
   if (keynote) {
     // Keynote mode: image-led family. Cover from frontmatter, then one keynote slide each.
     if (includeCover) html += renderKnCover(meta, 1);
-    slides.forEach((s, i) => { html += renderKnSlide(s, i + (includeCover ? 2 : 1)); });
+    slides.forEach((s, i) => { html += identifySlide(renderKnSlide(s, i + (includeCover ? 2 : 1)), s); });
   } else {
     // Boardroom mode: text layouts from the active pack.
     if (includeCover) html += renderCover(meta, 1);
     slides.forEach((s, i) => {
       const pageno = i + (includeCover ? 2 : 1);
       const layout = pickLayout(s, i, slides.length, punchline);
-      if (layout === 'closing') html += renderClosing(s, pageno, punchline);
-      else if (layout === 'verdict') html += renderVerdict(s, pageno);
-      else html += renderEditorial(s, pageno, meta.eyebrow || '');
+      if (layout === 'closing') html += identifySlide(renderClosing(s, pageno, punchline), s);
+      else if (layout === 'verdict') html += identifySlide(renderVerdict(s, pageno), s);
+      else html += identifySlide(renderEditorial(s, pageno, meta.eyebrow || ''), s);
     });
   }
 
@@ -1041,6 +970,7 @@ function buildHtml(meta, slides, fontCss) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="keynote-render-context" content="${esc(JSON.stringify({brand, sublabel, mode: meta.mode || 'boardroom', eyebrow: meta.eyebrow || ''}))}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(meta.title || baseName)}</title>
 <style>
