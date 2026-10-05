@@ -6,7 +6,7 @@ Keynote Create is a skill for Claude Code and Codex. It helps you work out what 
 
 Read the slide headlines in order and the argument should make sense. The images, charts, supporting text and speaker notes give it depth.
 
-You get an editable Markdown source, a browser presentation and a PDF. The browser presentation supports fullscreen delivery and arrow-key navigation. It does not create PowerPoint `.pptx` or Apple Keynote `.key` files.
+You get an editable Markdown source, a browser presentation and a PDF. The browser presentation supports fullscreen delivery and arrow-key navigation. On a Mac the skill can also export an editable Apple Keynote `.key` file. It does not create PowerPoint `.pptx` files.
 
 ## How it works
 
@@ -80,6 +80,7 @@ The review checks the presentation against your material. It does not independen
 - Keeping important evidence and qualifications while making slides clearer.
 - Reusing a house style and preserving unchanged slide designs through revisions.
 - Producing browser presentations and PDFs from editable source files.
+- Exporting an editable Apple Keynote file on a Mac, with real text, tables, speaker notes and, when marked for export, native charts (`scripts/keynote-export.mjs`, Stage 4d in [SKILL.md](SKILL.md)).
 
 ## What it is not so good at
 
@@ -87,11 +88,11 @@ The review checks the presentation against your material. It does not independen
 - **Producing finished imagery in one pass.** Good visuals still need suitable assets, an available image tool and review. Missing assets remain marked as draft placeholders.
 - **Replacing visual judgment.** Automated checks catch missing text and some layout problems. They do not prove that a chart is accurate or an image helps explain the point.
 - **Predicting exact delivery time.** Script estimates help; rehearsal is still needed.
-- **Creating native slide files.** The outputs are Markdown, HTML and PDF, not editable PowerPoint or Apple Keynote files.
+- **Creating PowerPoint files.** The outputs are Markdown, HTML, PDF and, on a Mac, an editable Keynote file. There is no `.pptx` export. In the Keynote file, chart styling, animations and some text layout need finishing by hand.
 
 ## How to install it
 
-The current rendering setup targets **macOS**. You need Git, Node.js with npm, and Google Chrome installed at `/Applications/Google Chrome.app`. Use Claude Code or Codex with local file and command access. Independent narrative reviews also need support for isolated agents.
+The current rendering setup targets **macOS**. You need Git, Node.js with npm, and Google Chrome installed at `/Applications/Google Chrome.app`. Use Claude Code or Codex with local file and command access. Independent narrative reviews also need support for isolated agents. The optional Keynote export needs Apple Keynote and Playwright, plus Poppler (`brew install poppler`) for its `--verify` check.
 
 For a **new Claude Code installation**:
 

@@ -1,0 +1,121 @@
+{
+  "slides": [
+    {
+      "texts": [
+        "Lists keep their rules",
+        "—",
+        "First point stays put",
+        "—",
+        "Second point keeps its rule",
+        "—",
+        "Third point ends the list",
+        "Plain words, red words, bold words and faded words.",
+        "Export Fixture",
+        "01"
+      ],
+      "notes": "Speaker note for slide one.",
+      "tables": [],
+      "charts": []
+    },
+    {
+      "texts": [
+        "Caption over moving image",
+        "Export Fixture",
+        "02"
+      ],
+      "notes": "",
+      "tables": [],
+      "charts": []
+    },
+    {
+      "texts": [
+        "A centred heading that is long enough to wrap onto two lines",
+        "Export Fixture",
+        "03"
+      ],
+      "notes": "",
+      "tables": [
+        [
+          [
+            "Region",
+            "Share",
+            "Change"
+          ],
+          [
+            "North",
+            "41%",
+            "+3"
+          ],
+          [
+            "South",
+            "35%",
+            "-2"
+          ],
+          [
+            "West",
+            "24%",
+            "-1"
+          ]
+        ]
+      ],
+      "charts": []
+    },
+    {
+      "texts": [
+        "He said \"go\" \\ now, café • 🙂 bold",
+        "Export Fixture",
+        "04"
+      ],
+      "notes": "Note with \"quotes\" and a backslash \\ here.",
+      "tables": [],
+      "charts": [
+        {
+          "type": "bar",
+          "rows": [
+            "2021",
+            "2026"
+          ],
+          "columns": [
+            "Democrats",
+            "Republicans"
+          ],
+          "data": [
+            [
+              31,
+              45
+            ],
+            [
+              56,
+              49
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "hiddenText": "Hidden text must not export",
+  "videoFrame0": [
+    200,
+    50,
+    50
+  ],
+  "fadedRun": {
+    "text": "faded words",
+    "alpha": 0.55,
+    "expectedRgb": [
+      140,
+      140,
+      140
+    ]
+  },
+  "marker": {
+    "text": "—",
+    "color": [
+      210,
+      34,
+      34
+    ],
+    "size": 20,
+    "x": 80
+  }
+}

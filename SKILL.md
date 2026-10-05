@@ -1,6 +1,6 @@
 ---
 name: keynote-create
-description: "Use when turning source material into a presentation, keynote, pitch, slide outline, or action-title deck, or when rendering, tightening, preparing a talk kit, or publishing an existing deck. Combines a pinned Narrative Engine workflow with Boardroom sentence titles or Keynote image-led fragments, style packs, HTML and PDF output. Does not generate .pptx or .key files."
+description: "Use when turning source material into a presentation, keynote, pitch, slide outline, or action-title deck, or when rendering, tightening, preparing a talk kit, or publishing an existing deck. Combines a pinned Narrative Engine workflow with Boardroom sentence titles or Keynote image-led fragments, style packs, HTML and PDF output. Exports an editable Apple Keynote .key on macOS; does not generate .pptx files."
 ---
 
 # Keynote Create
@@ -75,7 +75,7 @@ Two deliverables, both landing **next to the deck** (same directory as the markd
 
 ### Stage 4 — Render, promote layouts, export
 
-Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export.
+Three sub-stages: baseline render, layout promotion via `/impeccable`, re-export. An opt-in fourth, 4d, exports a Keynote file on macOS.
 
 **Style resolution precedence (applies to all sub-stages).** A deck is always rendered by a **style pack** — a directory the render script consumes (`pack.json` + `tokens.css` skin + `layouts.css` structure + `fonts.json` + `style-notes.md`; see `packs/neutral/REQUIRED-TOKENS.md`). Resolve which pack, in order:
 
@@ -169,6 +169,59 @@ The script now lives in the skill directory (`scripts/` in this repo's clone), s
 If a layout looks wrong, re-run 4b on the specific slide and re-export. The decision tree in the pack's `layout-catalog.md` is advisory, not binding — taste overrides rule when they conflict.
 
 Before delivery, run the **production fidelity check** against `deck.md` after every render/promotion and compare that production copy with the accepted narrative. Mechanical text checks do not certify meaning, asset provenance, charts or layout; inspect those visually. Use Art Direct's critique mode when images need review against intent. Then complete geometry/screenshots, PDF inspection and delivery controls. See [visual production](references/visual-production.md#production-fidelity).
+
+#### Stage 4d — Keynote file (opt-in, macOS)
+
+Offer this step when the user asks for a Keynote copy, a `.key` file or slides they can edit in Keynote. Otherwise mention it once when you deliver the deck at Stage 4c, if the user is on a Mac with Keynote.
+
+```bash
+node scripts/keynote-export.mjs <deck.html> --verify      # writes <deck>.key next to the HTML
+node scripts/keynote-export.mjs <deck.html> --out ~/Desktop/talk.key --force --verify --open
+```
+
+Flags: `--out <file.key>` (default: next to the HTML; must end in `.key`), `--force` (replace an existing file), `--slides 1,3-5` (export some slides only), `--verify` (check the result; use it before delivery), `--open` (open the file in Keynote at the end), `--keep-temp` (keep the slide images, the generated `build.applescript` and the verify files; the script prints the folder).
+
+Prerequisites: macOS with Keynote in `/Applications`; Playwright with its Chromium (`npm install --no-save playwright` and `npx playwright install chromium`, or set `PLAYWRIGHT_MODULE` to an existing install); Poppler (`brew install poppler`) for `--verify`.
+
+**Native charts need a marker.** The renderer does not add one. A chart becomes a native Keynote chart only when its wrapper element carries `data-kn-chart` with valid JSON, for example:
+
+```html
+<div class="chart" data-kn-chart='{"type":"bar","rows":["2021","2026"],"columns":["North","South"],"data":[[31,45],[56,49]]}'>…</div>
+```
+
+Types are `bar`, `line`, `area`, `pie`, `stacked_bar` and `horizontal_bar`. `rows` and `columns` must not be empty. `data` has one array per row, with one number per column. A chart without the marker, or with an invalid one, comes through as an image (the export prints a warning for an invalid one).
+
+The result has one Keynote slide per HTML slide, on the Blank layout of the Basic White theme. These parts stay editable.
+
+- Text, as real text boxes. Each run keeps its font, size and colour.
+- Tables, as native Keynote tables.
+- Charts marked with `data-kn-chart`, as native Keynote charts with the same data.
+- Images, as image objects. Speaker notes become presenter notes.
+
+These parts do not carry over, because Keynote's scripting cannot set them.
+
+- Chart styling: colours, value labels, gridlines and legend.
+- Text alignment and line spacing. Each paragraph stays one editable text box, with a line break wherever the HTML wraps it, and Keynote applies its own line spacing (about 1.2 times the font size). Where that spacing would push the text into something else on the slide, and for centred or right-aligned text that wraps, each line becomes its own text box so it stays where the HTML put it. List items are never split. To match the deck's tighter headings, select the box in Keynote and adjust Format → Text → Spacing.
+- Letter-spacing, text shadows and animations.
+- Table borders. A one-column table gets an extra empty column (Keynote needs at least two).
+- Decoration. Backgrounds, rules and shapes are flattened into one background image per slide. Anything painted over an image (a scrim, a caption plate) is merged into that image, and images that share one overlay become one picture. Videos become still frames (the poster, or the first frame).
+
+Fonts are resolved in CSS order: the first family in the stack that is installed on the Mac wins, generic families map to Mac stand-ins (`serif` to Times New Roman, `monospace` to Menlo), and Helvetica Neue is the last resort. Web fonts embedded in the deck are usually not installed, so the export prints one warning per missing font. Install the font and export again for an exact match.
+
+Output rules.
+
+- The script refuses to replace an existing `.key` without `--force`, because that file can hold the user's own Keynote edits (exit code 2). A file that appears at `--out` during the run is not replaced either.
+- It builds to a temporary `<name>.export-<pid>-<tag>.key` and moves it into place only when the build succeeds. With `--force`, the old file is kept as a backup until the new one is in place.
+- With `--verify`, a failed check keeps the build under the first free name, `<name>.unverified.key` then `<name>.unverified-2.key` and so on, and leaves any existing `.key` untouched (exit code 1). It never replaces an earlier `.unverified` file.
+- It never imports files into Keynote and does not touch documents the user already has open. It closes its own document, except after a timeout or Ctrl-C: then it says that Keynote may hold an untitled export document. Tell the user to close that document without saving.
+
+Before delivery, run with `--verify`. Read the line for each slide (`slide N words M/M diff X% PASS`) and open the contact sheet `<name>.verify.png` next to the `.key` (HTML on the left, Keynote on the right). The check covers visible slide text and the whole-slide look. It does not check speaker notes or text inside charts and SVG drawings, and chart areas are left out of the image comparison, so look at those by eye. Words set in a substituted font may sit further left or right, but must stay on their line, so a heading that wraps onto an extra line still fails.
+
+If `--verify` fails (exit 1), read the FAIL lines (`missing:` and `displaced:` list the words) and look at those rows of the contact sheet. Fix the HTML and export again. If the slide looks right by eye, hand over the `.unverified` file and name the slides that failed.
+
+When you deliver, tell the user the `.key` path, the font warnings, and where the contact sheet is. Tell them how to finish the charts in Keynote. Select a chart, then use Format → Chart for colours, value labels, gridlines and legend. To give other charts the same look, use Format → Copy Style, then Paste Style.
+
+Exit codes: 0 success; 1 build failed, verification failed or no slides found; 2 usage error or missing prerequisite; 130 interrupted with Ctrl-C.
 
 ### Stage 5 (on-demand) — "Tighter"
 
@@ -411,5 +464,6 @@ deferred follow-up — not yet built.
 - `scripts/house-style.mjs` — the house-style registry (register/resolve a saved house pack).
 - `scripts/web-optimize.mjs` — Stage 6: extract base64 images, dedupe by content hash, resize to measured rendered boxes (1.35×, never upscaling), rewrite to lazy-loaded relative assets. Prints a before/after size report.
 - `scripts/web-inject.mjs` — Stage 6: inject the meta/OG/Twitter tags + canonical URL, the reading-mode hint pill, and the mobile present controls. `--url` required.
+- `scripts/keynote-export.mjs`: Stage 4d. Turns a rendered HTML deck into an editable Apple Keynote `.key` (macOS); `--verify` checks it against the HTML. Exit 0 on success, 1 on a failed build or check, 2 on usage error or missing prerequisite, 130 on Ctrl-C.
 - `scripts/keynote-verify.mjs` — Stage 6 + Stage 4 QA: the assertion suite (slide-relative geometry, images, hint lifecycle, present flows; `--mobile` adds touch-context checks, `--throttle` adds a throttled first-paint budget). Works on `file://` or a live URL; exit 0 on all-pass, 1 on any FAIL, 2 on usage error.
 - `packs/neutral/` — the bundled neutral style pack: `pack.json`, `tokens.css` (skin), `layouts.css` (shared structure), `fonts.json`, `style-notes.md`, and `REQUIRED-TOKENS.md` (the token contract every pack's `tokens.css` must satisfy).

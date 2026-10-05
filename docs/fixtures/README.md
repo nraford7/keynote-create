@@ -68,3 +68,28 @@ Expected: `slides: 4`, no JS errors. All five `<img>` elements load
 (`complete && naturalWidth > 0`), the embedded font loads
 (`document.fonts.check('16px "Fixture Sans"') → true`), and no slide overflows
 (`scrollHeight <= clientHeight + 1`).
+
+## Keynote export fixture
+
+`sample-export.html` and `sample-export.expected.json` are the test deck for
+`scripts/keynote-export.mjs`. Regenerate both with
+`node docs/fixtures/gen-export-fixture.mjs` (needs `magick` and `ffmpeg`; the
+video is VP9 WebM because Playwright's Chromium has no H.264). The expected
+JSON is written from the generator's own strings, never from the extractor.
+
+| Feature | Where | Exercises |
+|---|---|---|
+| Heading in an uninstalled font family (`Fixture Sans`, no fallback) | Slide 1 | font fallback warning |
+| List with padded `<li>`, separator rules and an absolutely placed red em-dash `li::before` (the neutral pack's list style) | Slide 1 | one text item per `<li>`; marker as its own text item |
+| Red, bold and 55%-white runs on a black panel | Slide 1 | per-run styling; alpha composited to RGB 140 |
+| `display:none` block | Slide 1 | hidden content excluded |
+| Poster-less video under a scrim and caption plate | Slide 2 | paint-order group capture; frame-0 freeze (`rgb(200,50,50)`) |
+| Centred heading that wraps | Slide 3 | one text item per line |
+| `<table>` with `<thead>`, `<img>` | Slide 3 | native table; media image |
+| `data-kn-chart` element | Slide 4 | native Keynote chart |
+| Quotes, backslash, accent, bullet, emoji, then a bold run | Slide 4 | AppleScript escaping; code-point character ranges |
+| Speaker notes with quotes and a backslash | Slides 1, 4 | presenter notes |
+
+The two baseline decks are rendered fresh from the tracked
+`sample-boardroom.md` and `sample-keynote.md` by
+`scripts/lib/test-decks.mjs` (`docs/fixtures/baseline/` is local only).

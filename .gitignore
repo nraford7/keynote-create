@@ -6,6 +6,8 @@ node_modules/
 *.pdf
 # …except the committed publish-stage test fixture (plan Task 2)
 !docs/fixtures/sample-public.html
+# …and the Keynote-export test deck (gen-export-fixture.mjs)
+!docs/fixtures/sample-export.html
 
 # local golden baseline (not distributed)
 docs/fixtures/baseline/

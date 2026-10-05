@@ -84,11 +84,52 @@ node scripts/keynote-verify.mjs <deck.html | URL> [--mobile] [--throttle]
 
 **Talk kit (opt-in, Stage 3.6).** When a deck fronts a live talk, the skill can also produce a talk kit next to the deck: speaker notes — per-slide spoken prose written for ~120 wpm delivery, with cumulative timings and a source-cautions block kept strictly separate from the spoken copy — plus a one-page worksheet, only when the deck contains activity slides.
 
+## Keynote export
+
+`scripts/keynote-export.mjs` turns a rendered HTML deck into a native, editable Apple Keynote document (SKILL.md Stage 4d). macOS only.
+
+```sh
+node scripts/keynote-export.mjs <deck.html> [--out deck.key] [--force] [--slides 1,3-5] [--open] [--verify] [--keep-temp]
+```
+
+**Pipeline.** Playwright opens the deck in a 2000×1200 window at 2× pixel density and reads each 1920×1080 slide in slide pixels. Every video is frozen first, on its poster or on its first frame; a video that never loads is reported and may come out blank. `scripts/lib/keynote-extract.mjs` reads each slide into a JSON slide model plus PNG layers. `scripts/lib/keynote-fonts.mjs` maps each CSS font stack to an installed PostScript name (one JXA call to NSFontManager). `scripts/lib/keynote-applescript.mjs` turns the model into one AppleScript program. `osascript` runs it. Keynote makes a new document, builds the slides, saves to a temporary `.key` and closes it. The CLI moves the temporary file to `--out`.
+
+**Layers per slide, bottom to top.**
+
+1. Plate: one 2× PNG of the slide with all text hidden and all media, tables and charts removed. Decoration lives here, because Keynote's scripting cannot draw coloured shapes.
+2. Media: one PNG per image, SVG, canvas or video. Anything that paints above a media element (found with `elementsFromPoint`) is captured into that PNG and removed from the plate. Media that share one overlay become a single PNG, so they are no longer separate pictures in Keynote. Overlapping media keep their paint order.
+3. Native tables, from the HTML table cells, with per-cell font, size, colour, background and alignment.
+4. Native charts, from a `data-kn-chart` attribute holding JSON such as `{"type":"bar","rows":["2021","2026"],"columns":["North","South"],"data":[[31,45],[56,49]]}`. `rows` and `columns` must not be empty, and `data` needs one array per row with one number per column. Types: `bar`, `line`, `area`, `pie`, `stacked_bar`, `horizontal_bar`. The renderer does not add the attribute; anything without a valid one stays an image.
+5. Text items with styled runs: one per text block and one per list item, with a soft line break (U+2028) wherever the HTML wraps, so Keynote cannot re-wrap them. Keynote's fixed line spacing (about 1.2×) makes a tight heading taller; the box keeps its top when there is room below, keeps its bottom when there is room above, and only when neither fits (or for centred or right-aligned text that wraps) becomes one item per line. Text in a substituted font gets room to the slide's right edge. A list marker outside the text, or an absolutely placed `li::before`, becomes its own small text item.
+
+Speaker notes (`.speaker-note`) become presenter notes. Translucent text and tinted table cells get the colour a viewer sees, sampled from the rendered slide.
+
+**Model.** The header comment of `scripts/lib/keynote-extract.mjs` describes the layers. In short, a deck is `{ width, height, slides, warnings }`. Each slide has `index` (its place in the source deck), `plate.path`, `media` (`path, x, y, w, h, kind`), `tables` (`rows` of cell text plus a matching `styles` grid), `charts` (`type, rows, columns, data` plus a box), `texts` (a box, a `source` of `block`, `li`, `line` or `marker`, and `runs` of `text, font, weight, italic, size, color, alpha`) and `notes`. Every model value is validated before it reaches AppleScript. Strings are escaped, numbers must be finite, colours must be three numbers, and file paths with line breaks are refused.
+
+**Keynote rules learned from probes (2026-10-05).** Hold the reference from `make new document`; never use `front document`. Set a text item's style before its position. Character ranges count Unicode code points. Wait for a large image to exist before styling it. Set a table cell's format to text before its value, so `+3` stays `+3`. Keynote refuses tables under two rows or two columns.
+
+**Verify.** `--verify` opens the built `.key` in Keynote, exports a PDF, and compares each slide with the HTML in two ways. Each visible word on the slide must sit within 24 px of its HTML position at 1920 wide (`pdftotext -bbox`). The whole-slide greyscale difference at 480 px wide must be at most 8%. The check leaves out speaker notes, text inside charts and SVG drawings, and the chart areas of the image comparison, so charts need a look by eye. Words in a substituted font may move sideways but must stay on their line. Words in a box kept whole despite Keynote's line spacing get that drift as extra tolerance. Letter-spaced words get extra tolerance for the spacing Keynote drops. A contact sheet `<name>.verify.png` next to the `.key` shows HTML and Keynote side by side.
+
+**Output rules.** `--out` must end in `.key`. An existing `--out` is refused without `--force` (exit 2, before Keynote starts), and a file that appears there during the run is not replaced. With `--force`, the old file stays as a backup until the new one is in place. A failed `--verify` keeps the build under the first free name (`<name>.unverified.key`, `<name>.unverified-2.key`, …) and leaves `--out` untouched (exit 1). After an AppleScript timeout or Ctrl-C (exit 130), Keynote may hold an untitled export document; close it without saving.
+
+**Limits.** No chart styling, text alignment, line spacing, letter-spacing, text shadows, table borders or animations. Decoration is flattened. Videos become still frames. Fonts that are not installed fall back along the CSS stack, then to Helvetica Neue, with one warning per font.
+
+**Tests.**
+
+```sh
+npm test               # unit: fonts, generator, comparison, CLI with stubbed Keynote
+npm run test:browser   # extraction on docs/fixtures/sample-export.html, the baseline decks and an edge deck
+npm run test:keynote   # live round trip through Keynote (macOS + Keynote + Poppler; skipped elsewhere)
+```
+
+`test:keynote` exports the fixture and both baseline decks with `--verify`, then reads every `.key` back. It checks the font, size and colour of every character, item heights (a one-line item must not wrap), notes, table cells, and chart data through Keynote's own PowerPoint export. It keeps a sentinel Keynote document open; its id, slides and text must come through unchanged, and no other document may appear or disappear. Regenerate the fixture with `node docs/fixtures/gen-export-fixture.mjs`; it needs ImageMagick (`magick`) and `ffmpeg` with VP9 (see `docs/fixtures/README.md`).
+
 ## Requirements
 
 - Node.js (no mandatory npm dependencies — playwright is an optional peer, see `package.json`).
 - Google Chrome at `/Applications/Google Chrome.app` for PDF export.
 - Network for Google Fonts CSS resolution and any uncached font files. Font files are cached in `~/.claude/cache/fonts/`; CSS resolution still uses the network. A style pack with local font files avoids this dependency.
+- For the Keynote export: macOS with Keynote in `/Applications`, the Playwright install below, and Poppler (`brew install poppler`) for `--verify`.
 - For the publish scripts: a Playwright install, resolved via the `PLAYWRIGHT_MODULE` env var (point it at an existing `node_modules/playwright/index.mjs`) or a plain `npm i playwright`; plus ImageMagick 7 (`magick`) for `web-optimize`'s resizing.
 
 ## Validation and upstream updates

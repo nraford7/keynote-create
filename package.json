@@ -12,9 +12,10 @@
     }
   },
   "scripts": {
-    "test": "node --test scripts/narrative-render.test.mjs scripts/narrative-sync.test.mjs scripts/web-inject.test.mjs",
+    "test": "node --test scripts/narrative-render.test.mjs scripts/narrative-sync.test.mjs scripts/web-inject.test.mjs scripts/keynote-export.test.mjs",
     "test:render": "node scripts/test-render.mjs",
-    "test:browser": "node --test scripts/web-optimize.test.mjs scripts/keynote-verify.test.mjs",
+    "test:browser": "node --test scripts/web-optimize.test.mjs scripts/keynote-verify.test.mjs scripts/keynote-export.browser.test.mjs",
+    "test:keynote": "node --test scripts/keynote-export.keynote.test.mjs",
     "test:production": "node --test scripts/production.test.mjs"
   }
 }
